@@ -72,16 +72,17 @@ paragraph.
 
 \section{Introduction}
 
-It has been understood for at least twenty years that neural networks are singular statistical models \cite{??} and that invariants like the Bayes generalisation error are strongly influenced by singularities and can be studied using methods from algebraic geometry \cite{??}. However, the ideas of Watanabe's singular learning theory \citep{watanabe_algebraic_2009} have been slow to spread into the deep learning theory community, despite their potential for addressing deep problems in the subject. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the theory accessible to a wider audience. We also point out some misconceptions in the literature, on which light is shed by the theory.
+It has been understood for at least twenty years that neural networks are singular statistical models \cite{??} and that invariants like the Bayes generalisation error are strongly influenced by singularities and can be studied using methods from algebraic geometry \cite{??}. These ideas form what is known as singular learning theory \citep{watanabe_algebraic_2009}.
+Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory itself appears to have made little inroads into the canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. We also point out some misconceptions in the literature, on which light is shed by the theory.
 
 We use $p$ to stand for a class of statistical models, determined by neural networks parametrised by weights $w \in W$, $q$ to stand for the true distribution (from which a finite training set is sampled) and $\varphi$ to stand for a prior over the weights.
 
 The paper is divided into sections, each of which illustrates one idea:
 
 \begin{itemize}
-    \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). The Kullback-Leibler divergence of a ReLU network has a degenerate Hessian matrix, \emph{at every point of the parameter space}. You can't divide by the determinant of the Hessian in deep learning.
+    \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). The Kullback-Leibler divergence of a many-layered neural network has a degenerate Hessian matrix, \emph{at every point of the parameter space}. Simply put, one cannot divide by the determinant of the Hessian in deep learning.
     \item \textbf{Volume dimension and flatness of minima} (Section \ref{section:no_flat_minima}). The extensive discussion of ``flat'' minima in deep learning is fundamentally misguided, since in singular models the \emph{number} of normal directions to the set of true parameters (properly understood) matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian).
-    \item \textbf{Generalisation error} (Section \ref{section:gen_error}). In singular models the MAP is strictly inferior to the Bayes predictive distribution, with respect to asymptotic behaviour of the generalisation error. We illustrate this with experiments showing how ``being Bayesian'' in a small number of layers improves on generalisation performance over the MAP. This shows that, even in practice, Laplace approximations of the predictive distribution are not appropriate in deep learning.
+    \item \textbf{Generalisation error} (Section \ref{section:gen_error}). In singular models, common point estimators MAP and MLE are strictly inferior to the Bayes predictive distribution, with respect to asymptotic behaviour of the generalisation error. We illustrate this with experiments showing how ``being Bayesian'' in a small number of the final layers improves generalisation over the MAP estimator. This shows that, even in practice, Laplace approximations of the predictive distribution are not appropriate in deep learning.
     \item \textbf{Simple functions and complex singularities} (Section \ref{section:simple_func}). In singular models the learning coefficient depends on the triple $(p, q, \varphi)$ whereas in regular models it depends only on $(p, \varphi)$ under a hypothesis of realisability. We illustrate that in practice the learning coefficient \emph{does} depend on the true distribution, with a simple family of ReLU networks.
 \end{itemize}
 
@@ -89,30 +90,39 @@ The paper is divided into sections, each of which illustrates one idea:
 
 In classical learning theory, generalisation is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. Rethinking generalisation will likely require devising capacity measures suitable to the peculiarities of deep learning, e.g. non-identifiability and degenerate Fisher information matrix. 
 
-To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it's important to distinguish between two different types of statistical models. We call a statistical model $p(y|x,w)$ \textbf{regular} if it is identifiable and has positive-definite Fisher information matrix. Then, following the conventions in \cite{watanabe_algebraic_2009}, we call a statistical model \textbf{strictly singular} if it is not regular. 
- {\cite[Theorem 7.2]{watanabe_algebraic_2009}}.
+To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it's important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$. Let $W_0 = \{w \in W: p(y|x,w)=q(y|x))\}$ be the set of true parameters.
+Following the conventions in \cite{watanabe_algebraic_2009}, we have the following bifurcation:
+
+\begin{definition}
+A statistical model $p(y|x,w)$ is called \textbf{regular} if it is 1) identifiable, i.e, if $W_0$ is a singleton, and 2) has positive-definite Fisher information matrix. A statistical model is called \textbf{strictly singular} if it is not regular. 
+%{\cite[Theorem 7.2]{watanabe_algebraic_2009}}.
+\end{definition}
+
 % \begin{definition}[Singular model]
 % A singular statistical model is either a regular model or a strictly singular model. 
 % \end{definition}
 
-Define $K(w)$ to be the Kullback-Leibler divergence between the model $p(y|x,w)$ and the true distribution $p(y|x,w_0)$:
+To a model-truth-prior triplet, we define the zeta function of a statistical model as
 \begin{equation}
-    K(w) := \int \!\int p(y,|x,w_0) \log \frac{ p(y|x, w_0) }{ p(y|x,w) } q(x) \,dx \,dy.
-\end{equation}
-Using this, we define the zeta function of a statistical model as
+\zeta(z) = \int K(w)^z \varphi(w) \,dw, \quad z \in \mathbb C,
+\end{equation} 
+where $\varphi(w)$ is a prior on the network weights $w$ and $K(w)$ is the Kullback-Leibler divergence between the model $p(y|x,w)$ and the true distribution $q(y|x)$:
 \begin{equation}
-    \zeta(z) = \int K(w)^z \varphi(w) \,dw, \quad z \in \mathbb C.
+    K(w) := \int \!\int q(y|x) \log \frac{ q(y|x) }{ p(y|x,w) } q(x) \,dx \,dy.
 \end{equation}
+To every such triplet of model-truth-prior, we have the following object.
 
 \begin{definition}[Real log canonical threshold (RLCT)]
-For a statistical model, let $-\lambda$ be the maximum pole of its zeta function. We call $\lambda$ the real log canonical threshold of the statistical model.
+For a model-truth-prior triplet $(p(y|x,w),q(y|x),\varphi)$, let $-\lambda$ be the maximum pole of the corresponding zeta function. We call $\lambda$ the real log canonical threshold of the model-truth-prior triplet.
 \label{def:RLCT}
 \end{definition}
-
-Note that the RLCT is a function of the triple $(p(y|x,w),q(y|x),\varphi)$. In regular statistical models, the RLCT is equal to $d/2$, while in strictly singular models, the RLCT is bounded above by $d/2$.
+ 
+In regular statistical models, the RLCT is equal to $d/2$, while in strictly singular models, the RLCT is bounded above by $d/2$.
 
 
 % The work of Sumio Watanabe on singular learning theory \cite{watanabe_algebraic_2009} suggests that the \textit{real log canonical threshold} (RLCT) of a deep neural network is suitable for measuring its effective number of parameters (see Section ???). 
+\paragraph{RLCT as a measure of model complexity}
+One of the most accessible results in singular learning theory is the work related to WBIC. We explain briefly the developments here since many in the deep learning community may not be aware of this work.
 
 Suppose we take the marginal likelihood as a model selection criterion. Since the marginal likelihood is an intractable integral over the parameter space of the model, one needs to consider some approximation. Recall that the Bayesian Information Criterion (BIC) is one such approximation. In particular, the BIC derives from an asymptotic approximation of the negative log likelihood using the Laplace approximation, leading to
 \[
@@ -152,38 +162,14 @@ Cite papers looking at the spectrum.
 \subsection{Setup}
 \label{sec:setup}
 
-Suppose we have realisations of response variable $Y \in \mathcal Y$ and input variable $X \in \mathcal X$ which arise from the joint distribution $q(x,y) = q(y|x) q(x)$ with both $q(y|x)$ and $q(x)$ are unknown. Let $\{p(y|x,w): w \in W\}$ be a class of models. Assume $q(y|x)$ is realisable, i.e. there exists some $w_0 \in W$ such that $q(y|x) = p(y|x,w_0)$. This assumption is critical to the framework we develop here. Modifications to the theory are needed in the case that $q(y|x)$ is not realisable.
+Suppose we have a dataset of input-target pairs $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$ drawn from the joint distribution $q(x,y) = q(y|x) q(x)$ with both $q(y|x)$ and $q(x)$ unknown. Let $\{p(y|x,w): w \in W\}$ be a class of models. Let $W_0 = \{w \in W: p(y|x,w)=q(y|x))\}$ be the set of true parameters.
 
-Suppose we have a dataset $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$ drawn from $q(x,y)$. Define the entropy $S_n = -\frac{1}{n} \sum_{i=1}^n \log q(y_i|x_i)$.
-Let $L_n(w)$ be the negative log likelihood
-\[
-L_n(w) = -\frac{1}{n} \sum_{i=1}^n \log p(y_i |x_i, w)
-\]
-A related term is the likelihood of the data at a certain inverse temperature $\beta >0$, $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$, which can be written in terms of $L_n$ since
-\begin{equation}
-p^\beta(\mathcal D_n | w) = \exp(-\beta n L_n(w)).
-\label{general_likelihood}
-\end{equation}
-The posterior distribution, at inverse temperature $\beta$, is defined as 
-\begin{equation}
-    p^\beta(w|\mathcal D_n) = \frac{\Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)}{\int_W \Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)} = \frac{p^\beta(\mathcal D_n|w) \varphi(w)}{p^\beta(\mathcal D_n)}
-    \label{general_posterior}
-\end{equation}
-where $\varphi$ is the prior distribution on the network weights $w$ and
-\begin{equation}
-    p^\beta(\mathcal D_n) = \int_W p^\beta(\mathcal D_n|w) \varphi(w) \,dw
-    \label{general_marginal_likelihood}
-\end{equation}
-is the marginal likelihood of the data at inverse temperature $\beta$. 
+\begin{definition}
+We say $q(y|x)$ is \textbf{realisable} by the model $p(y|x,w)$ if $W_0$ is non-empty.
+\end{definition}
+This assumption will be critical to the framework we develop here. Modifications to the theory are needed in the case that $q(y|x)$ is not realisable.
 
-Finally, denote the expectation of a random variable $R(w)$ with respect to the tempered posterior $p^\beta(w|\mathcal D_n)$ as
-\begin{equation}
-{\E}_w^\beta [R(w)] = \int_W R(w) p^\beta(w|\mathcal D_n) \,dw
-\label{general_expectation_posterior}
-\end{equation}
-% There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we msut grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
 
-Henceforth, if $\beta = 1$, we drop the superscript in the quantities \ref{general_likelihood}, \ref{general_posterior}, \ref{general_marginal_likelihood}, \ref{general_expectation_posterior}.
 
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
@@ -223,110 +209,65 @@ Watanabe proves that the leading term in the asymptotic expansion of the Bayes g
 
 
 \section{Generalization}\label{section:gen_error}
-
-In a regular statistical model, MAP and the Bayes predictive distribution has the same asymptotic behavior. This is not so in singular models, a phenomenon we will illustrate via some simple experiments. Suppose the input-target relationship is modeled as
-\begin{equation}
-p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
-\label{eq:genexp_model}
-\end{equation}
-where $f_\theta: X \to Y$ is a neural network.
-% Let $\varphi(\theta)$ be the prior distribution of the weights of the network. We call $p(\mathcal D_n |\theta) = \Pi_{i=1}^n p(y_i | x_i, \theta)$ the likelihood of the data $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$. Then we have the posterior distribution of $\theta$: $$
-% p(\theta | \mathcal D_n) \propto p(\mathcal D_n | \theta) \varphi(\theta).
-% $$
-% In general the normalizing constant in the posterior distribution is an intractable integral. When $f_\theta$ is a deep neural network, this is especially true. Though many approximate Bayesian techniques exist for sampling the posterior, e.g., MCMC, variational inference, doing this effectively for a deep neural network is still an open challenge. 
-% Leaving aside the fact that the posterior is hard to sample, let's see why we should care about the posterior distribution in the first place. 
 In the Bayesian paradigm, prediction proceeds via the so-called Bayes predictive distribution
 \begin{equation}
 p(y|x, \mathcal D_n) = \int p(y|x,\theta) p(\theta|\mathcal D_n) \,d\theta
 \label{eq:bayes_pred_dist}
 \end{equation}
+In a regular statistical model, the \textit{maximum a posteriori} (MAP) estimator, the maximum likelihood estimator (MLE), and the Bayes predictive distribution have the \textit{same} asymptotic behavior. This is not so in singular models.
+% Let $\varphi(\theta)$ be the prior distribution of the weights of the network. We call $p(\mathcal D_n |\theta) = \Pi_{i=1}^n p(y_i | x_i, \theta)$ the likelihood of the data $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$. Then we have the posterior distribution of $\theta$: $$
+% p(\theta | \mathcal D_n) \propto p(\mathcal D_n | \theta) \varphi(\theta).
+% $$
+% In general the normalizing constant in the posterior distribution is an intractable integral. When $f_\theta$ is a deep neural network, this is especially true. Though many approximate Bayesian techniques exist for sampling the posterior, e.g., MCMC, variational inference, doing this effectively for a deep neural network is still an open challenge. 
+% Leaving aside the fact that the posterior is hard to sample, let's see why we should care about the posterior distribution in the first place. 
+
 
 There are clear advantages of using a distribution estimator rather than a point estimate for the purpose of inference and uncertainty quantification.
 There is yet another advantage to Bayesian prediction, perhaps less well documented in the deep learning community which we seek to illustrate in this section. 
 
 Let $\hat q_n(y|x)$ be some estimate of the true unknown conditional density $q(y|x)$ based on the dataset $\mathcal D_n$. The generalization error of the predictor $\hat q_n(y|x)$ is defined as
 $$
-G(n) = KL (q(y|x) || \hat q_n(y|x) ) = \int q(x) \int q(y|x) \log \frac{q(y|x)}{\hat q_n(y|x)} \,dy  \,dx.
+G(n) = KL (q(y|x) || \hat q_n(y|x) ) = \int  \int q(y|x) \log \frac{q(y|x)}{\hat q_n(y|x)} q(x) \,dy  \,dx.
 $$
-To average out the randomness in the dataset $\mathcal D_n$ used to form the predictors, we will work with the \textit{average generalization error}, $E_n G(n)$, where $E_n$ denotes expectation over the dataset $\mathcal D_n$.
-
-
+To account for sampling variability, we will work with the \textit{average generalization error}, $E_n G(n)$, where $E_n$ denotes expectation over the dataset $\mathcal D_n$.
 If $\hat q_n$ is the Bayes predictive distribution, then 
-$$
+\begin{equation}
 E_n G(n) = \lambda/n + o(1/n)
-$$ 
-where $\lambda$ is the RLCT corresponding to the triplet $( q(y|x), p(y|x,\theta), \varphi(\theta) )$.
-
-While for regular models the Bayes predictive distribution, MAP, and MLE have the same leading term for the asymptotic expansions (in $n$) of $E_n G(n)$, these three predictors have different leading terms for singular models.  Specifically, we have the following asymptotic expansions of the generalization error for singular models.
-\begin{itemize}
-\item If $\hat q_n$ is the Bayes predictive distribution, then 
-$$
-E_n G(n) = \lambda/n + o(1/n)
-$$ 
-where $\lambda \in \mathbb Q^+$ is a positive rational number known as the learning coefficient. The learning coefficient is completely determined by the the truth-model-prior triplet $( q(y|x), p(y|x,\theta), \varphi(\theta) )$. Most of the time $\lambda << dim(\theta)/2$
-\item If $\hat q_n$ is the MAP or MLE, then 
+\label{eq:RLCT_generalization}
+\end{equation}
+where $\lambda$ is the RLCT corresponding to the triplet $( q(y|x), p(y|x,\theta), \varphi(\theta) )$. We provide a quick sketch of the derivation of \eqref{eq:RLCT_generalization} in Appendix ???.
+If $\hat q_n$ is the MAP or MLE, then 
 $$
 E_n G(n) = C/n + o(1/n)
 $$
 (different $C$'s for MAP and MLE). Basically $C$ is the maximum of some Gaussian process, which can easily be greater than $dim(\theta)/2$. Watanabe's Main Theorem 6.4 gives the precise formulation. 
-\end{itemize}
+In other words, for regular models, the MAP, MLE, and the Bayes predictive distribution have the same leading term for the asymptotic expansion of $E_n G(n)$:  $\lambda = C = d/2$, but for singular models, these three predictors have different leading terms for singular models with the Bayes predictive distribution having on average smaller generalization error than MAP or MLE. 
 
+Since neural networks are singular, we should employ the Bayes predictive distribution rather than MAP or MLE. This is hard to put to practice however. It is not for an ignorance of singular learning theory but for the mere fact that the Bayes predictive distribution is intractable as it is based on the intractable posterior distribution. 
+Though sophisticated approximate Bayesian techniques exist, e.g., variational inference, Hamiltonian Monte Carlo, normalizaing flows, etc, in this experiment, we set out to investigate whether certain very simple approximations of the Bayes predictive distribution also inherit its superiority over the point estimator MAP. 
 
-Since neural networks are singular, we can expect the Bayes predictive distribution to have better generalization than the point estimators. However since the Bayes predictive distribution is intractable, we have to work with approximations of it. In this experiment, we set out to investigate whether certain approximations of the Bayes predictive distribution also inherit its superiority over the point estimator MAP. 
+To approximate the Bayes predictive distribution, we consider marginalization only over the final layers in the neural network. Suppose the input-target relationship is modelled as
+\begin{equation}
+p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
+\label{eq:genexp_model}
+\end{equation}
+where $f_\theta: X \to Y$ is a neural network. Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot,v);w)$ with the dimension of $w$ being relatively small, e.g., 20 or so. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights for $g$ at the MAP estimate $v_{map}$ and perform MCMC over $w$. 
 
-To approximate the Bayes predictive distribution, we consider marginalization only over the final layers in the neural network. Suppose the network can be written $f_\theta(\cdot) = h(g(\cdot,v);w)$. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. We freeze the network weights for $g$ at the MAP estimate $v_{map}$ and perform Bayesian inference over $w$ for the network $h(g(\cdot,v_{map});w)$. 
+Throughout the experiments, the initial layers of $f$, i.e., the architecture of $g$, is a feedforward ReLU block. The network $h$ will be either two linear layers with the identity activation function or the ReLU activation function. The architecture of $f$ used in the experiments is described in further detail in Appendix ???.
 
+Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; w^1); w^2)$ where $w=(w^1,w^2)$
+To approximate the Bayes predictive distribution, we perform either the laplace approximation or HMC (NUTS variant) in the last two layers  \begin{equation}
+h(g(\cdot;v_{map});w)
+\label{last_two_layers}
+\end{equation}
+or the laplace approximation or HMC in the last layer only 
+\begin{equation}
+h_2(h_1(g(\cdot;v_{map});w^1_{map}); w_2)
+\label{eq:last_layer}
+\end{equation}
+Details of these approximate Bayesian schemes are found in Appendix ???.
 
-
-
-The first is to perform Laplace approximation in the final layer(s). The second is to perform MCMC in the final layer(s). Throughout this experiment, we work with a neural network composed of a feedforward ReLU block followed by two linear layers with either the identity activation function or the ReLU activation function:
-??? insert diagram for network???
-Without the ReLU activation function, the last two layers together comprise a reduced rank regression block. 
-
-
-In total, we consider five different estimators of $q(y|x)$:
-\begin{itemize}
-    \item Approximations of the Bayesian predictive distribution $\hat q_n(y|x) = p(y|x,\mathcal D_n)$:
-    \begin{itemize}
-        \item last layer: laplace or MCMC
-        \item last two layers: laplace or MCMC
-    \end{itemize}
-    \item MAP $\hat q_n(y|x) = p(y|x,\theta_n^{MAP}$)
-\end{itemize}
-We leave out MLE because ...
-
-
-
-
-% So we have various (average) generalization errors we are interested in 
-% \begin{itemize}
-%     \item $E_n G_{post}(n)$ corresponding to the full posterior over $\theta$
-%     \item $E_n G_{map}(n)$
-%     \item $E_n G_{mle}(n)$
-%     \item $E_n G_{mcmcrr}(n)$
-%     \item Generalization error in \eqref{G_LLB_vfixed}. (don't have a name for it yet)
-%     \item Laplace generalization errors
-% \end{itemize}
-
-
-Theory guarantees the following relationships:
-\begin{itemize}
-    \item $E_n G_{post}(n)$ has smaller learning coefficient than either $E_n G_{map}(n)$ or $E_n G_{mle}(n)$
-    \item \eqref{G_LLB_vfixed} = known $\lambda/n + o(1/n)$ for certain $h_w$. 
-\end{itemize}
-
-The question is, what is the behavior of $E_n G_{mcmcrr}(n)$? And to a lesser extent, what is the behavior of the laplace generalization error? (We know laplace approximation is inadequate because ...) Two hunches
-\begin{itemize}
-\item Though LLB is different from full posterior predictive distribution, it's still better than map or mle, i.e., $E_n G_{mcmcrr}(n) \le E_n G_{map}(n)$.
-\item $E_n G_{mcmcrr}(n)$ is different from \eqref{G_LLB_vfixed} but perhaps asymptotially they share the same leading term $\lambda/n$?
-\end{itemize}
-We'll set out to investigate these conjectures in the following experiment.
-
-
-
-
-
-
+From the outset, we expect the approximate Bayes predictive distribution resulting from the laplace approximation for \eqref{last_two_layers} to be inadequate since the model over $w$ is singular. We do however expect the last-layer-only laplace approximation for \eqref{last_layer} to be sound, albeit poor performing, since the model is now regular. Next, we expect the Bayes predictive distribution based on the MCMC approximation of \eqref{last_two_layers} and \eqref{eq:last_layer} to be both superior to the laplace approximations and the MAP. We further expect the predictive distribution based on the the MCMC approximation in the last two layers (\eqref{last_two_layers}) to have better generalization error than MCMC approximation in the last layer only (\eqref{eq:last_layer}) since the former is closer to the Bayes predictive distribution.
 
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
@@ -345,7 +286,7 @@ In deep learning, knowledge to be discovered from examples corresponds to a sing
 \label{figure:simp_func_complex}
 \end{figure}
 
-The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'' the RLCT should increase. While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
+The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
 
 Consider a two-layer ReLU network
 \begin{gather*}
@@ -368,13 +309,13 @@ The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results
 
 
 
-\subsubsection*{Author Contributions}
-If you'd like to, you may include  a section for author contributions as is done
-in many journals. This is optional and at the discretion of the authors.
-
-\subsubsection*{Acknowledgments}
-Use unnumbered third level headings for the acknowledgments. All
-acknowledgments, including those to funding agencies, go at the end of the paper.
+%\subsubsection*{Author Contributions}
+%If you'd like to, you may include  a section for author contributions as is done
+%in many journals. This is optional and at the discretion of the authors.
+%
+%\subsubsection*{Acknowledgments}
+%Use unnumbered third level headings for the acknowledgments. All
+%acknowledgments, including those to funding agencies, go at the end of the paper.
 
 
 \bibliography{iclr2021_conference}
@@ -386,7 +327,39 @@ acknowledgments, including those to funding agencies, go at the end of the paper
 \subsection{Estimating the RLCT using asymptotics}
 \label{appendix:RLCT_estimation}
 
-From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterisations of the RLCT. Using Theorem 4 in \cite{watanabe_widely_2013}, under Fundamental Conditions (1)-(4) therein, the following asymptotic result can be obtained: 
+From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterisations of the RLCT. To set this up, we begin with some definitions. Define the entropy $S_n = -\frac{1}{n} \sum_{i=1}^n \log q(y_i|x_i)$.
+Let $L_n(w)$ be the negative log likelihood
+\[
+L_n(w) = -\frac{1}{n} \sum_{i=1}^n \log p(y_i |x_i, w)
+\]
+A related term is the likelihood of the data at a certain inverse temperature $\beta >0$, $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$, which can be written in terms of $L_n$ since
+\begin{equation}
+p^\beta(\mathcal D_n | w) = \exp(-\beta n L_n(w)).
+\label{general_likelihood}
+\end{equation}
+The posterior distribution, at inverse temperature $\beta$, is defined as 
+\begin{equation}
+p^\beta(w|\mathcal D_n) = \frac{\Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)}{\int_W \Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)} = \frac{p^\beta(\mathcal D_n|w) \varphi(w)}{p^\beta(\mathcal D_n)}
+\label{general_posterior}
+\end{equation}
+where $\varphi$ is the prior distribution on the network weights $w$ and
+\begin{equation}
+p^\beta(\mathcal D_n) = \int_W p^\beta(\mathcal D_n|w) \varphi(w) \,dw
+\label{general_marginal_likelihood}
+\end{equation}
+is the marginal likelihood of the data at inverse temperature $\beta$. 
+
+Finally, denote the expectation of a random variable $R(w)$ with respect to the tempered posterior $p^\beta(w|\mathcal D_n)$ as
+\begin{equation}
+{\E}_w^\beta [R(w)] = \int_W R(w) p^\beta(w|\mathcal D_n) \,dw
+\label{general_expectation_posterior}
+\end{equation}
+% There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we msut grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
+
+Henceforth, when $\beta = 1$, we drop the superscript in the quantities \ref{general_likelihood}, \ref{general_posterior}, \ref{general_marginal_likelihood}, \ref{general_expectation_posterior}, e.g., $p(\mathcal D_n)$ rather than $p^1(\mathcal D_n)$
+
+
+Using Theorem 4 in \cite{watanabe_widely_2013}, under Fundamental Conditions (1)-(4) therein, the following asymptotic result can be obtained: 
 \begin{equation}
     {\E}_w^\beta [nL_n(w)] = nL_n(w_0) + \frac{\lambda \log n}{\beta_0} + U_n \sqrt{\frac{\lambda \log n}{2 \beta_0}} + O_p(1)
     \label{eq:Theorem4_WBIC}
