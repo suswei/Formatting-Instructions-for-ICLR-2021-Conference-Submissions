@@ -1,0 +1,261 @@
+@incollection{Bengio+chapter2007,
+author = {Bengio, Yoshua and LeCun, Yann},
+booktitle = {Large Scale Kernel Machines},
+publisher = {MIT Press},
+title = {Scaling Learning Algorithms Towards {AI}},
+year = {2007}
+}
+
+@article{Hinton06,
+author = {Hinton, Geoffrey E. and Osindero, Simon and Teh, Yee Whye},
+journal = {Neural Computation},
+pages = {1527--1554},
+title = {A Fast Learning Algorithm for Deep Belief Nets},
+volume = {18},
+year = {2006}
+}
+
+@book{goodfellow2016deep,
+title={Deep learning},
+author={Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron and Bengio, Yoshua},
+volume={1},
+year={2016},
+publisher={MIT Press}
+}
+
+@book{watanabe_algebraic_2009,
+	address = {USA},
+	title = {Algebraic {Geometry} and {Statistical} {Learning} {Theory}},
+	isbn = {978-0-521-86467-1},
+	abstract = {Sure to be influential, Watanabe's book lays the foundations for the use of algebraic geometry in statistical learning theory. Many models/machines are singular: mixture models, neural networks, HMMs, Bayesian networks, stochastic context-free grammars are major examples. The theory achieved here underpins accurate estimation techniques in the presence of singularities.},
+	publisher = {Cambridge University Press},
+	author = {Watanabe, Sumio},
+	year = {2009},
+	keywords = {singular learning theory}
+}
+
+@article{watanabe_widely_2013,
+	title = {A {Widely} {Applicable} {Bayesian} {Information} {Criterion}},
+	volume = {14},
+	issn = {ISSN 1533-7928},
+	url = {http://www.jmlr.org/papers/v14/watanabe13a.html},
+	number = {Mar},
+	urldate = {2020-02-24},
+	journal = {Journal of Machine Learning Research},
+	author = {Watanabe, Sumio},
+	year = {2013},
+	keywords = {RLCT, information criteria, marginal likelihood, singular model, thermodynamic integration},
+	pages = {867--897}
+}
+
+@inproceedings{zhang_understanding_2017,
+	title = {Understanding deep learning requires rethinking generalization},
+	url = {http://arxiv.org/abs/1611.03530},
+	abstract = {Despite their massive size, successful deep artificial neural networks can exhibit a remarkably small difference between training and test performance. Conventional wisdom attributes small generalization error either to properties of the model family, or to the regularization techniques used during training. Through extensive systematic experiments, we show how these traditional approaches fail to explain why large neural networks generalize well in practice. Specifically, our experiments establish that state-of-the-art convolutional networks for image classification trained with stochastic gradient methods easily fit a random labeling of the training data. This phenomenon is qualitatively unaffected by explicit regularization, and occurs even if we replace the true images by completely unstructured random noise. We corroborate these experimental findings with a theoretical construction showing that simple depth two neural networks already have perfect finite sample expressivity as soon as the number of parameters exceeds the number of data points as it usually does in practice. We interpret our experimental findings by comparison with traditional models.},
+	urldate = {2020-02-24},
+	booktitle = {Proceedings of the 5th {International} {Conference} on {Learning} {Representations}},
+	author = {Zhang, Chiyuan and Bengio, Samy and Hardt, Moritz and Recht, Benjamin and Vinyals, Oriol},
+	month = feb,
+	year = {2017},
+	note = {arXiv: 1611.03530},
+	keywords = {deep learning, generalization}
+}
+
+@book{kollar_birational_1998,
+	series = {Cambridge {Tracts} in {Mathematics}},
+	title = {Birational {Geometry} of {Algebraic} {Varieties}},
+	publisher = {Cambridge University Press},
+	author = {Kollár, Janos and Mori, Shigefumi},
+	year = {1998},
+	doi = {10.1017/CBO9780511662560}
+}
+
+@article{thomas_information_2019,
+	title = {Information matrices and generalization},
+	url = {http://arxiv.org/abs/1906.07774},
+	abstract = {This work revisits the use of information criteria to characterize the generalization of deep learning models. In particular, we empirically demonstrate the effectiveness of the Takeuchi information criterion (TIC), an extension of the Akaike information criterion (AIC) for misspecified models, in estimating the generalization gap, shedding light on why quantities such as the number of parameters cannot quantify generalization. The TIC depends on both the Hessian of the loss H and the covariance of the gradients C. By exploring the similarities and differences between these two matrices as well as the Fisher information matrix F, we study the interplay between noise and curvature in deep models. We also address the question of whether C is a reasonable approximation to F, as is commonly assumed.},
+	urldate = {2020-02-24},
+	journal = {arXiv:1906.07774 [cs, stat]},
+	author = {Thomas, Valentin and Pedregosa, Fabian and van Merriënboer, Bart and Mangazol, Pierre-Antoine and Bengio, Yoshua and Roux, Nicolas Le},
+	month = jun,
+	year = {2019},
+	note = {arXiv: 1906.07774},
+	keywords = {deep learning, generalization, information criteria}
+}
+
+@article{maddox_rethinking_2020,
+	title = {Rethinking {Parameter} {Counting} in {Deep} {Models}: {Effective} {Dimensionality} {Revisited}},
+	shorttitle = {Rethinking {Parameter} {Counting} in {Deep} {Models}},
+	url = {http://arxiv.org/abs/2003.02139},
+	abstract = {Neural networks appear to have mysterious generalization properties when using parameter counting as a proxy for complexity. Indeed, neural networks often have many more parameters than there are data points, yet still provide good generalization performance. Moreover, when we measure generalization as a function of parameters, we see double descent behaviour, where the test error decreases, increases, and then again decreases. We show that many of these properties become understandable when viewed through the lens of effective dimensionality, which measures the dimensionality of the parameter space determined by the data. We relate effective dimensionality to posterior contraction in Bayesian deep learning, model selection, double descent, and functional diversity in loss surfaces, leading to a richer understanding of the interplay between parameters and functions in deep models.},
+	urldate = {2020-03-05},
+	journal = {arXiv:2003.02139 [cs, stat]},
+	author = {Maddox, Wesley J. and Benton, Gregory and Wilson, Andrew Gordon},
+	month = mar,
+	year = {2020},
+	note = {arXiv: 2003.02139}
+}
+
+@inproceedings{gao_degrees_2016,
+	title = {Degrees of {Freedom} in {Deep} {Neural} {Networks}},
+	url = {http://arxiv.org/abs/1603.09260},
+	abstract = {In this paper, we explore degrees of freedom in deep sigmoidal neural networks. We show that the degrees of freedom in these models is related to the expected optimism, which is the expected difference between test error and training error. We provide an efficient Monte-Carlo method to estimate the degrees of freedom for multi-class classification methods. We show degrees of freedom are lower than the parameter count in a simple XOR network. We extend these results to neural nets trained on synthetic and real data, and investigate impact of network's architecture and different regularization choices. The degrees of freedom in deep networks are dramatically smaller than the number of parameters, in some real datasets several orders of magnitude. Further, we observe that for fixed number of parameters, deeper networks have less degrees of freedom exhibiting a regularization-by-depth.},
+	urldate = {2020-03-03},
+	booktitle = {Proceedings of the {Thirty}-{Second} {Conference} on {Uncertainty} in {Artificial} {Intelligence}},
+	author = {Gao, Tianxiang and Jojic, Vladimir},
+	month = jun,
+	year = {2016},
+	note = {arXiv: 1603.09260},
+	keywords = {BIC, deep learning, degrees of freedom},
+	pages = {232--241}
+}
+
+@article{sun_lightlike_2020,
+	title = {Lightlike {Neuromanifolds}, {Occam}'s {Razor} and {Deep} {Learning}},
+	url = {http://arxiv.org/abs/1905.11027},
+	abstract = {How do deep neural networks benefit from a very high dimensional parameter space? Their high complexity vs stunning generalization performance forms an intriguing paradox. We took an information-theoretic approach. We find that the locally varying dimensionality of the parameter space can be studied by the discipline of singular semi-Riemannian geometry. We adapt Fisher information to this singular neuromanifold. We use a new prior to interpolate between Jeffreys' prior and the Gaussian prior. We derive a minimum description length of a deep learning model, where the spectrum of the Fisher information matrix plays a key role to reduce the model complexity.},
+	urldate = {2020-02-24},
+	journal = {arXiv:1905.11027 [cs, stat]},
+	author = {Sun, Ke and Nielsen, Frank},
+	month = feb,
+	year = {2020},
+	note = {arXiv: 1905.11027},
+	keywords = {deep learning, information criteria, marginal likelihood}
+}
+
+@article{zhang_energyentropy_2018,
+	title = {Energy–entropy competition and the effectiveness of stochastic gradient descent in machine learning},
+	volume = {116},
+	issn = {0026-8976},
+	url = {https://doi.org/10.1080/00268976.2018.1483535},
+	doi = {10.1080/00268976.2018.1483535},
+	abstract = {Finding parameters that minimise a loss function is at the core of many machine learning methods. The Stochastic Gradient Descent (SGD) algorithm is widely used and delivers state-of-the-art results for many problems. Nonetheless, SGD typically cannot find the global minimum, thus its empirical effectiveness is hitherto mysterious. We derive a correspondence between parameter inference and free energy minimisation in statistical physics. The degree of undersampling plays the role of temperature. Analogous to the energy–entropy competition in statistical physics, wide but shallow minima can be optimal if the system is undersampled, as is typical in many applications. Moreover, we show that the stochasticity in the algorithm has a non-trivial correlation structure which systematically biases it towards wide minima. We illustrate our argument with two prototypical models: image classification using deep learning and a linear neural network where we can analytically reveal the relationship between entropy and out-of-sample error.},
+	number = {21-22},
+	urldate = {2020-03-04},
+	journal = {Molecular Physics},
+	author = {Zhang, Yao and Saxe, Andrew M. and Advani, Madhu S. and Lee, Alpha A.},
+	month = nov,
+	year = {2018},
+	note = {Publisher: Taylor \& Francis
+\_eprint: https://doi.org/10.1080/00268976.2018.1483535},
+	pages = {3214--3223}
+}
+
+@inproceedings{le_bayesian_2018,
+	title = {A {Bayesian} {Perspective} on {Generalization} and {Stochastic} {Gradient} {Descent}},
+	url = {https://openreview.net/forum?id=BJij4yg0Z},
+	abstract = {We consider two questions at the heart of machine learning; how can we predict if a minimum will generalize to the test set, and why does stochastic gradient descent find minima that generalize...},
+	urldate = {2020-03-04},
+	author = {Le, Samuel L. Smith {and} Quoc V.},
+	month = feb,
+	year = {2018}
+}
+
+@article{nakajima_variational_2007,
+	title = {Variational {Bayes} {Solution} of {Linear} {Neural} {Networks} and {Its} {Generalization} {Performance}},
+	volume = {19},
+	url = {https://www.researchgate.net/publication/6457767_Variational_Bayes_Solution_of_Linear_Neural_Networks_and_Its_Generalization_Performance},
+	number = {4},
+	urldate = {2020-03-03},
+	journal = {Neural Computation},
+	author = {Nakajima, Shinichi and Watanabe, Sumio},
+	year = {2007},
+	keywords = {linear neural networks, singular learning theory, variational},
+	pages = {1112--53}
+}
+
+@article{aoyagi_learning_2012,
+	title = {Learning {Coefficient} of {Generalization} {Error} in {Bayesian} {Estimation} and {Vandermonde} {Matrix}-{Type} {Singularity}},
+	volume = {24},
+	issn = {0899-7667, 1530-888X},
+	url = {http://www.mitpressjournals.org/doi/10.1162/NECO_a_00271},
+	doi = {10.1162/NECO_a_00271},
+	language = {en},
+	number = {6},
+	urldate = {2020-04-10},
+	journal = {Neural Computation},
+	author = {Aoyagi, Miki and Nagata, Kenji},
+	month = jun,
+	year = {2012},
+	pages = {1569--1610}
+}
+
+@article{chaudhari2019entropy,
+  title="{Entropy-SGD}: Biasing gradient descent into wide valleys",
+  author={P.~Chaudhari and A.~Choromanska and S.~Soatto and Y.~LeCun and C.~Baldassi and C.~Borgs and J.~Chayes and L.~Sagun and R.~Zecchina},
+  journal={Journal of Statistical Mechanics: Theory and Experiment},
+  volume={2019},
+  number={12},
+  year={2019}
+}
+
+@inproceedings{hinton1993keeping,
+  title={Keeping the neural networks simple by minimizing the description length of the weights},
+  author={Hinton, Geoffrey E and Van Camp, Drew},
+  booktitle={Proceedings of the sixth annual conference on Computational learning theory},
+  pages={5--13},
+  year={1993}
+}
+
+@article{hochreiter1997flat,
+  title={Flat minima},
+  author={Hochreiter, Sepp and Schmidhuber, J{\"u}rgen},
+  journal={Neural Computation},
+  volume={9},
+  number={1},
+  pages={1--42},
+  year={1997},
+  publisher={MIT Press}
+}
+
+@article{smith2017bayesian,
+  title={A bayesian perspective on generalization and stochastic gradient descent},
+  author={Smith, Samuel L and Le, Quoc V},
+  journal={arXiv preprint arXiv:1710.06451},
+  year={2017}
+}
+
+@article{jastrzkebski2017three,
+  title="Three factors influencing minima in {SGD}",
+  author={Jastrzebski, Stanis{\l}aw and Kenton, Zachary and Arpit, Devansh and Ballas, Nicolas and Fischer, Asja and Bengio, Yoshua and Storkey, Amos},
+  journal={arXiv preprint arXiv:1711.04623},
+  year={2017}
+}
+
+@ARTICLE{Zhang:2018MolPh.116.3214Z,
+       author = {{Zhang}, Yao and {Saxe}, Andrew M. and {Advani}, Madhu S. and
+         {Lee}, Alpha A.},
+        title = "{Energy-entropy competition and the effectiveness of stochastic gradient descent in machine learning}",
+      journal = {Molecular Physics},
+     keywords = {Machine learning, energy landscape, neural network, high-dimensional inference, Computer Science - Machine Learning, Condensed Matter - Statistical Mechanics, Statistics - Machine Learning},
+         year = "2018",
+        month = "Nov",
+       volume = {116},
+       number = {21-22},
+        pages = {3214-3223},
+          doi = {10.1080/00268976.2018.1483535},
+archivePrefix = {arXiv},
+       eprint = {1803.01927},
+ primaryClass = {cs.LG},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2018MolPh.116.3214Z},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@ARTICLE{Balasubramanian:1996cond.mat..1030B,
+       author = {{Balasubramanian}, Vijay},
+        title = "Statistical Inference, {Occam's} Razor and Statistical Mechanics on The Space of Probability Distributions",
+journal = {Neural Computation},
+volume = {9},
+number = {2},
+pages = {349-368},
+year = {1997},
+doi = {10.1162/neco.1997.9.2.349},
+URL = {         https://doi.org/10.1162/neco.1997.9.2.349},
+     keywords = {Condensed Matter, Bayesian Analysis, Nonlinear Sciences - Adaptation and Self-Organizing Systems},
+          eid = {cond-mat/9601030},
+archivePrefix = {arXiv},
+       eprint = {cond-mat/9601030},
+ primaryClass = {cond-mat},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/1996cond.mat..1030B},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
