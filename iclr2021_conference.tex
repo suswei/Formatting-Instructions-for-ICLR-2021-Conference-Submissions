@@ -213,7 +213,7 @@ Now let $(p,q,\varphi)$ be a general model and note that if a point $w \in W_0$ 
 \be\label{eq:limit_volumedim}
 \frac{d'}{2} = \lim_{t \to 0} \frac{\log\big\{V(at)/V(t)\big\}}{\log(a)}\,.
 \ee
-If $(p, q, \varphi)$ is a regular model then the volume dimension at every true parameter $w \in W_0$ is the same, namely $d/2$ and so any differences between the rate of growth of the volume must come down to the local curvature as measured by the Hessian determinant. However in a singular model it is possible that the volume dimension varies from point to point, and thus the volume dimension itself will be a much stronger influence on the volume dimension than the eigenvalues of the Hessian. 
+If $(p, q, \varphi)$ is a regular model then the volume dimension at every true parameter $w \in W_0$ is $d/2$ and so any differences between the local volumes as functions of $t$ are due to differences in the local curvatures as measured by the Hessian determinant. However in a singular model the volume dimension varies from point to point, and thus the volume dimension itself will be a much stronger influence on the volume dimension than the eigenvalues of the Hessian. 
 
 This is all made precise by Watanabe, who shows that under natural conditions \citep[Theorem 7.1]{watanabe_algebraic_2009} 
 \[
@@ -325,8 +325,7 @@ We conducted the experiments with $H = 5$, $n = 1000$. The \emph{a posteriori} d
 
 The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citep[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
 
-
-
+The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence that this model is not minimally singular, when combined with the symmetric true distribution $q^{SiLU}_m(x,y)$. Starting from the weight vector of this true distribution, varying $c$ or any of the $b_i$ independently takes the model off the set of true parameters, so that the normal bundle has dimension $> H + 1$. Hence the RLCT in the minimally singular case would be bounded below by $3$ in the case $H = 5$, but our estimates for the RLCT are $< 0.6$.
 
 %\subsubsection*{Author Contributions}
 %If you'd like to, you may include  a section for author contributions as is done
