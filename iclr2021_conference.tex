@@ -81,9 +81,9 @@ The paper is divided into sections, each of which illustrates one idea:
 
 \begin{itemize}
     \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). The Kullback-Leibler divergence of a many-layered neural network has a degenerate Hessian matrix, \emph{at every point of the parameter space}. Simply put, one cannot divide by the determinant of the Hessian in deep learning.
-    \item \textbf{The real log canonical threshold is the correct way to count the effective number of parameters in a deep neural network.} (Section \ref{section:no_flat_minima}). 
+    \item \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network.} (Section \ref{section:no_flat_minima}). 
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood as the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian), laying bare some of the confusion over ``flat'' minima in deep learning 
-    \item \textbf{Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In singular models, common point estimators MAP and MLE are strictly inferior to the Bayes predictive distribution, with respect to asymptotic behaviour of the generalisation error. We illustrate this with experiments showing how ``being Bayesian'' in a small number of the final layers improves generalisation over the MAP estimator. This shows that, even in practice, Laplace approximations of the predictive distribution are not appropriate in deep learning.
+    \item \textbf{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In singular models, common point estimators MAP and MLE are strictly inferior to the Bayes predictive distribution, with respect to asymptotic behaviour of the generalisation error. We illustrate this with experiments showing how ``being Bayesian'' in a small number of the final layers improves generalisation over the MAP estimator. This shows that, even in practice, Laplace approximations of the predictive distribution are not appropriate in deep learning.
     \item \textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair.
      %under a hypothesis of realisability. 
      We verify this experimentally with a simple family of ReLU networks. Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
@@ -95,7 +95,7 @@ In classical learning theory, generalisation is explained by measures of capacit
 
 To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it is important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$. Let 
 $$
-W_0 = \{w \in W: p(y|x,w)=q(y|x))\}
+W_0 = \{w \in W: p(y|x,w)=q(y|x)\}
 $$
  be the set of true parameters.
 Following the conventions in \cite{watanabe_algebraic_2009}, we have the following bifurcation:
@@ -134,9 +134,10 @@ One of the most accessible results in singular learning theory is the work relat
 
 Let $\mathcal D_n =  \{(x_i,y_i)\}_{i=1}^n$ be a dataset of input-output pairs.  
 Let $L_n(w)$ be the negative log likelihood
-\[
+\begin{equation}
 L_n(w) = -\frac{1}{n} \sum_{i=1}^n \log p(y_i |x_i, w)
-\]
+\label{eq:nll}
+\end{equation}
 A formal comparison of two models  $M_1=\{p(y|x,w): w \in W\}$ versus $M_2=\{p'(y|x,w): w \in W'\}$ can proceed by comparing their marginal likelihood:
 $$
 p(\mathcal D_n) = \int_W p(\mathcal D_n|w) \varphi(w) \,dw.
@@ -233,7 +234,9 @@ In the Bayesian paradigm, prediction proceeds via the so-called Bayes predictive
 p(y|x, \mathcal D_n) = \int p(y|x,\theta) p(\theta|\mathcal D_n) \,d\theta
 \label{eq:bayes_pred_dist}
 \end{equation}
-In a regular statistical model, the \textit{maximum a posteriori} (MAP) estimator, the maximum likelihood estimator (MLE), and the Bayes predictive distribution have the \textit{same} asymptotic behavior. This is not so in singular models.
+There are clear advantages of using a distribution estimator rather than a point estimate for the purpose of inference and uncertainty quantification.
+There is yet another advantage to Bayesian prediction, perhaps less well documented in the deep learning community which we seek to illustrate in this section. 
+Specifically, while in a regular statistical model, the \textit{maximum a posteriori} (MAP) estimator, the maximum likelihood estimator (MLE), and the Bayes predictive distribution have the \textit{same} asymptotic behavior, the same is not true in singular models.
 % Let $\varphi(\theta)$ be the prior distribution of the weights of the network. We call $p(\mathcal D_n |\theta) = \Pi_{i=1}^n p(y_i | x_i, \theta)$ the likelihood of the data $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$. Then we have the posterior distribution of $\theta$: $$
 % p(\theta | \mathcal D_n) \propto p(\mathcal D_n | \theta) \varphi(\theta).
 % $$
@@ -241,26 +244,25 @@ In a regular statistical model, the \textit{maximum a posteriori} (MAP) estimato
 % Leaving aside the fact that the posterior is hard to sample, let's see why we should care about the posterior distribution in the first place. 
 
 
-There are clear advantages of using a distribution estimator rather than a point estimate for the purpose of inference and uncertainty quantification.
-There is yet another advantage to Bayesian prediction, perhaps less well documented in the deep learning community which we seek to illustrate in this section. 
+
 
 Let $\hat q_n(y|x)$ be some estimate of the true unknown conditional density $q(y|x)$ based on the dataset $\mathcal D_n$. The generalization error of the predictor $\hat q_n(y|x)$ is defined as
 $$
 G(n) = KL (q(y|x) || \hat q_n(y|x) ) = \int  \int q(y|x) \log \frac{q(y|x)}{\hat q_n(y|x)} q(x) \,dy  \,dx.
 $$
 To account for sampling variability, we will work with the \textit{average generalization error}, ${\E}_n G(n)$, where ${\E}_n$ denotes expectation over the dataset $\mathcal D_n$.
-If $\hat q_n$ is the Bayes predictive distribution, then 
+If $\hat q_n$ is the Bayes predictive distribution, then by {\cite[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have
 \begin{equation}
 {\E}_n G(n) = \lambda/n + o(1/n)
 \label{eq:RLCT_generalization}
 \end{equation}
 where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$. We provide a quick sketch of the derivation of \eqref{eq:RLCT_generalization} in Appendix \ref{appendix:generalization_theory}.
-If $\hat q_n$ is the MAP or MLE, then 
+If $\hat q_n$ is the MAP or MLE, then by {\cite[Theorem 6.4]{watanabe_algebraic_2009}}
 $$
 {\E}_n G(n) = C/n + o(1/n)
 $$
-(different $C$'s for MAP and MLE). Basically $C$ is the maximum of some Gaussian process, which can easily be greater than $dim(\theta)/2$. Watanabe's Main Theorem 6.4 gives the precise formulation. 
-In other words, for regular models, the MAP, MLE, and the Bayes predictive distribution have the same leading term for the asymptotic expansion of ${\E}_n G(n)$:  $\lambda = C = d/2$, but for singular models, these three predictors have different leading terms for singular models with the Bayes predictive distribution having on average smaller generalization error than MAP or MLE. 
+(different $C$'s for MAP and MLE), where $C$ is the maximum of some Gaussian process, which can easily be greater than $dim(\theta)/2$. 
+In other words, for regular models, the MAP, MLE, and the Bayes predictive distribution have the same leading term for the asymptotic expansion of ${\E}_n G(n)$ since $\lambda = C = d/2$, but for singular models, these three predictors have different leading terms for singular models with the Bayes predictive distribution having on average smaller generalization error than MAP or MLE. 
 
 Since neural networks are singular, we should employ the Bayes predictive distribution rather than MAP or MLE. This is hard to put to practice however. It is not for an ignorance of singular learning theory but for the mere fact that the Bayes predictive distribution is intractable as it is based on the intractable posterior distribution. 
 Though sophisticated approximate Bayesian techniques exist, e.g., variational inference, Hamiltonian Monte Carlo, normalizaing flows, etc, in this experiment, we set out to investigate whether certain very simple approximations of the Bayes predictive distribution also inherit its superiority over the point estimator MAP. 
@@ -273,7 +275,6 @@ p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
 where $f_\theta: X \to Y$ is a neural network. Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small, e.g., 20 or so. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers, e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
 
 Throughout the experiments, $g$ is a feedforward ReLU block and $h$ is either two linear layers with the identity activation function or the ReLU activation function. More details on the architecture of $f = h \circ g$ used in the experiments is described in further detail in Appendix \ref{appendix:generalizaton}.
-
 Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; w^1); w^2)$ where $w=(w^1,w^2)$
 To approximate the Bayes predictive distribution, we perform either the laplace approximation or HMC (NUTS variant) in the last two layers  \begin{equation}
 h(g(\cdot;v_{map});w)
@@ -345,7 +346,7 @@ The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence th
 \subsection{Estimating the RLCT using asymptotics}
 \label{appendix:RLCT_estimation}
 
-From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterisations of the RLCT. To set this up, we begin with some definitions. Define the entropy $S_n = -\frac{1}{n} \sum_{i=1}^n \log q(y_i|x_i)$.
+From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterisations of the RLCT. To set this up, we begin with some definitions. 
 Let $L_n(w)$ be the negative log likelihood
 \[
 L_n(w) = -\frac{1}{n} \sum_{i=1}^n \log p(y_i |x_i, w)
@@ -382,7 +383,7 @@ Using Theorem 4 in \cite{watanabe_widely_2013}, under Fundamental Conditions (1)
     {\E}_w^\beta [nL_n(w)] = nL_n(w_0) + \frac{\lambda \log n}{\beta_0} + U_n \sqrt{\frac{\lambda \log n}{2 \beta_0}} + O_p(1)
     \label{eq:Theorem4_WBIC}
 \end{equation}
-where $\beta_0$ is a positive constant and $U_n$ is a sequence of random variables satisfying $\E_{\mathcal D_n} U_n = 0$. %Assuming $q(y|x)$ is realisable (which we do), $U_n$ behaves nicely ???insert some of those nice properties???.
+where $\beta_0$ is a positive constant and $U_n$ is a sequence of random variables satisfying ${\E}_n U_n = 0$. %Assuming $q(y|x)$ is realisable (which we do), $U_n$ behaves nicely ???insert some of those nice properties???.
 
  We have found \eqref{eq:Theorem4_WBIC} works well in our experiments; the corresponding algorithm is given in Algorithm \ref{alg:thm4}. 
 
@@ -418,7 +419,7 @@ whose expectation admits the following asymptotic expansion \cite{watanabe_algeb
 \[
 {\E}_n F(n) =  {\E}_n n S_n + \lambda \log n + o(\log n)
 \]
-where ${\E}_n$ denotes the expectation value over all sets of $n$ training samples. This deceptively simple result is actually based on a set of sophisticated tools, in particular Hironaka's resolution theorem from algebraic geometry.
+where $S_n = -\frac{1}{n} \sum_{i=1}^n \log q(y_i|x_i)$ is the entropy. This deceptively simple result is actually based on a set of sophisticated tools, in particular Hironaka's resolution theorem from algebraic geometry.
 
 The expected Bayesian generalisation error can be connected to the Bayes free energy via the following relation:
 \[
