@@ -13,7 +13,7 @@
 \usepackage{url}
 
 
-\title{Singularities in deep learning: an invitation}
+\title{An invitation to singular learning theory}
 
 % Authors must not appear in the submitted version. They should be hidden
 % as long as the \iclrfinalcopy macro remains commented out below.
@@ -73,10 +73,10 @@ paragraph.
 \section{Introduction}
 
 It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}.
-The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular models, e.g., generalisation is strongly influenced by singularities. The wide breadth of knowledge demanded by singular learning theory ranging from empirical processes to algebraic geometry to mathematical physics is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
+The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes, algebraic geometry, and mathematical physics -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 
 
-Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
+Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
 %We also point out some misconceptions in the literature, on which light is shed by the theory.
 %We use $p$ to stand for a class of statistical models, determined by neural networks parametrised by weights $w \in W$, $q$ to stand for the true distribution (from which a finite training set is sampled) and $\varphi$ to stand for a prior over the weights.
 Each section of the paper illustrates one key take-away idea:
@@ -99,12 +99,7 @@ To understand why classical measures of capacity fail to say anything meaningful
 $$
 W_0 = \{w \in W: p(y|x,w)=q(y|x)\}
 $$
- be the set of true parameters. We will frequently require the following condition:
- \begin{definition}
- 	We say $q(y|x)$ is \textbf{realizable} by the model class $\{p(y|x,w)\}$ if $W_0$ is non-empty.
- \end{definition}
-The realizability assumption will be critical to the standard results in singular learning theory. Modifications to the theory are needed in the case that $q(y|x)$ is not realisable, see the condition called relatively finite variance in \citet{watanabe_mathematical_2018}.
-
+ be the set of true parameters. 
 Following the conventions in \cite{watanabe_algebraic_2009}, we have the following bifurcation of statistical models:
 \begin{definition}
 A statistical model $p(y|x,w)$ is called \textbf{regular} if it is 1) identifiable, i.e, if $W_0$ is a singleton, and 2) has positive-definite Fisher information matrix. A statistical model is called \textbf{strictly singular} if it is not regular. 
@@ -130,8 +125,12 @@ Then to every triplet of model-truth-prior, we can associate the following centr
 For a model-truth-prior triplet $(p(y|x,w),q(y|x),\varphi)$, let $-\lambda$ be the maximum pole of the corresponding zeta function. We call $\lambda$ the real log canonical threshold of the model-truth-prior triplet.
 \label{def:RLCT}
 \end{definition}
-In regular statistical models, the RLCT is equal to $d/2$, while in strictly singular models, the RLCT is bounded above by $d/2$ if realizability is satisfied  {\citep[Theorem 6.4]{watanabe_algebraic_2009}}
 
+By {\citet[Theorem 6.4]{watanabe_algebraic_2009}}, the RLCT is equal to $d/2$ in regular statistical models. Furthermore the RLCT is bounded above by $d/2$ in strictly singular models, if \textit{realizability} holds:
+ \begin{definition}
+	We say $q(y|x)$ is \textbf{realizable} by the model class $\{p(y|x,w)\}$ if $W_0$ is non-empty.
+\end{definition}
+The condition of realizability will be critical to the standard results in singular learning theory. Modifications to the theory are needed in the case that $q(y|x)$ is not realisable, see the more general condition called relatively finite variance in \citet{watanabe_mathematical_2018}.
 
 % The work of Sumio Watanabe on singular learning theory \cite{watanabe_algebraic_2009} suggests that the \textit{real log canonical threshold} (RLCT) of a deep neural network is suitable for measuring its effective number of parameters (see Section ???). 
 \paragraph{RLCT as a measure of model complexity}
@@ -143,30 +142,28 @@ Let $L_n(w)$ be the negative log likelihood
 L_n(w) = -\frac{1}{n} \sum_{i=1}^n \log p(y_i |x_i, w)
 \label{eq:nll}
 \end{equation}
-A formal comparison of two models  $M_1=\{p(y|x,w): w \in W\}$ and $M_2=\{p'(y|x,w): w \in W'\}$ can proceed by comparing their marginal likelihood:
+The marginal likelihood of a model $\{p(y|x,w): w \in W\}$ is given by
 $$
 p(\mathcal D_n) = \int_W p(\mathcal D_n|w) \varphi(w) \,dw.
 $$
 Since the marginal likelihood is an intractable integral over the parameter space of the model, one needs to consider some approximation.
 
-Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of the log marginal likelihood, $\log p(\mathcal D_n)$, using the Laplace approximation, leading to
+Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of the negative log marginal likelihood, $-\log p(\mathcal D_n)$, using the Laplace approximation, leading to
 \[
-\operatorname{BIC} = -nL_n( w_{mle}) - \frac{d}{2} \log n.
+\operatorname{BIC} = nL_n( w_{mle}) + \frac{d}{2} \log n.
 \]
-Since we want the marginal likelihood of the data for some given model to be \textit{high}, but $d$ is extremely large for deep neural networks, one should almost never adopt a deep network according to the BIC. 
+Since we want the marginal likelihood of the data for some given model to be \textit{high}, we want the negative log marginal likelihood to be \textit{low}. Thus when $d$ is extremely large as is the case in deep neural networks, one should almost never adopt a deep network according to the BIC. 
 %(aka the log marginal likelihood, aka the free energy). 
 % Given two statistical models of a data source, one should choose (all else being equal) the one with higher model evidence. 
 
 However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and deep neural networks are not regular. Deep neural networks are \textit{strictly singular} as we illustrated in Section \ref{section:nn_singular}. 
 If we have realizability (along with a few more technical conditions), the correct criterion for both regular and strictly singular models was shown in \citet{watanabe_widely_2013} to be 
 \begin{equation}
--nL_n(w_0) - \lambda \log n,
+nL_n(w_0) + \lambda \log n,
 \label{logmarginal_rlct}
 \end{equation}
 where $w_0 \in W_0$ and $\lambda$ is the RLCT. 
-
-
-The RLCT is a birational invariant \citep{kollar_birational_1998} that directly measures the complexity of singularities in the model. Since more complex singularities lead to smaller values of $\lambda$, and deep learning models are highly singular, it is possible for deep neural networks to have high marginal likelihood, aka high model evidence -- consistent with their empirical success. 
+The RLCT is a birational invariant \citep{kollar_birational_1998} that directly measures the complexity of singularities in the model. Since more complex singularities lead to smaller values of $\lambda$, which we illustrate in Section \ref{section:simple_func}, and deep learning models are highly singular, it is possible for deep neural networks to have high marginal likelihood -- consistent with their empirical success. 
 
 
 ??? needs a better transition ???
@@ -257,10 +254,10 @@ $$
 (different $C$'s for MAP and MLE), where $C$ is the maximum of some Gaussian process, which can easily be greater than $dim(\theta)/2$. 
 In other words, for regular models, the MAP, MLE, and the Bayes predictive distribution have the same leading term for the asymptotic expansion of ${\E}_n G(n)$ since $\lambda = C = d/2$, but for singular models, these three predictors have different leading terms for singular models with the Bayes predictive distribution having on average smaller generalization error than MAP or MLE. 
 
-Since neural networks are singular, we should employ the Bayes predictive distribution rather than MAP or MLE. This is hard to put to practice however. It is not for an ignorance of singular learning theory but for the mere fact that the Bayes predictive distribution is intractable as it is based on the intractable posterior distribution. 
+Since neural networks are singular, we should employ the Bayes predictive distribution rather than MAP or MLE in deep learning. This is seldom done in practice however. It is not for an ignorance of singular learning theory but for the mere fact that the Bayes predictive distribution is intractable as it is based on the intractable posterior distribution. 
 Though sophisticated approximate Bayesian techniques exist, e.g., variational inference, Hamiltonian Monte Carlo, normalizaing flows, etc, in this experiment, we set out to investigate whether certain very simple approximations of the Bayes predictive distribution also inherit its superiority over the point estimator MAP. 
 
-To approximate the Bayes predictive distribution, we consider marginalization only over the final layers in the neural network. Suppose the input-target relationship is modelled as
+To approximate the Bayes predictive distribution, we consider marginalization only over the final layers of the neural network. Suppose the input-target relationship is modelled as
 \begin{equation}
 p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
 \label{eq:genexp_model}
@@ -269,18 +266,25 @@ where $f_\theta$ is a neural network. Since $f$ is a hierarchical model, let's w
 
 Throughout the experiments, $g$ is a feedforward ReLU block and $h$ is either two linear layers with the identity activation function or the ReLU activation function. More details on the architecture of $f = h \circ g$ used in the experiments is described in further detail in Appendix \ref{appendix:generalizaton}.
 Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; w^1); w^2)$ where $w=(w^1,w^2)$
-To approximate the Bayes predictive distribution, we perform either the laplace approximation or HMC (NUTS variant) \citep{hoffman2014no} in the last two layers  \begin{equation}
+To approximate the Bayes predictive distribution, we perform either the Laplace approximation or HMC (NUTS variant) \citep{hoffman2014no} in the last two layers  \begin{equation}
 h(g(\cdot;v_{map});w)
 \label{eq:last_two_layers}
 \end{equation}
-or the laplace approximation or HMC in the last layer only 
+or the Laplace approximation or HMC in the last layer only 
 \begin{equation}
-h_2(h_1(g(\cdot;v_{map});w^1_{map}); w_2)
+h_2(h_1(g(\cdot;v_{map});w^1_{map}); w^2)
 \label{eq:last_layer}
 \end{equation}
 Details of these approximate Bayesian schemes are found in Appendix \ref{appendix:generalizaton}.
 
-From the outset, we expect the approximate Bayes predictive distribution resulting from the laplace approximation for the last two layers (\eqref{eq:last_two_layers}) to be inappropriate since the model over $w$ is singular. We do however expect the last-layer-only laplace approximation (\eqref{eq:last_layer}) to be sound since the model is now regular,  albeit poor performing. Next, we expect the Bayes predictive distribution based on the MCMC approximation of \eqref{eq:last_two_layers} and \eqref{eq:last_layer} to be both superior to the laplace approximations and the MAP. We further expect the predictive distribution based on the the MCMC approximation in the last two layers (\eqref{eq:last_two_layers}) to have better generalization error than MCMC approximation in the last layer only (\eqref{eq:last_layer}) since the former is closer to the Bayes predictive distribution.
+From the outset, we expect the approximate Bayes predictive distribution resulting from the Laplace approximation for the last two layers to be inappropriate since model \eqref{eq:last_two_layers} over $w = (w^1, w^2)$ is singular. We do however expect the last-layer-only Laplace approximation to be sound since the model \eqref{eq:last_layer} over $w^2$ is regular. Next, we expect the Bayes predictive distribution based on the MCMC approximation of \eqref{eq:last_two_layers} and \eqref{eq:last_layer} to be both superior to the Laplace approximations and the MAP. We further expect the predictive distribution based on the the MCMC approximation in the last two layers (\eqref{eq:last_two_layers}) to have better generalization error than MCMC approximation in the last layer only (\eqref{eq:last_layer}) since the former is closer to the Bayes predictive distribution.
+
+The data $(x,y)$ are drawn according to \eqref{eq:genexp_model} with $q(x) =$???. 
+We varied the following factors: 1) minibatch stochastic gradient descent or full batch gradient descent, 2) ReLU activation or identity activation in $h$ network, 3) number of layers in $g$, either 1 or 5. 
+The results are displayed in Figure ???. We see that...
+
+
+Other variations on the data generating mechanism are discussed in Appendix \ref{appendix:generalizaton}, including violations of realizability. For these settings, results analogous to Figure ??? can also be found there. ??? summarize the lesson ???
 
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
@@ -321,6 +325,10 @@ The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results
 
 The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence that this model is not minimally singular, when combined with the symmetric true distribution $q^{SiLU}_m(x,y)$. Starting from the weight vector of this true distribution, varying $c$ or any of the $b_i$ independently takes the model off the set of true parameters, so that the normal bundle has dimension $> H + 1$. Hence the RLCT in the minimally singular case would be bounded below by $3$ in the case $H = 5$, but our estimates for the RLCT are $< 0.6$.
 
+\section{Future directions}
+We claimed that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
+
+We have already illustrated that despite the fact that for very few singular models have theoretical RLCTs been catalogued, it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
 %\subsubsection*{Author Contributions}
 %If you'd like to, you may include  a section for author contributions as is done
 %in many journals. This is optional and at the discretion of the authors.
@@ -426,7 +434,7 @@ That the RLCT has such a simple relationship to the Bayesian generalisation erro
 \label{appendix:generalizaton}
 
 \paragraph{Simulated data}
-Input and target variables are both in $\mathbb R^3$. The distribution of $x$ is set to $q(x)=$ ???. We simulate the data under the realizability assumption, i.e. we draw $y$ given $x$ according to \eqref{eq:genexp_model} for some $w_0 \in W$, drawn randomly. 
+Input and target variables are both in $\mathbb R^3$. The distribution of $x$ is set to $q(x)=$ ???. We simulate the data under the realizability assumption, i.e. we draw $y$ given $x$ according to \eqref{eq:genexp_model} for some $w_0 \in W$, drawn randomly. ??? mention $x_test_std$.
 
 \paragraph{Network architecture} In our experiments, $f = h \circ g$ where $g$ is a sequence of 
 \[
@@ -454,7 +462,7 @@ We calculate the average generalization error using a held-out-test set $T_{n'} 
 Assume the held-out test set is large enough so that the difference between ${\E}_n G(n)$ and \eqref{eq:computed_avgGn} is negligible. We will refer to them interchangeably as the average generalization error. 
 
 \paragraph{Laplace in the last layer(s)}
-Describe laplace in last layer and reduced regression layers.
+Describe Laplace in last layer and reduced regression layers.
 
 
 \paragraph{MCMC in the last layer(s)}
