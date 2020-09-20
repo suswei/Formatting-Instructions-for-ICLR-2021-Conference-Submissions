@@ -269,7 +269,7 @@ where $f_\theta$ is a neural network. Since $f$ is a hierarchical model, let's w
 
 Throughout the experiments, $g$ is a feedforward ReLU block and $h$ is either two linear layers with the identity activation function or the ReLU activation function. More details on the architecture of $f = h \circ g$ used in the experiments is described in further detail in Appendix \ref{appendix:generalizaton}.
 Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; w^1); w^2)$ where $w=(w^1,w^2)$
-To approximate the Bayes predictive distribution, we perform either the laplace approximation or HMC (NUTS variant) in the last two layers  \begin{equation}
+To approximate the Bayes predictive distribution, we perform either the laplace approximation or HMC (NUTS variant) \citep{hoffman2014no} in the last two layers  \begin{equation}
 h(g(\cdot;v_{map});w)
 \label{eq:last_two_layers}
 \end{equation}
@@ -467,7 +467,7 @@ Define the following approximation to the Bayesian predictive distribution
 $$
 \tilde p(y|x, \mathcal D_n) = \int p(y|x,(v_{map},w)) p(w|\tilde{\mathcal D_n}) \,dw
 $$
-We use HMC (NUTS variant) to draw $w_1,\ldots,w_R$ from $\tilde{\mathcal D_n}$. Then we approximate $\textbackslash\{\}tilde p(y|x, \textbackslash\{\}mathcal D\_n)$ with
+We use HMC (NUTS variant) \citep{hoffman2014no} to draw $w_1,\ldots,w_R$ from $\tilde{\mathcal D_n}$. Then we approximate $\textbackslash\{\}tilde p(y|x, \textbackslash\{\}mathcal D\_n)$ with
 \[
 \frac{1}{R} \sum_{r=1}^R p(y|x,(v_{map},w_r))
 \]
