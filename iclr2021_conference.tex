@@ -73,20 +73,19 @@ paragraph.
 \section{Introduction}
 
 It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}.
-The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular models, e.g., generalisation is strongly influenced by singularities and can be studied using methods from empirical processes, algebraic geometry, and mathematical physics. The wide breadth of knowledge demanded by singular learning theory is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
+The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular models, e.g., generalisation is strongly influenced by singularities. The wide breadth of knowledge demanded by singular learning theory ranging from empirical processes to algebraic geometry to mathematical physics is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 
 
-Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. We also point out some misconceptions in the literature, on which light is shed by the theory.
-
+Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
+%We also point out some misconceptions in the literature, on which light is shed by the theory.
 %We use $p$ to stand for a class of statistical models, determined by neural networks parametrised by weights $w \in W$, $q$ to stand for the true distribution (from which a finite training set is sampled) and $\varphi$ to stand for a prior over the weights.
-
-The paper is divided into sections, each of which illustrates one idea:
+Each section of the paper illustrates one key take-away idea:
 
 \begin{itemize}
-    \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Hessian \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning and the local contributions of singularities effect global invariants like generalisation. 
+    \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Hessian \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. 
     \item \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network.} (Section \ref{section:no_flat_minima}). 
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood as the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian), laying bare some of the confusion over ``flat'' minima in deep learning 
-    \item \textbf{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In singular models, MAP and MLE are strictly inferior to the Bayes predictive distribution, with respect to asymptotic behaviour of the generalisation error. We illustrate this with experiments showing how ``being Bayesian'' in a small number of the final layers improves generalisation over MAP. We will also show that, even in practice, Laplace approximations of the predictive distribution are not appropriate in deep learning.
+    \item \textbf{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models, MAP, MLE, and the Bayes predictive distribution share the same leading term in the asymptotic expansion of the Kullback-Leibler generalizatoin error. This is not so in singular models. We illustrate in our experiments that even ``being Bayesian'' in just the final layers improves generalisation over MAP. Our experiments further confirm that the Laplace approximations of the predictive distribution is indeed not appropriate in deep learning.
     \item \textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair.
      %under a hypothesis of realisability. 
      We verify this experimentally with a simple family of ReLU networks. Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
@@ -96,13 +95,13 @@ The paper is divided into sections, each of which illustrates one idea:
 
 In classical learning theory, generalisation is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. Rethinking generalisation will likely require devising capacity measures suitable to the peculiarities of deep learning, e.g. non-identifiability and degenerate Fisher information matrix. 
 
-To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it is important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$. Let 
+To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it is important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$ where $W \subset \mathbb R^d$ is the parameter space. Let 
 $$
 W_0 = \{w \in W: p(y|x,w)=q(y|x)\}
 $$
  be the set of true parameters. We will frequently require the following condition:
  \begin{definition}
- 	We say $q(y|x)$ is \textbf{realizable} by the model $p(y|x,w)$ if $W_0$ is non-empty.
+ 	We say $q(y|x)$ is \textbf{realizable} by the model class $\{p(y|x,w)\}$ if $W_0$ is non-empty.
  \end{definition}
 The realizability assumption will be critical to the standard results in singular learning theory. Modifications to the theory are needed in the case that $q(y|x)$ is not realisable, see the condition called relatively finite variance in \citet{watanabe_mathematical_2018}.
 
