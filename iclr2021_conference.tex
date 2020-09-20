@@ -72,7 +72,8 @@ paragraph.
 
 \section{Introduction}
 
-It has been understood for at least twenty years that neural networks are singular statistical models \cite{watanabe_almost_2007}. The study of singular models, also known as singular learning theory, requires very different tools from the study of regular models, e.g., generalisation is strongly influenced by singularities and can be studied using methods from empirical processes, algebraic geometry, and mathematical physics \cite{??}. The wide breadth of knowledge demanded by singular learning theory is rewarded with profound and surprising results that reveal singular models are different from regular models in practically important ways.
+It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}.
+The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular models, e.g., generalisation is strongly influenced by singularities and can be studied using methods from empirical processes, algebraic geometry, and mathematical physics. The wide breadth of knowledge demanded by singular learning theory is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 
 
 Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. We also point out some misconceptions in the literature, on which light is shed by the theory.
@@ -82,10 +83,10 @@ Despite its potential for addressing fundamental mysteries in deep learning, sin
 The paper is divided into sections, each of which illustrates one idea:
 
 \begin{itemize}
-    \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Hessian \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning, the local contributions of singularities effect global invariants like generalisation. 
+    \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Hessian \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning and the local contributions of singularities effect global invariants like generalisation. 
     \item \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network.} (Section \ref{section:no_flat_minima}). 
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood as the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian), laying bare some of the confusion over ``flat'' minima in deep learning 
-    \item \textbf{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In singular models, common point estimators MAP and MLE are strictly inferior to the Bayes predictive distribution, with respect to asymptotic behaviour of the generalisation error. We illustrate this with experiments showing how ``being Bayesian'' in a small number of the final layers improves generalisation over the MAP estimator. This shows that, even in practice, Laplace approximations of the predictive distribution are not appropriate in deep learning.
+    \item \textbf{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In singular models, MAP and MLE are strictly inferior to the Bayes predictive distribution, with respect to asymptotic behaviour of the generalisation error. We illustrate this with experiments showing how ``being Bayesian'' in a small number of the final layers improves generalisation over MAP. We will also show that, even in practice, Laplace approximations of the predictive distribution are not appropriate in deep learning.
     \item \textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair.
      %under a hypothesis of realisability. 
      We verify this experimentally with a simple family of ReLU networks. Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
@@ -93,7 +94,7 @@ The paper is divided into sections, each of which illustrates one idea:
 
 \section{Singular Learning Theory}
 
-In classical learning theory, generalisation is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. Rethinking generalisation will likely require devising capacity measures suitable to the peculiarities of deep learning, e.g. non-identifiability and degenerate Fisher information matrix. 
+In classical learning theory, generalisation is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. Rethinking generalisation will likely require devising capacity measures suitable to the peculiarities of deep learning, e.g. non-identifiability and degenerate Fisher information matrix. 
 
 To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it is important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$. Let 
 $$
@@ -130,7 +131,7 @@ Then to every triplet of model-truth-prior, we can associate the following centr
 For a model-truth-prior triplet $(p(y|x,w),q(y|x),\varphi)$, let $-\lambda$ be the maximum pole of the corresponding zeta function. We call $\lambda$ the real log canonical threshold of the model-truth-prior triplet.
 \label{def:RLCT}
 \end{definition}
-In regular statistical models, the RLCT is equal to $d/2$, while in strictly singular models, the RLCT is bounded above by $d/2$ if realizability is satisfied. 
+In regular statistical models, the RLCT is equal to $d/2$, while in strictly singular models, the RLCT is bounded above by $d/2$ if realizability is satisfied  {\citep[Theorem 6.4]{watanabe_algebraic_2009}}
 
 
 % The work of Sumio Watanabe on singular learning theory \cite{watanabe_algebraic_2009} suggests that the \textit{real log canonical threshold} (RLCT) of a deep neural network is suitable for measuring its effective number of parameters (see Section ???). 
@@ -168,15 +169,10 @@ where $w_0 \in W_0$ and $\lambda$ is the RLCT.
 
 The RLCT is a birational invariant \citep{kollar_birational_1998} that directly measures the complexity of singularities in the model. Since more complex singularities lead to smaller values of $\lambda$, and deep learning models are highly singular, it is possible for deep neural networks to have high marginal likelihood, aka high model evidence -- consistent with their empirical success. 
 
-\paragraph{Related work on measuring capacity of neural network}
-\begin{itemize}
-    \item TIC \cite{thomas_information_2019}. Wrong because the Hessian in neural networks is degenerate.
-    \item Maddox \cite{maddox_rethinking_2020} Rethinking Parameter Counting in Deep Models: Effective Dimensionality Revisited
-    \item Gao \cite{gao_degrees_2016} Degrees of Freedom in Deep Neural Networks
-    \item Lightlike \cite{sun_lightlike_2020}
-    \item \url{http://papers.nips.cc/paper/7176-exploring-generalization-in-deep-learning.pdf}
-    \item \cite{zhang_energyentropy_2018} posit a relationship between the generalisation error of the full Bayes predictor and an entropy term (Eq (14)). Le and Smith \cite{le_bayesian_2018} do something very similar. These works rely on Laplace approximation (saddlepoint approximation) of the intractable posterior distribution. This is wrong in singular models such as neural networks. 
-\end{itemize} 
+
+??? needs a better transition ???
+Capacity measures for explaining the generalization of deep neural networks is an active area of research \cite{neyshabur_exploring_2017}. It is still common practice to work with degenerate Hessians in proposing capacity measures \cite{thomas_information_2019}. Another common mistake is to perform the Laplace approximation for singular neural networks. For instance, \citet{zhang_energyentropy_2018} posit a relationship between the generalisation error of the full Bayes predictor and an entropy term (Eq (14)). Le and Smith \cite{le_bayesian_2018} do something very similar. These works rely on Laplace approximation (saddlepoint approximation) of the intractable posterior distribution. ???Also discuss the following works \cite{maddox_rethinking_2020}, \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
+
 
 \subsection{Neural networks are singular models}
 \label{section:nn_singular}
@@ -345,11 +341,7 @@ The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence th
 \label{appendix:RLCT_estimation}
 
 From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterisations of the RLCT. To set this up, we begin with some definitions. 
-Let $L_n(w)$ be the negative log likelihood
-\[
-L_n(w) = -\frac{1}{n} \sum_{i=1}^n \log p(y_i |x_i, w)
-\]
-A related term is the likelihood of the data at a certain inverse temperature $\beta >0$, $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$, which can be written in terms of $L_n$ since
+Let $L_n(w)$ be the negative log likelihood as in \eqref{eq:nll}. Define the data likelihood at inverse temperature $\beta >0$ to be $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$, which can be written in terms of $L_n$ since
 \begin{equation}
 p^\beta(\mathcal D_n | w) = \exp(-\beta n L_n(w)).
 \label{general_likelihood}
@@ -373,17 +365,16 @@ Finally, denote the expectation of a random variable $R(w)$ with respect to the 
 \end{equation}
 % There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we msut grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
 
-Henceforth, when $\beta = 1$, we drop the superscript in the quantities \ref{general_likelihood}, \ref{general_posterior}, \ref{general_marginal_likelihood}, \ref{general_expectation_posterior}, e.g., $p(\mathcal D_n)$ rather than $p^1(\mathcal D_n)$
+Henceforth, when $\beta = 1$, we drop the superscript in the quantities \ref{general_likelihood}, \ref{general_posterior}, \ref{general_marginal_likelihood}, \ref{general_expectation_posterior}, e.g., $p(\mathcal D_n)$ rather than $p^1(\mathcal D_n)$. ???is this necessary???
 
 
-Using Theorem 4 in \cite{watanabe_widely_2013}, under Fundamental Conditions (1)-(4) therein, the following asymptotic result can be obtained: 
+Assuming the conditions of Theorem 4 in \cite{watanabe_widely_2013} hold, we have
 \begin{equation}
     {\E}_w^\beta [nL_n(w)] = nL_n(w_0) + \frac{\lambda \log n}{\beta_0} + U_n \sqrt{\frac{\lambda \log n}{2 \beta_0}} + O_p(1)
     \label{eq:Theorem4_WBIC}
 \end{equation}
 where $\beta_0$ is a positive constant and $U_n$ is a sequence of random variables satisfying ${\E}_n U_n = 0$. %Assuming $q(y|x)$ is realisable (which we do), $U_n$ behaves nicely ???insert some of those nice properties???.
-
- We have found \eqref{eq:Theorem4_WBIC} works well in our experiments; the corresponding algorithm is given in Algorithm \ref{alg:thm4}. 
+In Algorithm \ref{alg:thm4}, we describe an estimation procedure for the RLCT based on \eqref{eq:Theorem4_WBIC}.
 
 To use any of these three asymptotic characterisations of $\lambda$, we need to compute integrals of the form $E_w^\beta [n L_n(w)]$. However, the $p^\beta(w|\mathcal D_n)$ is intractable for any $\beta>0$, rendering computation of $E_w^\beta$ challenging. For regular models, the Laplace approximation to ${\E}_w^\beta [R(w)]$ would be reasonable (as guaranteed for instance by the Berstein-von Mises theorem.) Recall the Laplace approximation in this case would replace ${\E}_w^\beta$ with an expectation with respect to a normal random variable with mean $w_0$, which is a mode of $L_n$, and covariance which is the Hessian $H_{ij} =\frac{\partial^2 L_n}{\partial w_i \partial w_j}$. But as we discussed earlier, for strictly singular models, the Laplace approximation does not hold. 
 
@@ -407,7 +398,7 @@ At present there does not exist a method of sampling from the Bayesian posterior
 Very few theoretical RLCTs are known for strictly singular models. They are certainly not known for modern deep neural networks where the network weights number on the order of $n$. Furthermore singular learning theory, as it stands, cannot be directly applied to neural networks with the ReLU activation function. 
 
 \subsection{Connection between RLCT and generalization} \label{appendix:generalization_theory}
-For completeness, we sketch the asymptotic derivation of the average generalization error in singular models. The exposition is an amalgamation of various papers published by Sumio Watanabe, but mostly based on the textbooks. 
+For completeness, we sketch the asymptotic expansion of the average generalization error in singular models. The exposition is an amalgamation of various papers published by Sumio Watanabe, but mostly based on the textbook \cite{watanabe_algebraic_2009}. 
 
 To understand the connection between the RLCT and $G(n)$, we first define the so-called \textbf{Bayes free energy} as 
 \[
@@ -421,7 +412,7 @@ where $S_n = -\frac{1}{n} \sum_{i=1}^n \log q(y_i|x_i)$ is the entropy. This dec
 
 The expected Bayesian generalisation error can be connected to the Bayes free energy via the following relation:
 \[
-{\E}_n G(n) = \E F_{n+1} - \E F_n 
+{\E}_n G(n) = \E F(n+1) - \E(F_n)
 \]
 Then we have the expected Bayes generalisation error is related to the RLCT as follows
 \begin{equation}
@@ -435,24 +426,27 @@ That the RLCT has such a simple relationship to the Bayesian generalisation erro
 \subsection{Details for generalization error experiments}
 \label{appendix:generalizaton}
 
-\paragraph{Network architecture} In our experiments, $h$ is a sequence of 
+\paragraph{Simulated data}
+Input and target variables are both in $\mathbb R^3$. The distribution of $x$ is set to $q(x)=$ ???. We simulate the data under the realizability assumption, i.e. we draw $y$ given $x$ according to \eqref{eq:genexp_model} for some $w_0 \in W$, drawn randomly. 
+
+\paragraph{Network architecture} In our experiments, $f = h \circ g$ where $g$ is a sequence of 
 \[
-\text{linear} \circ \text{relu} \circ \ldots \text{linear}
+\text{linear} \circ \text{ReLU} \circ \ldots \text{linear}
 \]
-and $g$ is either
+and $h$ is either
 \begin{equation}
-    \text{linear} \circ \text{relu} \circ \text{linear} 
+    \text{linear} \circ \text{ReLU} \circ \text{linear} 
 \end{equation}
 or
 \begin{equation}
-    \text{linear}  \circ \text{linear} 
+    \text{linear}  \circ \text{linear}. 
 \end{equation}
+We fix the number of hidden units in $g$, the feedforward ReLU block, to 5 and the number of hidden units in $h$, the last two years, to 3. We varied the number of layers in $g$ between $1$ and $5$.
 
-Hidden units in feedforward relu block, hidden units in reduced rank regression block.
+\paragraph{MAP training}
+The MAP estimator is found via stochastic gradient descent on the MSE loss with minibatch set to ???. Training was set to 5000 epochs with no early stopping. 
 
-No minibatching, no early stopping.
-
-
+\paragraph{Calculating the generalization error}
 We calculate the average generalization error using a held-out-test set $T_{n'} = \{(x_i',y_i')\}_{i=1}^{n'}$ as
 \begin{equation}
 \frac{1}{n'} \sum_{i=1}^{n'} \log q(y_i'|x_i') - {\E}_n \frac{1}{n'} \sum_{i=1}^{n'} \log \hat q_n(y_i'|x_i')
@@ -470,23 +464,29 @@ $$
 p(w | \tilde{\mathcal D_n}) \propto p(\tilde{\mathcal D_n} | w) \varphi(w) = \Pi_{i=1}^n \exp\{-|| y_i - h_w \circ g_{v_{map}}(x_i) ||^2/2\} \varphi(w)
 $$
 
-Define the approximate Bayesian predictive distribution
+Define the following approximation to the Bayesian predictive distribution
 $$
-p_{mcmcrr}(y|x, \mathcal D_n) = \int p(y|x,(v_{map},w)) p(w|\tilde{\mathcal D_n}) \,dw
+\tilde p(y|x, \mathcal D_n) = \int p(y|x,(v_{map},w)) p(w|\tilde{\mathcal D_n}) \,dw
 $$
-We have to be careful when we speak of the generalization error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{map}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
-\begin{equation}
-{\E}_n G_{mcmcrr}(n) =  KL (q(y|x) || p_{mcmcrr}(y|x, \mathcal D_n) )
-\label{G_LLB}
-\end{equation}
-where ${\E}_n$ averages out the randomness of both $D_n$ and  $v_{map}$. 
+We use HMC (NUTS variant) to draw $w_1,\ldots,w_R$ from $\tilde{\mathcal D_n}$. Then we approximate $\textbackslash\{\}tilde p(y|x, \textbackslash\{\}mathcal D\_n)$ with
+\[
+\frac{1}{R} \sum_{r=1}^R p(y|x,(v_{map},w_r))
+\]
+where $R$ is a large number, set to ???1000??? in our experiments.
 
-An alternative is to condition on $v_{map}$, using $g_{v_{map}}$ as a feature extractor in a preprocessing step. Then, assuming realizability $q(y|x) = p(y|x,(v_0,w_0))$ we may examine the generalizaton error
-\begin{equation}
-E_{\mathcal D_n | v_{map}} KL( p(y|x,(v_{map},w_0)) || p_{mcmcrr}(y|x, \mathcal D_n) )
-\label{G_LLB_vfixed}
-\end{equation}
-The average generalization error in \eqref{G_LLB_vfixed} is distinctly different from the one in \eqref{G_LLB}. The nice thing about \eqref{G_LLB_vfixed} is that we know its asymptotic expansion is $\lambda/n$ where $\lambda$ corresponds to the triplet $( p(y|x,(v_{map},w_0)), p(y| x, (v_{map},w)), \varphi(w))$. For certain functions $h_w$ where the true $\lambda$ is known, we can verify this in the experiments. (Not implemented yet).
+%We have to be careful when we speak of the generalization error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{map}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
+%\begin{equation}
+%{\E}_n G_{mcmcrr}(n) =  KL (q(y|x) || p_{mcmcrr}(y|x, \mathcal D_n) )
+%\label{G_LLB}
+%\end{equation}
+%where ${\E}_n$ averages out the randomness of both $D_n$ and  $v_{map}$. 
+%
+%An alternative is to condition on $v_{map}$, using $g_{v_{map}}$ as a feature extractor in a preprocessing step. Then, assuming realizability $q(y|x) = p(y|x,(v_0,w_0))$ we may examine the generalizaton error
+%\begin{equation}
+%E_{\mathcal D_n | v_{map}} KL( p(y|x,(v_{map},w_0)) || p_{mcmcrr}(y|x, \mathcal D_n) )
+%\label{G_LLB_vfixed}
+%\end{equation}
+%The average generalization error in \eqref{G_LLB_vfixed} is distinctly different from the one in \eqref{G_LLB}. The nice thing about \eqref{G_LLB_vfixed} is that we know its asymptotic expansion is $\lambda/n$ where $\lambda$ corresponds to the triplet $( p(y|x,(v_{map},w_0)), p(y| x, (v_{map},w)), \varphi(w))$. For certain functions $h_w$ where the true $\lambda$ is known, we can verify this in the experiments. (Not implemented yet).
 
 
 \end{document}
