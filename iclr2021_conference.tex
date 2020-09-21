@@ -182,7 +182,7 @@ A ReLU network of depth $k$ is a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of
 \[
 f = A_k \circ \operatorname{ReLU}_{k-1} \circ A_{k-1} \cdots \operatorname{ReLU}_1 \circ A_1
 \]
-where $A_i: \mathbb{R}^{d_i} \lto \mathbb{R}^{d_{i+1}}$ are affine functions, $d_1 = N, d_{k+}+ M$ and for $1 \le i \le k-1$ the function $\operatorname{ReLU}_i: \mathbb{R}^{d_{i+1}} \lto \mathbb{R}^{d_{i+1}}$ is coordinate-wise $\operatorname{ReLU}$. Let $W$ be a compact subspace of the space $\mathbb{R}^D$ be the space of affine functions $(A_i)_{i=1}^k$ with coordinates $w_i$, so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define
+where the $A_i: \mathbb{R}^{d_i} \lto \mathbb{R}^{d_{i+1}}$ are affine functions and the function $\operatorname{ReLU}_i: \mathbb{R}^{d_{i+1}} \lto \mathbb{R}^{d_{i+1}}$ is coordinate-wise $\operatorname{ReLU}$. Let $W$ be a compact subspace of the space $\mathbb{R}^D$ containing the origin, where $\mathbb{R}^D$ is the space of sequences affine functions $(A_i)_{i=1}^k$ with coordinates denoted $w_1,\ldots,w_D$, so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define
 \[
 p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
 \]
@@ -190,24 +190,15 @@ The Fisher information matrix is the matrix valued function on $W$ defined by
 \[
 I(w)_{ij} = \int\!\int \frac{\partial}{\partial w_i}[ \log p(y|x,w) ] \frac{\partial}{\partial w_j}[ \log p(y|x,w) ] p(y|x,w) q(x) dx dy
 \]
-Then it is a standard calculation that
-\[
+if this integral is finite. Then it is a standard calculation that
+\begin{equation}\label{eq:fisher_relu}
 I(w)_{ij} = \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int_{\mathbb{R}^N} \Big\langle \frac{\partial}{\partial w_i} f(x,w), \frac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx
-\]
-where $\langle -, - \rangle$ denotes the dot product on $\mathbb{R}^M$.
+\end{equation}
+where $\langle -, - \rangle$ denotes the dot product on $\mathbb{R}^M$. Given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the decision boundary at that node (clarify). Since each of these decision boundaries is a hyperplane, $\mathcal{D}(w)$ is a disjoint union of finitely many open chambers. The partial derivative with respect to $\frac{\partial}{\partial w_j}$ of $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$ exists at any point $(x,w)$ with $x \in \mathcal{D}(w)$ and \eqref{eq:fisher_relu} is to be interpreted as a sum over integrals over chambers.
 
-\begin{remark} (cleanup)
-Neural networks are not only strictly singular, they are not even ``minimally singular'' (better name for this). This means that a lot of papers (e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning. The fact that they are not minimally singular is immediate from our RLCT estimates, for instance, but also from the old tanh estimates.
-\begin{enumerate}
-    \item true parameter as a variety not as a submanifold (i.e. explain why alg geom is relevant)
-    \item give example of minimally singular model
-\end{enumerate}
-Cite papers looking at the spectrum.
-\end{remark}
-
-\begin{lemma} For any hidden node in the network with coordinates $(w_k)_k$ for the incoming weights, $(q_i)_i$ for the outgoing weights and $b$ for the bias the function $f$ is a solution of the following differential equation
+\begin{lemma}\label{lemma:reln} For any hidden node in the network with coordinates $(a_k)_k$ for the incoming weights, $(b_i)_i$ for the outgoing weights and $c$ for the bias
 \begin{align*}
-\Big\{ \sum_k w_{k}\frac{\partial}{\partial w_k} + b \frac{\partial}{\partial b}-\sum_{i} q_i\frac{\partial}{\partial q_i} \Big\} f = 0.
+\Big\{ \sum_k a_{k}\frac{\partial}{\partial a_k} + c \frac{\partial}{\partial c}-\sum_{i} b_i\frac{\partial}{\partial b_i} \Big\} f = 0.
 \end{align*}
 \end{lemma}
 \begin{proof}
@@ -217,9 +208,25 @@ Let $e_i$ denote unit vectors and $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Let
 \frac{\partial y}{\partial w_{jk}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial w_{jk}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l})e_{i}.\\
 \frac{\partial y}{\partial b_{j}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial b_{j}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}H(u_{j}^{l})e_{i}.
 \end{align*}
-The claim immediately follows.
+The claim immediately follows (TODO: fix notation).
 \end{proof}
 
+\begin{lemma} The matrix $I(w)$ is degenerate at every nonzero point of $W$.
+\end{lemma}
+\begin{proof}
+Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation.
+\end{proof}
+
+The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. As we show in Section \ref{??} even once this symmetry is ``fixed'' there is additional degeneracy (as measured by the RLCT) which depends on the true distribution.
+
+\begin{remark} (cleanup)
+Neural networks are not only strictly singular, they are not even ``minimally singular'' (better name for this). This means that a lot of papers (e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning. The fact that they are not minimally singular is immediate from our RLCT estimates, for instance, but also from the old tanh estimates.
+\begin{enumerate}
+    \item true parameter as a variety not as a submanifold (i.e. explain why alg geom is relevant)
+    \item give example of minimally singular model
+\end{enumerate}
+Cite papers looking at the spectrum.
+\end{remark}
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
