@@ -262,7 +262,7 @@ E(T) = \mathbb{E}_w^T\Big[ \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big]
 \]
 where $w$ from the posterior at temperature $T$. This quantity is a random variable, which depends on the dataset $D_n$ the temperature $T$ and the prior $\varphi(w)$ that is placed on the parameters. The temperature controls how finely parameters are distinguished: at high temperature points with high posterior probability are barely distinguishable from points with low probability, and as $T \lto 0$ all the probability concentrates around true parameters. Consider the change $\Delta E = E(T + \Delta T) - E(T)$ resulting from an increase in the temperature. This is a measure of sensitivity of the performance of the predictive distribution to temperature. If our prior $\varphi = \psi_i$ is concentrated near a point $w_i \in W_0$ of volume dimension $d'_i$, then it can be shown that
 \[
-\Delta E \approx \frac{d'_i}{2} \Delta T
+\Delta E \approx d'_i \Delta T
 \]
 Hence if $d'_0 < d'_1$ then the model we obtain by integrating near $w_0$ will have an error which increases less quickly with temperature. From the point of view of statistical learning two true parameters with different volume dimensions are not equivalent.
 
