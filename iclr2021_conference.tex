@@ -2,6 +2,7 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{iclr2021_conference,times}
 \usepackage{graphicx,amsmath,amsthm}
+\usepackage{showlabels}
 
 % Optional math commands from https://github.com/goodfeli/dlbook_notation.
 \input{math_commands.tex}
@@ -87,15 +88,16 @@ Despite its potential for addressing fundamental mysteries in deep learning, sin
 %We use $p$ to stand for a class of statistical models, determined by neural networks parametrised by weights $w \in W$, $q$ to stand for the true distribution (from which a finite training set is sampled) and $\varphi$ to stand for a prior over the weights.
 Each section of the paper illustrates one key take-away idea:
 
-\begin{itemize}
-    \item \textbf{Neural networks are singular models} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Fisher information matrix \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. 
-    \item \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network.} (Section \ref{section:no_flat_minima}). 
+\paragraph{Neural networks are singular models} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Fisher information matrix \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. 
+
+\paragraph{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network.} (Section \ref{section:no_flat_minima}). 
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood as the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian), laying bare some of the confusion over ``flat'' minima in deep learning 
-    \item \textbf{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models, MAP, MLE, and the Bayes predictive distribution share the same leading term in the asymptotic expansion of the Kullback-Leibler generalizatoin error. This is not so in singular models. We illustrate in our experiments that even ``being Bayesian'' in just the final layers improves generalisation over MAP. Our experiments further confirm that the Laplace approximations of the predictive distribution is indeed not appropriate in deep learning.
-    \item \textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair.
+\paragraph{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models, MAP, MLE, and the Bayes predictive distribution share the same leading term in the asymptotic expansion of the Kullback-Leibler generalizatoin error. This is not so in singular models. We illustrate in our experiments that even ``being Bayesian'' in just the final layers improves generalisation over MAP. Our experiments further confirm that the Laplace approximations of the predictive distribution is indeed not appropriate in deep learning.
+
+\paragraph{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair.
      %under a hypothesis of realisability. 
      We verify this experimentally with a simple family of ReLU networks. Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
-\end{itemize}
+
 
 \section{Singular Learning Theory}
 
@@ -105,10 +107,15 @@ To understand why classical measures of capacity fail to say anything meaningful
 $$
 W_0 = \{w \in W: p(y|x,w)=q(y|x)\}
 $$
- be the set of true parameters. 
+ be the set of true parameters. We say the model is \textit{identifiable} if $W_0$ is a singleton. Let $q(x)$ be the distribution of $x$. The Fisher information matrix associated with the model $p(y|x,w)$ is the matrix-valued function on $W$ defined by
+ \begin{equation*}
+ I(w)_{ij} = \int\!\int \frac{\partial}{\partial w_i}[ \log p(y|x,w) ] \frac{\partial}{\partial w_j}[ \log p(y|x,w) ] q(y|x) q(x) dx dy,
+ \label{eq:FIM}
+ \end{equation*}
+if this integral is finite. 
 Following the conventions in \cite{watanabe_algebraic_2009}, we have the following bifurcation of statistical models:
 \begin{definition}
-A statistical model $p(y|x,w)$ is called \textbf{regular} if it is 1) identifiable, i.e, if $W_0$ is a singleton, and 2) has positive-definite Fisher information matrix. A statistical model is called \textbf{strictly singular} if it is not regular. 
+A statistical model $p(y|x,w)$ is called \textbf{regular} if it is 1) identifiable and 2) has positive-definite Fisher information matrix. A statistical model is called \textbf{strictly singular} if it is not regular. 
 %{\cite[Theorem 7.2]{watanabe_algebraic_2009}}.
 \end{definition}
 
@@ -139,7 +146,7 @@ By {\citet[Theorem 6.4]{watanabe_algebraic_2009}}, the RLCT is equal to $d/2$ in
 The condition of realizability will be critical to the standard results in singular learning theory. Modifications to the theory are needed in the case that $q(y|x)$ is not realisable, see the more general condition called relatively finite variance in \citet{watanabe_mathematical_2018}.
 
 % The work of Sumio Watanabe on singular learning theory \cite{watanabe_algebraic_2009} suggests that the \textit{real log canonical threshold} (RLCT) of a deep neural network is suitable for measuring its effective number of parameters (see Section ???). 
-\paragraph{RLCT as a measure of model complexity}
+\paragraph{RLCT plays an important role in model selection}
 One of the most accessible results in singular learning theory is the work related to the widely-applicable Bayesian information criterion (WBIC) \citet{watanabe_widely_2013}. We explain briefly the developments here since many in the deep learning community may not be aware of this work.
 
 Let $\mathcal D_n =  \{(x_i,y_i)\}_{i=1}^n$ be a dataset of input-output pairs.  
@@ -176,9 +183,12 @@ The RLCT is a birational invariant \citep{kollar_birational_1998} that directly 
 Capacity measures for explaining the generalization of deep neural networks is an active area of research \cite{neyshabur_exploring_2017}. It is still common practice to work with degenerate Hessians in proposing capacity measures \cite{thomas_information_2019}. Another common mistake is to perform the Laplace approximation for singular neural networks. For instance, \citet{zhang_energyentropy_2018} posit a relationship between the generalisation error of the full Bayes predictor and an entropy term (Eq (14)). Le and Smith \cite{le_bayesian_2018} do something very similar. These works rely on Laplace approximation (saddlepoint approximation) of the intractable posterior distribution. ???Also discuss the following works \cite{maddox_rethinking_2020}, \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
 
 
-\subsection{Neural networks are strictly singular}
+\section{Neural networks are strictly singular}
 \label{section:nn_singular}
+Many-layered neural networks are strictly singular. There seems to be only informal acknowledgement of this fact in the deep learning community. For instance the recent work in \citet{pennington_spectrum_2018} studies the Fisher information matrix of a \textit{single-hidden-layer} neural network. Though not theoretically supported, there are many proposed workarounds for deep networks \citep{sun2017relative}.  
 
+
+We prove the common feedforward ReLU network has degenerate Fisher information matrix. 
 A ReLU network of depth $k$ is a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
 \[
 f = A_k \circ \operatorname{ReLU}_{k-1} \circ A_{k-1} \cdots \operatorname{ReLU}_1 \circ A_1
@@ -187,11 +197,7 @@ where the $A_i: \mathbb{R}^{d_i} \lto \mathbb{R}^{d_{i+1}}$ are affine functions
 \[
 p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
 \]
-The Fisher information matrix is the matrix valued function on $W$ defined by
-\[
-I(w)_{ij} = \int\!\int \frac{\partial}{\partial w_i}[ \log p(y|x,w) ] \frac{\partial}{\partial w_j}[ \log p(y|x,w) ] p(y|x,w) q(x) dx dy
-\]
-if this integral is finite. Then it is a standard calculation that
+Then it is a standard calculation that the associated Fisher information matrix is
 \begin{equation}\label{eq:fisher_relu}
 I(w)_{ij} = \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int_{\mathbb{R}^N} \Big\langle \frac{\partial}{\partial w_i} f(x,w), \frac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx
 \end{equation}
@@ -229,48 +235,70 @@ e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singulari
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
 
-The easiest way to understand the RLCT is as a volume dimension \citep[Theorem 7.1]{watanabe_algebraic_2009}. To explain, we begin with the special case of a singular statistical model with the property that in a neighborhood of every point $w_0 \in W_0$ the Kullback-Liebler distance has an expression in local coordinates
+\paragraph{Building intuition} The easiest way to understand the RLCT is as a volume dimension \citep[Theorem 7.1]{watanabe_algebraic_2009}.  Suppose $W_0$ is nonempty, i.e., the true distribution is realizable. We consider a special case in which a neighborhood of every point $w_0 \in W_0$ the Kullback-Liebler distance has the following expression in local coordinates
 \begin{equation}\label{eq:local_Kw}
-K(w) = \sum_{i=1}^{d'} \lambda_i w_i^2
+K(w) = \sum_{i=1}^{d'} c_i w_i^2,
 \end{equation}
-where the coefficients $\lambda_1,\ldots,\lambda_{d'} > 0$ depend on $w_0$. It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} (or \emph{effective degrees of freedom}) near $w_0$. This effective dimension can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters near $w_0$ to be
+where the coefficients $c_1,\ldots,c_{d'} > 0$ depend on $w_0$. That such a form exists is guaranteed by Hironaka's resolution of singularities.\footnote{Hironaka's resolution of singularities guarantees existence. But the proof is not constructive. It is notoriously difficult to do the so-called blowup transformations in high dimensions to obtain the standard form.} It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} (or \emph{effective degrees of freedom}) near $w_0$. This effective dimension can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters near $w_0$ to be
 %This is not true in general, and it is not true of deep neural networks, but it is true of regular models with $d' = 0$ (the set of true parameters is a set of isolated points) and for singular models such as reduced rank regression with $d' > 0$.
 \begin{equation}\label{eq:true_param}
 V(t) = \int_{K(w) < t} \varphi(w) dw\,.
 \end{equation}
-As long as the prior $\varphi(w)$ is nonzero on $W_0$ it does not affect the relevant features of the volume, so we may assume $\varphi$ is constant on the region of integration in the first $d'$ directions and normal in the remaining directions, so up to a constant depending only on $d'$ we have
+As long as the prior $\varphi(w)$ is non-zero on $W_0$ it does not affect the relevant features of the volume, so we may assume $\varphi$ is constant on the region of integration in the first $d'$ directions and normal in the remaining directions, so up to a constant depending only on $d'$ we have
 \begin{equation}\label{eq:volume_singular}
-V(t) \propto \frac{t^{d'/2}}{\sqrt{\lambda_1 \cdots \lambda_{d'}}}
+V(t) \propto \frac{t^{d'/2}}{\sqrt{c_1 \cdots c_{d'}}}
 \end{equation}
 and we can extract the exponent of $t$ in this volume in the limit
 \be\label{eq:limit_volumedim}
 d' = 2 \lim_{t \to 0} \frac{\log\big\{V(at)/V(t)\big\}}{\log(a)}
 \ee
-for any $a > 0$, $a \neq 1$. The right hand side of (\ref{eq:limit_volumedim}) is the \emph{volume dimension} associated to $K$ and $w_0$.
+for any $a > 0$, $a \neq 1$. The right hand side of (\ref{eq:limit_volumedim}) is the \emph{volume dimension} associated to $K$ and $w_0$. It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
 
-More generally, we can consider a model which in which $K(w)$ has the form (\ref{eq:local_Kw})  near each point of $W_0$ but where the codimension $d'$ (and hence the volume dimension) varies from point to point (for instance $W_0$ might be a disjoint union of two regular submanifolds). What are we to make of such a situation? Since two true parameters with different volume dimensions still determine the same model, the significance of this situation requires explanation.
+\paragraph{Not all true parameters are created equal} More generally, we can consider a model in which $K(w)$ has the form (\ref{eq:local_Kw})  near each point of $W_0$ but where the codimension $d'$ (and hence the volume dimension) varies from point to point (for instance $W_0$ might be a disjoint union of two regular submanifolds). What are we to make of such a situation? Since two true parameters $w_0, w_1$ with different volume dimensions $d_0' < d_1'$ still determine the same model, the significance of this situation requires explanation.
 
-We take the point of view that in deep learning it is not meaningful to talk about \emph{points} $w \in W$ as this would suggest an inference procedure of infinite precision. The only ``physically'' meaningful quantities are distributions $\psi(w)$ over $W$ and the associated predictive distributions
+The explanation requires examining local neighborhoods around $w_0$ and $w_1$ with respect to the \textit{posterior distribution}:
+\begin{equation}
+p(w|\mathcal D_n) \propto \Pi_{i=1}^n p(y_i|x_i,w) \varphi(w)
+\end{equation}
+Namely, we must compare $E_w \displaystyle \1_\mathrm{w \in U(w_0)}$ and $E_w \displaystyle \1_\mathrm{w \in U(w_1)}$ where for random variable $R(w)$
+\begin{equation}
+{\E}_w [R(w)] = \int_W R(w) p(w|\mathcal D_n) \,dw
+\label{eq:E_w}
+\end{equation}
+For some $w^* \in W$, it can be shown that 
 \[
-p^*_\psi(y|x) = \int p(y|x,w) \psi(w) dw\,.
+E_w \displaystyle \1_\mathrm{w \in U(w^*)} = p(w^*|\mathcal D_n) Z(w^*)
 \]
-While two parameters $w_0, w_1$ with volume dimensions $d'_0, d'_1$ determine the same model, if the predictive distributions $p^*_{\psi_1}(y|x)$ and $p^*_{\psi_2}(y|x)$ are essentially different for $\psi_i$ arbitrarily concentrated around $w_i$ then the two parameters are, in a deeper sense, not equivalent. For example, suppose the statistical model is of exponential form, as with the models defined in Section \ref{??} associated to two-layer ReLU networks. 
+Watanabe pointed out that the more complicated singularity (smaller RLCT) has higher $Z(w^*)$. Since $d_0' < d_1'$, $w_0$ is the more complicated singularity and we have
+$$
+E_w \displaystyle \1_\mathrm{w \in U(w_0)} > E_w \displaystyle \1_\mathrm{w \in U(w_1)}
+$$
+This is to say that two true parameters may lead to the same model, but could have vastly different behaviour if we look at \eqref{eq:E_w} restricted to local neighborhoods of the true parameters. 
 
-Given a fixed dataset $D_n = \{ (x_i,y_i) \}_{i=1}^n$ sampled from the true distribution we consider the expected squared error over the dataset
-\[
-E(T) = \mathbb{E}_w^T\Big[ \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big]
-\]
-where $w$ from the posterior at temperature $T$. This quantity is a random variable, which depends on the dataset $D_n$ the temperature $T$ and the prior $\varphi(w)$ that is placed on the parameters. The temperature controls how finely parameters are distinguished: at high temperature points with high posterior probability are barely distinguishable from points with low probability, and as $T \lto 0$ all the probability concentrates around true parameters. Consider the change $\Delta E = E(T + \Delta T) - E(T)$ resulting from an increase in the temperature. This is a measure of sensitivity of the performance of the predictive distribution to temperature. If our prior $\varphi = \psi_i$ is concentrated near a point $w_i \in W_0$ of volume dimension $d'_i$, then it can be shown that
-\[
-\Delta E \approx d'_i \Delta T
-\]
-Hence if $d'_0 < d'_1$ then the model we obtain by integrating near $w_0$ will have an error which increases less quickly with temperature. From the point of view of statistical learning two true parameters with different volume dimensions are not equivalent.
+%We take the point of view that in deep learning it is not meaningful to talk about \emph{points} $w \in W$ as this would suggest an inference procedure of infinite precision. The only ``physically'' meaningful quantities are distributions $\psi(w)$ over $W$ and the associated predictive distributions
+%\[
+%p^*_\psi(y|x) = \int p(y|x,w) \psi(w) dw\,.
+%\]
+%While two parameters $w_0, w_1$ with volume dimensions $d'_0, d'_1$ determine the same model, if the predictive distributions $p^*_{\psi_1}(y|x)$ and $p^*_{\psi_2}(y|x)$ are essentially different for $\psi_i$ arbitrarily concentrated around $w_i$ then the two parameters are, in a deeper sense, not equivalent. For example, suppose the statistical model is of exponential form, as with the models defined in Section \ref{??} associated to two-layer ReLU networks. 
+%
+%Given a fixed dataset $D_n = \{ (x_i,y_i) \}_{i=1}^n$ sampled from the true distribution we consider the expected squared error over the dataset
+%\[
+%E(T) = \mathbb{E}_w^T\Big[ \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big]
+%\]
+%where $w$ from the posterior at temperature $T$. This quantity is a random variable, which depends on the dataset $D_n$ the temperature $T$ and the prior $\varphi(w)$ that is placed on the parameters. The temperature controls how finely parameters are distinguished: at high temperature points with high posterior probability are barely distinguishable from points with low probability, and as $T \lto 0$ all the probability concentrates around true parameters. Consider the change $\Delta E = E(T + \Delta T) - E(T)$ resulting from an increase in the temperature. This is a measure of sensitivity of the performance of the predictive distribution to temperature. If our prior $\varphi = \psi_i$ is concentrated near a point $w_i \in W_0$ of volume dimension $d'_i$, then it can be shown that
+%\[
+%\Delta E \approx d'_i \Delta T
+%\]
+%Hence if $d'_0 < d'_1$ then the model we obtain by integrating near $w_0$ will have an error which increases less quickly with temperature. From the point of view of statistical learning two true parameters with different volume dimensions are not equivalent.
 
-\textbf{General theory}. With this in mind the conceptual link between volume dimension and generalisation error can be seen as follows.Singular learning theory bears out a general connection between $\Delta E / \Delta T$, the Bayesian generalisation error and the volume dimension. For any singular model satisfying some natural conditions \citep[Theorem 7.1]{watanabe_algebraic_2009} shows that
+\textbf{General theory}. 
+We derived $V(t)$ in \eqref{eq:volume_singular} under the special case when the KL divergence can be written as in \eqref{eq:local_Kw}.
+%With this in mind the conceptual link between volume dimension and generalisation error can be seen as follows. Singular learning theory bears out a general connection between $\Delta E / \Delta T$, the Bayesian generalisation error and the volume dimension. 
+More generally, for any singular model satisfying some natural conditions \citet[Theorem 7.1]{watanabe_algebraic_2009} shows that
 \[
 V(t) = c t^\lambda (- \log t)^{m-1} + o( t^\lambda ( - \log t)^{m-1})
 \]
-for a positive rational number $\lambda$, namely the \emph{Real Log Canonical Threshold} (RLCT). It follows that $\lambda$ is the volume dimension computed by (\ref{eq:volume_singular}) and that $\lambda = d'/2$ in the situation considered above. 
+where $\lambda$ is the RLCT. It follows that $\lambda$ is the volume dimension computed by (\ref{eq:volume_singular}).
 
 \begin{remark}
 It is folklore in the deep learning community that flatter minima have better generalisation properties \citep{hinton_keeping_1993, hochreiter1997flat} and this claim has been revisited in recent years \citep{chaudhari2019entropy, smith2017bayesian, jastrzkebski2017three, Zhang:2018MolPh.116.3214Z}. 
@@ -389,7 +417,7 @@ Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y
 
 Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT. The results are shown in Figure \ref{figure:simp_func_complex}.
 
-We conducted the experiments with $H = 5$, $n = 1000$. The \emph{a posteriori} distribution was approximated by Hamiltonian Monte Carlo NUTS \cite{?} where the first 1000 steps were omitted and $20,000$ samples were collected. For each value of $m \in \{3,4,5\}$ three estimates of the RLCT were performed with the mean and standard deviation shown in Figure \ref{figure:simp_func_complex}. Each estimate was performed by linear regression on the pairs $\{ (1/\beta_i, \mathbb{E}^{\beta_i}_w[ nL_n(w) ] ) \}_{i=1}^5$ where the five inverse temperatures $\beta_i$ are centered on $1/\log(T)$ where $T = 20,000$. The theoretical justification for this estimation method is \citep[Theorem 4]{watanabe_widely_2013}. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are $< 1$, so not only are these models not regular, they are not even minimally singular (the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$, so if this model were minimally singular the RLCT would have to be $11/2$).
+We conducted the experiments with $H = 5$, $n = 1000$. The \emph{a posteriori} distribution was approximated by Hamiltonian Monte Carlo NUTS \citep{hoffman2014no} where the first 1000 steps were omitted and $20,000$ samples were collected. For each value of $m \in \{3,4,5\}$ three estimates of the RLCT were performed with the mean and standard deviation shown in Figure \ref{figure:simp_func_complex}. Each estimate was performed by linear regression on the pairs $\{ (1/\beta_i, \mathbb{E}^{\beta_i}_w[ nL_n(w) ] ) \}_{i=1}^5$ where the five inverse temperatures $\beta_i$ are centered on $1/\log(T)$ where $T = 20,000$. The theoretical justification for this estimation method is \citep[Theorem 4]{watanabe_widely_2013}. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are $< 1$, so not only are these models not regular, they are not even minimally singular (the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$, so if this model were minimally singular the RLCT would have to be $11/2$).
 
 The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citep[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
 
@@ -398,7 +426,7 @@ The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence th
 We show in Appendix \ref{??} that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. Hence if such a model is minimally singular its RLCT will be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula.
 
 \section{Future directions}
-We claimed that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
+We claim that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
 
 We have already illustrated that despite the fact that for very few singular models have theoretical RLCTs been catalogued, it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
 %\subsubsection*{Author Contributions}
@@ -442,6 +470,8 @@ Finally, denote the expectation of a random variable $R(w)$ with respect to the 
 {\E}_w^\beta [R(w)] = \int_W R(w) p^\beta(w|\mathcal D_n) \,dw
 \label{general_expectation_posterior}
 \end{equation}
+% There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we msut grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
+
 % There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we msut grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
 
 Henceforth, when $\beta = 1$, we drop the superscript in the quantities \ref{general_likelihood}, \ref{general_posterior}, \ref{general_marginal_likelihood}, \ref{general_expectation_posterior}, e.g., $p(\mathcal D_n)$ rather than $p^1(\mathcal D_n)$. ???is this necessary???
