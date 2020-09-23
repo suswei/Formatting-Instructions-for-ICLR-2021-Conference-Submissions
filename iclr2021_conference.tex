@@ -239,7 +239,7 @@ e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singulari
 \begin{equation}\label{eq:local_Kw}
 K(w) = \sum_{i=1}^{d'} c_i w_i^2,
 \end{equation}
-where the coefficients $c_1,\ldots,c_{d'} > 0$ depend on $w_0$. That such a form exists is guaranteed by Hironaka's resolution of singularities.\footnote{Hironaka's resolution of singularities guarantees existence. But the proof is not constructive. It is notoriously difficult to do the so-called blowup transformations in high dimensions to obtain the standard form.} It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} (or \emph{effective degrees of freedom}) near $w_0$. This effective dimension can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters near $w_0$ to be
+where the coefficients $c_1,\ldots,c_{d'} > 0$ depend on $w_0$. This corresponds to a reduced rank regression model, or a neural network with two linear layers and the identity function: $f_w(x) = BAx$ where $B$ and $A$ are matrices of the appropriate size. It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} (or \emph{effective degrees of freedom}) near $w_0$. This effective dimension can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters near $w_0$ to be
 %This is not true in general, and it is not true of deep neural networks, but it is true of regular models with $d' = 0$ (the set of true parameters is a set of isolated points) and for singular models such as reduced rank regression with $d' > 0$.
 \begin{equation}\label{eq:true_param}
 V(t) = \int_{K(w) < t} \varphi(w) dw\,.
@@ -327,7 +327,7 @@ p(y|x, \mathcal D_n) = \int p(y|x,\theta) p(\theta|\mathcal D_n) \,d\theta
 \label{eq:bayes_pred_dist}
 \end{equation}
 More commonly encountered in deep learning practice are the point estimators \textit{maximum a posteriori} (MAP) estimator and the maximum likelihood estimator (MLE).
-While in a regular statistical model, the three estimators Bayes predictive distribution, MAP, and MLE have the \textit{same} leading term in their asymptotic generalization behavior, the same is not true in singular models.
+While in a regular statistical model, the three estimators 1) Bayes predictive distribution, 2) MAP, and 3) MLE have the \textit{same} leading term in their asymptotic generalization behavior, the same is not true in singular models.
 % Let $\varphi(\theta)$ be the prior distribution of the weights of the network. We call $p(\mathcal D_n |\theta) = \Pi_{i=1}^n p(y_i | x_i, \theta)$ the likelihood of the data $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$. Then we have the posterior distribution of $\theta$: $$
 % p(\theta | \mathcal D_n) \propto p(\mathcal D_n | \theta) \varphi(\theta).
 % $$
@@ -360,13 +360,12 @@ p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
 \end{equation}
 where $f_\theta$ is a many-layered neural network.
 We set $q(x) = N(0,I_3)$. 
-For the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model \ref{eq:genexp_model} is instantiated. How to use multiple data
-sets $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$, $(x,y) \sim q(x,y) = q(y|x)q(x)$ and a large testing set drawn also from $q(x,y)$ to assess $E_n G(n)$ is discussed in Appendix \ref{appendix:generalizaton}. 
+For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model \ref{eq:genexp_model} is instantiated. How to use multiple datasets $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$, $(x,y) \sim q(x,y) = q(y|x)q(x)$ and a large testing set drawn also from $q(x,y)$ to assess $E_n G(n)$ is discussed in Appendix \ref{appendix:generalizaton}. 
 
- Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers, e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
+ Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{Interestingly, \citet{kristiadi_being_2020} apply this very idea using a Laplace approximation for ReLU networks. It is also worth noting that the title of \citet{kristiadi_being_2020} claims that being Bayesian fixes overconfidence; the authors however seem to  miss that this is a statement  about $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
 Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward ReLU block with each hidden layer having 5 hidden units and $h: \mathbb R^3 \to \mathbb R^3$ is either $BAx$ or $B\text{ReLU}(Ax)$ where $A \in \mathbb R^{3 \times r}, B \in \mathbb R^{r \times 3}$. We set $r=3$. We shall consider 1 or 5 hidden layers for $g$. 
 
-Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; A); B)$ where $w=(A,B)$.
+%Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; A); B)$ where $w=(A,B)$.
 To approximate the Bayes predictive distribution, we perform either the Laplace approximation or the NUTS variant of HMC \citep{hoffman2014no} in the last two layers, i.e., performing inference over $A,B$ in
 \begin{equation}
 h(g(\cdot;v_{map});A,B).
@@ -378,14 +377,14 @@ We also implemented the Laplace approximation and HMC in the last layer only, i.
 h_2(h_1(g(\cdot;v_{map});A_{map}); B).
 \label{eq:last_layer}
 \end{equation}
-Details of these approximate Bayesian schemes are found in Appendix \ref{appendix:generalizaton}.
+Further implementation details of these approximate Bayesian schemes are found in Appendix \ref{appendix:generalizaton}.
 
 From the outset, we expect the Laplace approximation to model \ref{eq:last_two_layers} over $w = (A, B)$ to be invalid since the model is singular. We do however expect the last-layer-only Laplace approximation to be sound since model \ref{eq:last_layer} over $B$ is regular. Next, we expect the MCMC approximation of \eqref{eq:last_two_layers} and \eqref{eq:last_layer} to be both superior to the Laplace approximations and to the MAP. We further expect the last-two-layers MCMC (\eqref{eq:last_two_layers}) to have better generalization than the last-layer-only MCMC (\eqref{eq:last_layer}) since the former is closer to the Bayes predictive distribution. In summary, we anticipate the following performance order for these five approximate Bayesian schemes (from worst to best): last-two-layers Laplace, last-layer-only Laplace, MAP, last-two-layers MCMC, last-layer-only MCMC.
 
 
 We varied the following factors: 1) minibatch stochastic gradient descent or full batch gradient descent, 2) ReLU activation or identity activation in $h$ network, 3) either 1 or 5 layers in $g$. 
 The results\footnote{See ??? for code to reproduce figures related to this section.} are displayed in Figure ??? . We see that...
-In Appendix \ref{appendix:generalizaton}, we also present results analogous to Figure ??? for several variations on the data-generating mechanism are discussed, including violations of realizability. ???summarize the lesson???
+In Appendix \ref{appendix:generalizaton}, we also present results analogous to Figure ??? for several variations on the data-generating mechanism, including violations of realizability. ???summarize the lesson???
 
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
@@ -426,7 +425,7 @@ The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence th
 We show in Appendix \ref{??} that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. Hence if such a model is minimally singular its RLCT will be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula.
 
 \section{Future directions}
-We claim that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
+We claim that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network\footnote{Hironaka's resolution of singularities guarantees existence. But the proof is not constructive. It is notoriously difficult to do the so-called blowup transformations in high dimensions to obtain the standard form.}. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
 
 For very few singular models have theoretical RLCTs been cataloged \citep{}. Theoretical RLCTs are certainly not known for modern deep neural networks where the network weights number on the order of $n$. Furthermore singular learning theory, as it stands, cannot be directly applied to neural networks with the ReLU activation function. 
 
@@ -510,38 +509,38 @@ The \emph{a posteriori} distribution was approximated using the NUTS variant of 
 
 
 \subsection{Connection between RLCT and generalization} \label{appendix:generalization_theory}
-For completeness, we sketch the asymptotic expansion of the average generalization error in singular models. The exposition is an amalgamation of various papers published by Sumio Watanabe, but mostly based on the textbook \cite{watanabe_algebraic_2009}. 
+For completeness, we sketch the derivation of \eqref{eq:RLCT_generalization} which gives the asymptotic expansion of the average generalization error ${\E}_n G(n)$ of the Bayes prediction distribution  in singular models. The exposition is an amalgamation of various works published by Sumio Watanabe, but is mostly based on the textbook \cite{watanabe_algebraic_2009}. 
 
 To understand the connection between the RLCT and $G(n)$, we first define the so-called \textbf{Bayes free energy} as 
 \[
 F(n) = -\log p(\mathcal D_n)
 \]
-whose expectation admits the following asymptotic expansion \cite{watanabe_algebraic_2009}
+whose expectation admits the following asymptotic expansion \cite{watanabe_algebraic_2009}:
 \[
 {\E}_n F(n) =  {\E}_n n S_n + \lambda \log n + o(\log n)
 \]
-where $S_n = -\frac{1}{n} \sum_{i=1}^n \log q(y_i|x_i)$ is the entropy. This deceptively simple result is actually based on a set of sophisticated tools, in particular Hironaka's resolution theorem from algebraic geometry.
-
-The expected Bayesian generalization error can be connected to the Bayes free energy via the following relation:
+where $S_n = -\frac{1}{n} \sum_{i=1}^n \log q(y_i|x_i)$ is the entropy. 
+%This deceptively simple result is actually based on a set of sophisticated tools, in particular Hironaka's resolution theorem from algebraic geometry.
+The expected Bayesian generalization error is related to the Bayes free energy as follows
 \[
 {\E}_n G(n) = \E F(n+1) - \E(F_n)
 \]
-Then we have the expected Bayes generalization error is related to the RLCT as follows
+Then for the average generalization error, we have
 \begin{equation}
-{\E}_n G(n) = \lambda/n + o(1/n)
+{\E}_n G(n) = \lambda/n + o(1/n).
 \label{eq:bayesgenerr}
 \end{equation}
-Since models with more complex singularities have smaller RLCTs, this would suggest that the more singular a model is, the better its generalization (assuming one uses the Bayesian predictive distribution for prediction). In this connection it is interesting to note that simpler true distributions lead to more singular models (Section \ref{section:simple_func}).
+Since models with more complex singularities have smaller RLCTs, this would suggest that the more singular a model is, the better its generalization (assuming one uses the Bayesian predictive distribution for prediction). In this connection it is interesting to note that simpler (relative to the model) true distributions lead to more singular models (Section \ref{section:simple_func}).
 
-That the RLCT has such a simple relationship to the Bayesian generalization error is remarkable. On the other hand, the practical implications of (\ref{eq:bayesgenerr}) are limited. This is because the Bayes predictive distribution in the case of a deep neural network is itself intractable. While we believe that approximations to the Bayesian predictive distribution, say via variational inference, might inherit a similar relationship between generalization and the (variational) RLCT, serious theoretical developments will be required to rigorously establish this. The challenge comes from the fact that for approximate Bayesian predictors, the free energy and generalization error have different learning coefficients $\lambda$. This was well documented in the case of a neural network with one hidden layer \citep{nakajima_variational_2007}. 
+That the RLCT has such a simple relationship to the Bayesian generalization error is remarkable. On the other hand, the practical implications of (\ref{eq:bayesgenerr}) are limited. This is because the Bayes predictive distribution in the case of a deep neural network is itself intractable. While we believe that approximations to the Bayesian predictive distribution, say via variational inference, might inherit a similar relationship between generalization and the (variational) RLCT, serious theoretical developments will be required to rigorously establish this. The challenge comes from the fact that for approximate Bayesian predictive distributions, the free energy and generalization error have different learning coefficients $\lambda$. This was well documented in the case of a neural network with one hidden layer \citep{nakajima_variational_2007}. 
 
 \subsection{Details for generalization error experiments}
 \label{appendix:generalizaton}
 
 \textbf{Simulated data}
-Input and target variables are both in $\mathbb R^3$. In the realizable case, $q(y|x)$ is drawn according to $p(y|x,w_0)$ as in \eqref{eq:genexp_model}. 
-
-The distribution of $x$ is set to $q(x)=N(0,I_3$.  We simulate the data under the realizability assumption, i.e. we draw $y$ given $x$ according to \eqref{eq:genexp_model} for some $w_0 \in W$, drawn randomly. ??? mention $x_test_std$.
+The distribution of $x \in \mathbb R^3$ is set to $q(x)=N(0,I_3)$. 
+In the realizable case, $y \in \mathbb R^3$ is drawn according to $q(y|x) = p(y|x,\theta_0)$ as in \eqref{eq:genexp_model}. In the nonrealizable setting, we set $q(y|x) \propto \exp\{-|| y - h_{w_0}(x) ||^2/2\},$ where $w_0 = (A_0,B_0)$ is drawn according to the PyTorch model initialization of $h$.
+%???mention $x_test_std$.???
 
 %\textbf{Network architecture} In our experiments, $f = h \circ g$ where $g$ is a sequence of 
 %\[
@@ -560,35 +559,46 @@ The distribution of $x$ is set to $q(x)=N(0,I_3$.  We simulate the data under th
 %We fix the number of hidden units in $g$, the feedforward ReLU block, to 5 and the number of hidden units in $h$, the last two years, to 3. We varied the number of layers in $g$ between $1$ and $5$.
 
 \textbf{MAP training}
-The MAP estimator is found via stochastic gradient descent on the MSE loss with minibatch set to ???. Training was set to 5000 epochs. Early stopping was not employed.
+The MAP estimator is found via stochastic gradient descent using the mean-squared-error loss with minibatch set to ???. Training was set to 5000 epochs. No form of early stopping was employed.
 
 \textbf{Calculating the generalization error}
-We calculate the average generalization error using a held-out-test set $T_{n'} = \{(x_i',y_i')\}_{i=1}^{n'}$ as
+Using a held-out-test set $T_{n'} = \{(x_i',y_i')\}_{i=1}^{n'}$, we calculate the average generalization error as
 \begin{equation}
 \frac{1}{n'} \sum_{i=1}^{n'} \log q(y_i'|x_i') - {\E}_n \frac{1}{n'} \sum_{i=1}^{n'} \log \hat q_n(y_i'|x_i')
 \label{eq:computed_avgGn}
 \end{equation}
 Assume the held-out test set is large enough so that the difference between ${\E}_n G(n)$ and \eqref{eq:computed_avgGn} is negligible. We will refer to them interchangeably as the average generalization error. In our experiments we use $n' = 10,000$ and $30$ draws of the dataset $\mathcal{D}_n$ to estimate ${\E}_n$.
 
-\textbf{Laplace in the last layer(s)}
-Describe Laplace in last layer and reduced regression layers.
-
-
-\textbf{MCMC in the last layer(s)}
- Let $\tilde x_i = g_{v_{map}}(x_i)$. Define a new transformed dataset $\tilde{\mathcal D}_n = \{(\tilde x_i, y_i) \}_{i=1}^n$. We perform MCMC to sample the posterior over $w$:
-$$
-p(w | \tilde{\mathcal D}_n) \propto p(\tilde{\mathcal D}_n | w) \varphi(w) = \Pi_{i=1}^n \exp\{-|| y_i - h_w \circ g_{v_{map}}(x_i) ||^2/2\} \varphi(w)
-$$
-
+\textbf{Last layer(s) inference}
+Without loss of generality, we discuss performing inference in the $w$ parameters of $h$ while freezing the parameters of $g$ at the MAP estimate. The steps easily extends to performing inference over the final layer only of $f = h \circ g$. Let $\tilde x_i = g_{v_{map}}(x_i)$. Define a new transformed dataset $\tilde{\mathcal D}_n = \{(\tilde x_i, y_i) \}_{i=1}^n$. We take the prior on $w$ to be standard Gaussian. 
+Define the posterior over $w$ given $\tilde{\mathcal D}_n$ as:
+\begin{equation}
+p(w | \tilde{\mathcal D}_n) \propto p(\tilde{\mathcal D}_n | w) \varphi(w) = \Pi_{i=1}^n \exp\{-|| y_i - h_w(\tilde x_i) ||^2/2\} \varphi(w)
+\label{eq:last_layer_posterior}
+\end{equation}
 Define the following approximation to the Bayesian predictive distribution
 $$
-\tilde p(y|x, \mathcal D_n) = \int p(y|x,(v_{map},w)) p(w|\tilde{\mathcal D}_n) \,dw
+\tilde p(y|x, \mathcal D_n) = \int p(y|x,(v_{map},w)) p(w|\tilde{\mathcal D}_n) \,dw.
 $$
-We use HMC (NUTS variant) \citep{hoffman2014no} to draw $w_1,\ldots,w_R$ from $\tilde{\mathcal D}_n$. Then we approximate $\tilde p(y|x, \mathcal D_n)$ with
+Let $w_1,\ldots,w_R$ be some approximate samples from $p(w | \tilde{\mathcal D}_n)$. Then we approximate $\tilde p(y|x, \mathcal D_n)$ with
 \[
 \frac{1}{R} \sum_{r=1}^R p(y|x,(v_{map},w_r))
 \]
-where $R$ is a large number, set to 1000 in our experiments.
+where $R$ is a large number, set to 1000 in our experiments. We consider the Laplace approximation and the NUTS variant of HMC for drawing samples from $p(w | \tilde{\mathcal D}_n)$:
+
+\begin{itemize}
+	\item \textbf{Laplace in the last layer(s)}
+	Recall $\theta_{map} = (v_{map}, w_{map})$ is the MAP estimate for $f_\theta$ trained with the data $\mathcal D_n$. With the Laplace approximation, we draw $w_1,\ldots w_R$ from the Gaussian
+	\[
+	N(w_{map}, \Sigma)
+	\]
+	where $\Sigma = (- \nabla^2 \log p(w| \tilde{\mathcal D}_n) |_{w_{map}})^{-1}$ is the inverse Hessian\footnote{Following \citet{kristiadi_being_2020}, the code for the exact Hessian calculation is borrowed from \url{https://github.com/f-dangel/hbp}} of the negative log posterior evaluated at the MAP estimate of the mode.
+	\item \textbf{MCMC in the last layer(s)}
+	We used the NUTS variant of HMC to draw samples from \eqref{eq:last_layer_posterior}. The first 1000 samples were warmup. Our implementation used pyro package in PyTorch.
+	
+\end{itemize}
+
+
 
 %We have to be careful when we speak of the generalization error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{map}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
 %\begin{equation}
