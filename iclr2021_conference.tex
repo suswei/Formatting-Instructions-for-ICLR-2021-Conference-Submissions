@@ -265,7 +265,7 @@ where $p^{1/T}(w|D_n)$ is the Bayesian posterior at temperature $T$ of (\ref{gen
 
 Note that when $n$ is large $L_n(w_0) \approx \frac{M}{2} \log(2\pi)$ for any $w_0 \in W_0$ so for $T \approx 0$ the posterior concentrates around the set $W_0$ of true parameters and $E(T) \approx \frac{nM}{2} \log(2\pi)$. Consider the increase $\Delta E = E(T + \Delta T) - E(T)$ corresponding to an increase in temperature $\Delta T$. It can be shown that 
 \[
-\Delta E \approx \frac{\lambda}{2} \Delta T
+\Delta E \approx \lambda \Delta T
 \]
 where the reader should see \citep[Corollary 3]{watanabe_widely_2013} for a precise statement. As the temperature increases, samples taken from the tempered posterior are more likely to come from further away from $W_0$ and $E$ will increase. If $\lambda$ is smaller then for a given increase in temperature the quantity $E$ increases less: this is one way to understand why a model with smaller RLCT generalises better from the dataset $D_n$ to the true distribution.\footnote{The relation $\Delta E \approx \lambda \Delta T$ holds for the global RLCT. If the posterior is defined with respect to a prior $\varphi(w)$ which is concentrated around a point $w_0$ with lower point RLCT than any other point in its neighborhood, as above, then the same relation holds for the point RLCT $\lambda$.}
 
