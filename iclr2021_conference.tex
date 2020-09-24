@@ -230,8 +230,6 @@ The well-known positive scale invariance of ReLU networks is responsible for the
 e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
 \end{remark}
 
-\newpage
-
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
 
@@ -239,7 +237,7 @@ e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singulari
 \begin{equation}\label{eq:local_Kw}
 K(w) = \sum_{i=1}^{d'} c_i w_i^2,
 \end{equation}
-where the coefficients $c_1,\ldots,c_{d'} > 0$ depend on $w_0$. That such a form exists is guaranteed by Hironaka's resolution of singularities.\footnote{Hironaka's resolution of singularities guarantees existence. But the proof is not constructive. It is notoriously difficult to do the so-called blowup transformations in high dimensions to obtain the standard form.} It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} (or \emph{effective degrees of freedom}) near $w_0$. This effective dimension can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters near $w_0$ to be
+where the coefficients $c_1,\ldots,c_{d'} > 0$ depend on $w_0$. It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} (or \emph{effective degrees of freedom}) near $w_0$. This effective dimension can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters near $w_0$ to be
 %This is not true in general, and it is not true of deep neural networks, but it is true of regular models with $d' = 0$ (the set of true parameters is a set of isolated points) and for singular models such as reduced rank regression with $d' > 0$.
 \begin{equation}\label{eq:true_param}
 V(t) = \int_{K(w) < t} \varphi(w) dw\,.
@@ -252,10 +250,39 @@ and we can extract the exponent of $t$ in this volume in the limit
 \be\label{eq:limit_volumedim}
 d' = 2 \lim_{t \to 0} \frac{\log\big\{V(at)/V(t)\big\}}{\log(a)}
 \ee
-for any $a > 0$, $a \neq 1$. The right hand side of (\ref{eq:limit_volumedim}) is the \emph{volume dimension} associated to $K$ and $w_0$. It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
+for any $a > 0$, $a \neq 1$. The right hand side of (\ref{eq:limit_volumedim}) is the \emph{volume dimension} associated to $K$ and $w_0$. %It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
 
 \paragraph{Not all true parameters are created equal} More generally, we can consider a model in which $K(w)$ has the form (\ref{eq:local_Kw})  near each point of $W_0$ but where the codimension $d'$ (and hence the volume dimension) varies from point to point (for instance $W_0$ might be a disjoint union of two regular submanifolds). What are we to make of such a situation? Since two true parameters $w_0, w_1$ with different volume dimensions $d_0' < d_1'$ still determine the same model, the significance of this situation requires explanation.
 
+
+We take the point of view that in deep learning it is not meaningful to talk about \emph{points} $w \in W$ as this would suggest an inference procedure of infinite precision. The only ``physically'' meaningful quantities are distributions $\psi(w)$ over $W$ and the associated predictive distributions
+\[
+p^*_\psi(y|x) = \int p(y|x,w) \psi(w) dw\,.
+\]
+While two parameters $w_0, w_1$ with volume dimensions $d'_0, d'_1$ determine the same model, if the predictive distributions $p^*_{\psi_1}(y|x)$ and $p^*_{\psi_2}(y|x)$ are essentially different for $\psi_i$ arbitrarily concentrated around $w_i$ then the two parameters are, in a deeper sense, not equivalent. For example, suppose the statistical model is of exponential form, as with the models defined in Section \ref{??} associated to two-layer ReLU networks. 
+
+Given a fixed dataset $D_n = \{ (x_i,y_i) \}_{i=1}^n$ sampled from the true distribution we consider the expected squared error over the dataset
+\[
+E(T) = \mathbb{E}_w^T\Big[ \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big]
+\]
+where $w$ from the posterior at temperature $T$. This quantity is a random variable, which depends on the dataset $D_n$ the temperature $T$ and the prior $\varphi(w)$ that is placed on the parameters. The temperature controls how finely parameters are distinguished: at high temperature points with high posterior probability are barely distinguishable from points with low probability, and as $T \lto 0$ all the probability concentrates around true parameters. Consider the change $\Delta E = E(T + \Delta T) - E(T)$ resulting from an increase in the temperature. This is a measure of sensitivity of the performance of the predictive distribution to temperature. If our prior $\varphi = \psi_i$ is concentrated near a point $w_i \in W_0$ of volume dimension $d'_i$, then it can be shown that
+\[
+\Delta E \approx d'_i \Delta T
+\]
+Hence if $d'_0 < d'_1$ then the model we obtain by integrating near $w_0$ will have an error which increases less quickly with temperature. From the point of view of statistical learning two true parameters with different volume dimensions are not equivalent.
+
+TODO: soap bubble effect
+
+\textbf{General theory}. 
+We derived $V(t)$ in \eqref{eq:volume_singular} under the special case when the KL divergence can be written as in \eqref{eq:local_Kw}.
+%With this in mind the conceptual link between volume dimension and generalisation error can be seen as follows. Singular learning theory bears out a general connection between $\Delta E / \Delta T$, the Bayesian generalisation error and the volume dimension. 
+More generally, for any singular model satisfying some natural conditions \citet[Theorem 7.1]{watanabe_algebraic_2009} shows that
+\[
+V(t) = c t^\lambda (- \log t)^{m-1} + o( t^\lambda ( - \log t)^{m-1})
+\]
+where $\lambda$ is the RLCT. It follows that $\lambda$ is the volume dimension computed by (\ref{eq:volume_singular}).
+
+\begin{remark}
 The explanation requires examining local neighborhoods around $w_0$ and $w_1$ with respect to the \textit{posterior distribution}:
 \begin{equation}
 p(w|\mathcal D_n) \propto \Pi_{i=1}^n p(y_i|x_i,w) \varphi(w)
@@ -274,31 +301,7 @@ $$
 E_w \displaystyle \1_\mathrm{w \in U(w_0)} > E_w \displaystyle \1_\mathrm{w \in U(w_1)}
 $$
 This is to say that two true parameters may lead to the same model, but could have vastly different behaviour if we look at \eqref{eq:E_w} restricted to local neighborhoods of the true parameters. 
-
-%We take the point of view that in deep learning it is not meaningful to talk about \emph{points} $w \in W$ as this would suggest an inference procedure of infinite precision. The only ``physically'' meaningful quantities are distributions $\psi(w)$ over $W$ and the associated predictive distributions
-%\[
-%p^*_\psi(y|x) = \int p(y|x,w) \psi(w) dw\,.
-%\]
-%While two parameters $w_0, w_1$ with volume dimensions $d'_0, d'_1$ determine the same model, if the predictive distributions $p^*_{\psi_1}(y|x)$ and $p^*_{\psi_2}(y|x)$ are essentially different for $\psi_i$ arbitrarily concentrated around $w_i$ then the two parameters are, in a deeper sense, not equivalent. For example, suppose the statistical model is of exponential form, as with the models defined in Section \ref{??} associated to two-layer ReLU networks. 
-%
-%Given a fixed dataset $D_n = \{ (x_i,y_i) \}_{i=1}^n$ sampled from the true distribution we consider the expected squared error over the dataset
-%\[
-%E(T) = \mathbb{E}_w^T\Big[ \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big]
-%\]
-%where $w$ from the posterior at temperature $T$. This quantity is a random variable, which depends on the dataset $D_n$ the temperature $T$ and the prior $\varphi(w)$ that is placed on the parameters. The temperature controls how finely parameters are distinguished: at high temperature points with high posterior probability are barely distinguishable from points with low probability, and as $T \lto 0$ all the probability concentrates around true parameters. Consider the change $\Delta E = E(T + \Delta T) - E(T)$ resulting from an increase in the temperature. This is a measure of sensitivity of the performance of the predictive distribution to temperature. If our prior $\varphi = \psi_i$ is concentrated near a point $w_i \in W_0$ of volume dimension $d'_i$, then it can be shown that
-%\[
-%\Delta E \approx d'_i \Delta T
-%\]
-%Hence if $d'_0 < d'_1$ then the model we obtain by integrating near $w_0$ will have an error which increases less quickly with temperature. From the point of view of statistical learning two true parameters with different volume dimensions are not equivalent.
-
-\textbf{General theory}. 
-We derived $V(t)$ in \eqref{eq:volume_singular} under the special case when the KL divergence can be written as in \eqref{eq:local_Kw}.
-%With this in mind the conceptual link between volume dimension and generalisation error can be seen as follows. Singular learning theory bears out a general connection between $\Delta E / \Delta T$, the Bayesian generalisation error and the volume dimension. 
-More generally, for any singular model satisfying some natural conditions \citet[Theorem 7.1]{watanabe_algebraic_2009} shows that
-\[
-V(t) = c t^\lambda (- \log t)^{m-1} + o( t^\lambda ( - \log t)^{m-1})
-\]
-where $\lambda$ is the RLCT. It follows that $\lambda$ is the volume dimension computed by (\ref{eq:volume_singular}).
+\end{remark}
 
 \begin{remark}
 It is folklore in the deep learning community that flatter minima have better generalisation properties \citep{hinton_keeping_1993, hochreiter1997flat} and this claim has been revisited in recent years \citep{chaudhari2019entropy, smith2017bayesian, jastrzkebski2017three, Zhang:2018MolPh.116.3214Z}. 
