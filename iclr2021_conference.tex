@@ -257,10 +257,12 @@ where $\lambda$ is the RLCT and $c$ is a constant.\footnote{We are assuming that
 \begin{equation}
 L_n(w) = \frac{M}{2} \log(2\pi) + \frac{1}{n} \sum_{i=1}^n \frac{1}{2} \| y_i - f(x_i,w) \|^2\,.
 \end{equation}
-Given a temperature $T$ consider the expectation $E(T)$ over the Bayesian posterior at temperature $T$, $p^{1/T}(w|D_n)$ of (\ref{??}), of the quantity $nL_n(w)$
+Given a temperature $T$ consider the quantity $E(T)$ 
 \[
 E(T) = \mathbb{E}^{1/T}_w\big[ 2nL_n(w) \big] = \mathbb{E}_w^{1/T}\Big[ \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big] + \frac{nM}{2} \log(2\pi)\,.
 \]
+where $p^{1/T}(w|D_n)$ is the Bayesian posterior at temperature $T$ of (\ref{general_posterior}).
+
 Note that $L_n(w_0) = \frac{M}{2} \log(2\pi)$ for any $w_0 \in W_0$ so for $T \approx 0$ the posterior concentrates around the set $W_0$ of true parameters and $E(T) \approx \frac{nM}{2} \log(2\pi)$. Consider the increase $\Delta E = E(T + \Delta T) - E(T)$ corresponding to an increase in temperature $\Delta T$. It can be shown that \citep[Corollary 3]{watanabe_widely_2013}
 \[
 \Delta E \approx \lambda \Delta T\,.
@@ -603,7 +605,7 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 	\]
 	where $\Sigma = (- \nabla^2 \log p(w| \tilde{\mathcal D}_n) |_{w_{map}})^{-1}$ is the inverse Hessian\footnote{Following \citet{kristiadi_being_2020}, the code for the exact Hessian calculation is borrowed from \url{https://github.com/f-dangel/hbp}} of the negative log posterior evaluated at the MAP estimate of the mode.
 	\item \textbf{MCMC in the last layer(s)}
-	We used the NUTS variant of HMC to draw samples from \eqref{eq:last_layer_posterior}. The first 1000 samples were warmup. Our implementation used pyro package in PyTorch.
+	We used the NUTS variant of HMC to draw samples from \eqref{eq:last_layer_posterior} with the first 1000 samples  discarded.. Our implementation used the \texttt{pyro} package in \texttt{PyTorch}.
 	
 \end{itemize}
 
