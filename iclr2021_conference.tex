@@ -3,12 +3,11 @@
 \usepackage{iclr2021_conference,times}
 \usepackage{graphicx,amsmath,amsthm}
 \usepackage{showlabels}
+\usepackage{iclr2021_extras}
+\usepackage{subcaption}
 
 % Optional math commands from https://github.com/goodfeli/dlbook_notation.
 \input{math_commands.tex}
-
-\newtheorem{definition}{Definition}
-
 
 \usepackage{hyperref}
 \usepackage{url}
@@ -57,11 +56,6 @@ Address \\
 \newcommand{\new}{\marginpar{NEW}}
 \def\l{\,|\,}
 \def\lto{\longrightarrow}
-
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{example}[theorem]{Example}
 
 %\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
 \begin{document}
@@ -400,32 +394,58 @@ In Appendix \ref{appendix:generalizaton}, we also present results analogous to F
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
 
-In deep learning, knowledge to be discovered from examples corresponds to a singularity of the analytic variety $W_0$ of true parameters. These singularities affect the learning process, and the true distribution affects the singularities. In \citep[\S 7.6]{watanabe_algebraic_2009} Watanabe offers the following intuition for this relationship:
+In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. Watanabe provides in \citep[\S 7.6]{watanabe_algebraic_2009} the following intuition for the relationship between the true distribution and the RLCT:
 \begin{align*}
 \text{simple function} \iff \text{complicated singularities}\\
-\text{complicated function} \iff \text{simple singularities}\\
+\text{complicated function} \iff \text{simple singularities}
 \end{align*}
+The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. %While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[scale=0.3]{RLCT_m.pdf}
-\end{center}
-\caption{Increasingly complicated true distributions $q(x,y)$ with a fixed model class, and the associated learning coefficients (TODO fix).}
-\label{figure:simp_func_complex}
-\end{figure}
-
-The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
-
-Consider again the Gaussian model $p(y|x,w)$ in \eqref{eq:gaussian_model_in_w} where this time $f_\theta: \mathbb{R}^2 \longrightarrow \mathbb{R}$ is a two-layer ReLU network:
+Consider again the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where $f_\theta: \mathbb{R}^2 \longrightarrow \mathbb{R}$ is a two-layer ReLU network
 \begin{gather*}
 f_\theta(x) = c + \sum_{i=1}^H q_i \operatorname{ReLU}( \langle w_i, x \rangle + b_i )
 \end{gather*}
-where $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb{R}^{4H+1}$ and $w_i \in \mathbb{R}^2, b_i \in \mathbb{R}, q_i \in \mathbb{R}$ for $1 \le i \le H$. We let $W$ be some compact neighborhood of the origin in $\mathbb{R}^{3H+1}$ which contains all the networks that we are about to define. 
-%\begin{equation}
-%p(y|x, \theta) = \frac{1}{\sqrt{2\pi}} \exp\Big( -\tfrac{1}{2} \| y - f_\theta(x) \|^2 \Big)
-%\end{equation}
+and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb{R}^{4H+1}$ and $w_i \in \mathbb{R}^2, b_i \in \mathbb{R}, q_i \in \mathbb{R}$ for $1 \le i \le H$. We let $W$ be some compact neighborhood of the origin in $\mathbb{R}^{3H+1}$.
 
-Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$ as follows. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are defined as follows: $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$. Then the decision boundary for hidden node $i$ is the line $L_i = \{ x \in \mathbb{R}^2 \l \langle w_i, x - \tfrac{1}{3} w_i \rangle = 0 \}$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [0,1]^2$) and the distribution $q_m$ is $\mathbb{Z}/m\mathbb{Z}$-invariant. We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.4]{truedist3.png}
+\includegraphics[scale=0.4]{truedist4.png}
+\includegraphics[scale=0.4]{truedist5.png}
+\end{center}
+\caption{Increasingly complicated true distributions $q_m(x,y)$ on $[-1,1]^2 \times \mathbb{R}$.}
+\label{figure:simp_func_complex}
+\end{figure}
+
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}
+    {r l l l l}
+    \toprule
+      \textbf{m}  & \textbf{Nonlinearity}  & \textbf{Mean} & \textbf{Std}\\ 
+    \midrule
+    3 & ReLU & 0.526301 & 0.027181\\
+    3 & SiLU & 0.522393 & 0.026342\\
+    4 & ReLU & 0.539590 & 0.024774\\
+    4 & SiLU & 0.539387 & 0.020769\\
+    5 & ReLU & 0.555303 & 0.002344\\
+    5 & SiLU & 0.555630 & 0.021184\\
+   \bottomrule
+   \end{tabular}
+    \end{center}
+    \caption{\footnotesize RLCT estimates for ReLU and SiLU.}
+    \label{table:hyper}
+\end{table}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.6]{RLCTplot.png}
+\end{center}
+\caption{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
+\label{figure:simp_func_complex2}
+\end{figure}
+
+Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$ as follows. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are defined as follows: $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$) and the distribution $q_m$ is $\mathbb{Z}/m\mathbb{Z}$-invariant. We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
 
 We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{figure:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability\footnote{See ??? for code to reproduce this figure.}. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
 

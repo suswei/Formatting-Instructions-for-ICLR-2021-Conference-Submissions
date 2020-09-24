@@ -1,0 +1,152 @@
+\usepackage{etex} % to fix "no room for new dimen" error. Voodoo.
+\usepackage{array}
+\usepackage{varwidth}
+\usepackage{bussproofs}
+\usepackage{epigraph}
+\usepackage{stmaryrd}
+\usepackage{mathdots}
+\usepackage{amsmath, amscd, amssymb, mathrsfs, accents, amsfonts,amsthm}
+\usepackage[all]{xy}
+\usepackage{mathtools} % for bra-ket
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{booktabs}
+\usetikzlibrary{calc}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newtheoremstyle{example}{\topsep}{\topsep}
+	{}
+	{}
+	{\bfseries}
+	{.}
+	{2pt}
+	{\thmname{#1}\thmnumber{ #2}\thmnote{ #3}}
+	
+	\theoremstyle{example}
+	\newtheorem{definition}[theorem]{Definition}
+	\newtheorem{example}[theorem]{Example}
+	\newtheorem{remark}[theorem]{Remark}
+	\newtheorem{setup}[theorem]{Setup}
+
+
+
+% Labels in tabular
+\newcommand{\tagarray}{\mbox{}\refstepcounter{equation}$(\theequation)$}
+
+\newenvironment{mathprooftree}
+  {\varwidth{.9\textwidth}\centering\leavevmode}
+  {\DisplayProof\endvarwidth}
+  
+% Bra-ket stuff
+\DeclarePairedDelimiter\bra{\langle}{\rvert}
+\DeclarePairedDelimiter\ket{\lvert}{\rangle}
+\DeclarePairedDelimiterX\braket[2]{\langle}{\rangle}{#1 \delimsize\vert #2}
+\DeclarePairedDelimiterX\inner[2]{\langle}{\rangle}{#1,#2}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\set{\lbrace}{\rbrace}
+
+% TikZ stuff
+\def\drawbang{\draw[color=teal!50, line width=2pt]}
+\def\drawprom{\draw[color=gray, line width=3pt]}
+\def\bluenode{\node[circle,draw=blue!50,fill=blue!20]}
+\def\mapnode{\node[circle,draw=black,fill=black,inner sep=0.5mm]}
+\def\whitenode{\node[circle,draw=blue!50,fill=blue!5]}
+\def\dernode{\node[circle,draw=black,fill=white]}
+\definecolor{Myblue}{rgb}{0,0,0.6}
+%\usepackage[a4paper,colorlinks,citecolor=Myblue,linkcolor=Myblue,urlcolor=Myblue,pdfpagemode=None]{hyperref}
+
+% Operators
+\def\eval{\operatorname{ev}}
+\def\sh{\operatorname{Sh}}
+\def\res{\operatorname{Res}}
+\def\Coker{\operatorname{Coker}}
+\def\Ker{\operatorname{Ker}}
+\def\im{\operatorname{Im}}
+\def\can{\operatorname{can}}
+\def\K{\mathbf{K}}
+\def\D{\mathbf{D}}
+\def\N{\mathbf{N}}
+\def\LG{\mathcal{LG}}
+\def\Ab{\operatorname{Ab}}
+\def\Hom{\operatorname{Hom}}
+\def\modd{\operatorname{mod}}
+\def\Modd{\operatorname{Mod}}
+\def\vacu{\ket{\emptyset}}
+\def\be{\begin{equation}}
+\def\ee{\end{equation}}
+\DeclareMathOperator{\Ext}{Ext}
+%\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tot}{Tot}
+\DeclareMathOperator{\ch}{ch}
+\DeclareMathOperator{\str}{str}
+\DeclareMathOperator{\hmf}{hmf}
+\DeclareMathOperator{\HMF}{HMF}
+\DeclareMathOperator{\Cl}{Cl}
+\DeclareMathOperator{\hf}{HF}
+\DeclareMathOperator{\At}{At}
+\DeclareMathOperator{\Cat}{Cat}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\MSpec}{MSpec}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\LC}{LC}
+\DeclareMathOperator{\ILL}{ILL}
+\DeclareMathOperator{\len}{len}
+\def\qstart{q_{\textup{start}}}
+\def\qhalt{q_{\textup{halt}}}
+\def\inta{\bold{int}}
+\def\comp{\underline{\textup{comp}}}
+\def\contract{\;\lrcorner\;}
+\DeclareMathOperator{\inc}{inc}
+\DeclareMathOperator{\nv}{nv}
+\DeclareMathOperator{\prom}{prom}
+\newcommand{\dkl}{D_{\operatorname{KL}}}
+
+% SCprooftree environment
+\newenvironment{scprooftree}[1]
+{\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}
+{\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
+
+% Bussproof things
+\def\ScoreOverhang{1pt}
+
+% a hack for vdots to decrease the vertical space above it; see https://tex.stackexchange.com/questions/169679/vdots-are-taller-than-the-rest-of-text
+\makeatletter
+\DeclareRobustCommand{\rvdots}{%
+  \vbox{
+    \baselineskip4\p@\lineskiplimit\z@
+    \kern-\p@
+    \hbox{}\hbox{.}\hbox{.}\hbox{.}
+  }}
+\makeatother
+
+% Commands
+\newcommand{\proofvdots}[1]{\overset{\displaystyle #1}{\rvdots}}
+\def\Res{\res\!}
+\newcommand{\ud}[1]{\operatorname{d}\!{#1}}
+\newcommand{\Ress}[1]{\res_{#1}\!}
+\newcommand{\cat}[1]{\mathcal{#1}}
+\newcommand{\lto}{\longrightarrow}
+\newcommand{\xlto}[1]{\stackrel{#1}\lto}
+\newcommand{\mf}[1]{\mathfrak{#1}}
+\newcommand{\md}[1]{\mathscr{#1}}
+\newcommand{\church}[1]{\underline{#1}}
+\newcommand{\prf}[1]{\underline{#1}}
+\newcommand{\den}[1]{\llbracket #1 \rrbracket}
+\def\l{\,|\,}
+\def\sgn{\textup{sgn}}
+\def\cont{\operatorname{cont}}
+\def\counit{\varepsilon}
+\def\inta{\textbf{int}}
+\def\binta{\textbf{bint}}
+\def\comp{\underline{\textup{comp}}}
+\def\mult{\underline{\textup{mult}}}
+\def\repeat{\underline{\textup{repeat}}}
+\def\contract{\;\lrcorner\;}
