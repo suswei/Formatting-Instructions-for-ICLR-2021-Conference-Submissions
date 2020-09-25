@@ -12,6 +12,8 @@
 \usepackage{url}
 
 
+\graphicspath{{graphics/}}
+
 \title{Deep Learning is Singular Learning}
 
 % Authors must not appear in the submitted version. They should be hidden
@@ -70,7 +72,7 @@ Despite its potential for addressing fundamental mysteries in deep learning, sin
 
 It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means that the set of weights with zero loss form a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory such as the Bayes generalisation error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 
-In order to illustrate the relevance of singular learning theory to deep learning, the paper consists of several sections each of which illustrates one key take-away idea:
+In order to illustrate the relevance of singular learning theory to deep learning, the paper consists of several sections each of which illustrates one key take-away idea. The code to reproduce all experiments in the paper can be found at \url{???}/
 
 \textbf{Neural networks are singular models.} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Fisher information matrix \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for deep neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. 
 
@@ -369,6 +371,17 @@ where $f_\theta$ is a many-layered neural network.
 We set $q(x) = N(0,I_3)$. 
 For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model \ref{eq:genexp_model} is instantiated. How to use multiple datasets $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$, $(x,y) \sim q(x,y) = q(y|x)q(x)$ and a large testing set drawn also from $q(x,y)$ to assess $E_n G(n)$ is discussed in Appendix \ref{appendix:generalizaton}. 
 
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.4]{publication_taskid8.png}
+		\includegraphics[scale=0.4]{publication_taskid9.png}
+		\includegraphics[scale=0.4]{publication_taskid10.png}
+		\includegraphics[scale=0.4]{publication_taskid11.png}
+	\end{center}
+	\caption{Full batch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Figure \ref{figure:avg_gen_err_minibatch} is analogous to this setup except minibatch gradient descent was employed to find MAP.}
+	\label{figure:avg_gen_err_fullbatch}
+\end{figure}
+
  Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{Interestingly, \citet{kristiadi_being_2020} apply this very idea using a Laplace approximation for ReLU networks. It is also worth noting that the title of \citet{kristiadi_being_2020} claims that being Bayesian fixes overconfidence; the authors however seem to  miss that this is a statement  about $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
 Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward ReLU block with each hidden layer having 5 hidden units and $h: \mathbb R^3 \to \mathbb R^3$ is either $BAx$ or $B\text{ReLU}(Ax)$ where $A \in \mathbb R^{3 \times r}, B \in \mathbb R^{r \times 3}$. We set $r=3$. We shall consider 1 or 5 hidden layers for $g$. 
 
@@ -386,12 +399,14 @@ h_2(h_1(g(\cdot;v_{map});A_{map}); B).
 \end{equation}
 Further implementation details of these approximate Bayesian schemes are found in Appendix \ref{appendix:generalizaton}.
 
+
 From the outset, we expect the Laplace approximation to model \ref{eq:last_two_layers} over $w = (A, B)$ to be invalid since the model is singular. We do however expect the last-layer-only Laplace approximation to be sound since model \ref{eq:last_layer} over $B$ is regular. Next, we expect the MCMC approximation of \eqref{eq:last_two_layers} and \eqref{eq:last_layer} to be both superior to the Laplace approximations and to the MAP. We further expect the last-two-layers MCMC (\eqref{eq:last_two_layers}) to have better generalization than the last-layer-only MCMC (\eqref{eq:last_layer}) since the former is closer to the Bayes predictive distribution. In summary, we anticipate the following performance order for these five approximate Bayesian schemes (from worst to best): last-two-layers Laplace, last-layer-only Laplace, MAP, last-two-layers MCMC, last-layer-only MCMC.
 
 
 We varied the following factors: 1) minibatch stochastic gradient descent or full batch gradient descent, 2) ReLU activation or identity activation in $h$ network, 3) either 1 or 5 layers in $g$. 
-The results\footnote{See ??? for code to reproduce figures related to this section.} are displayed in Figure ??? . We see that...
-In Appendix \ref{appendix:generalizaton}, we also present results analogous to Figure ??? for several variations on the data-generating mechanism, including violations of realizability. ???summarize the lesson???
+The results are displayed in Figures \ref{avg_gen_err_fullbatch} and \ref{avg_gen_err_minibatch}, with the latter in the Appendix. We see that...
+In Appendix \ref{appendix:generalizaton}, we also present results analogous to Figure \ref{avg_gen_err_fullbatch} and \ref{avg_gen_err_minibatch} when the data-generating mechanism and the assumed model do not satisfy the condition of realizability. ???summarize the lesson???
+
 
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
@@ -449,7 +464,7 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 
 Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$ as follows. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are defined as follows: $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$) and the distribution $q_m$ is $\mathbb{Z}/m\mathbb{Z}$-invariant. We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
 
-We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{figure:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability\footnote{See ??? for code to reproduce this figure.}. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
+We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{figure:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
 
 The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citep[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
 
@@ -466,6 +481,8 @@ At present there does not exist a method of sampling from the Bayesian posterior
 
 
 Despite this, we have  illustrated that it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
+
+Another TODO: we should probably clarify that we don't mean to say that SLT is, as it stands, already a complete mathematical theory of deep learning. We should clarify that unrealisability is the norm in deep learning, and in this case much less is known, but even so the known results in the realisable case point towards a very different approach to what people are currently pursuing.
 %\subsubsection*{Author Contributions}
 %If you'd like to, you may include  a section for author contributions as is done
 %in many journals. This is optional and at the discretion of the authors.
@@ -632,6 +649,18 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 \end{itemize}
 
 
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.4]{publication_taskid12.png}
+		\includegraphics[scale=0.4]{publication_taskid13.png}
+		\includegraphics[scale=0.4]{publication_taskid14.png}
+		\includegraphics[scale=0.4]{publication_taskid15.png}
+	\end{center}
+	\caption{Minibatch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
+	\label{figure:avg_gen_err_minibatch}
+\end{figure}
+
+\input{graphics/publication_taskid8.tex}
 
 %We have to be careful when we speak of the generalization error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{map}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
 %\begin{equation}
