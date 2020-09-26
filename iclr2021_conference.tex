@@ -1,8 +1,8 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{iclr2021_conference,times}
+\usepackage{iclr2021_extras}
 \usepackage{graphicx,amsmath,amsthm}
 \usepackage{showlabels}
-\usepackage{iclr2021_extras}
 \usepackage{subcaption}
 %\usepackage{subfig}
 \usepackage{booktabs}
@@ -178,11 +178,10 @@ Since more complex singularities lead to smaller values of $\lambda$, which we i
 The RLCT is a birational invariant \citep{kollar_birational_1998} that measures the complexity of singularities in the model. Since the complexity of singularities determine most of the interesting properties of a model, the RLCT is a very appealing choice for understanding, say, the generalization behavior in singular models, particularly deep neural networks. Furthermore the RLCT as a capacity measure is theoretically rigorous which most existing capacity measures for deep neural networks cannot claim. While theoretical investigations of a deep network's generalization behavior is an active area of research \cite{neyshabur_exploring_2017}, it is still common practice to work with degenerate Hessians in proposing capacity measures, e.g., \citet{thomas_information_2019}. Another common mistake is to perform the Laplace approximation for singular neural networks. For instance, both \citet{zhang_energyentropy_2018} and  \citet{le_bayesian_2018} have explanations of the generalization error of the full Bayes predictor that relies on the Laplace approximation of the intractable posterior distribution. ???Also discuss the following works \cite{maddox_rethinking_2020}, \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
 
 
-
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
 
-\textbf{Volume dimension}. The easiest way to understand the RLCT is as a volume dimension \citep[Theorem 7.1]{watanabe_algebraic_2009}.  Suppose $W_0$ is nonempty, i.e., the true distribution is realizable and that $W \subseteq \mathbb{R}^d$. We consider a special case in which a neighborhood of every point $w_0 \in W_0$ the Kullback-Liebler distance has the following expression in local coordinates
+\textbf{Volume dimension}. The easiest way to understand the RLCT is as a volume dimension \citep[Theorem 7.1]{watanabe_algebraic_2009}.  Suppose $W_0$ is nonempty, i.e., the true distribution is realizable and that $W \subseteq \mathbb{R}^d$. We consider a special case in which a neighborhood of every point $w_0 \in W_0$ the Kullback-Leibler distance has the following expression in local coordinates
 \begin{equation}\label{eq:local_Kw}
 K(w) = \sum_{i=1}^{d'} c_i w_i^2,
 \end{equation} %This corresponds to a reduced rank regression model, or a neural network with two linear layers and the identity function: $f_w(x) = BAx$ where $B$ and $A$ are matrices of the appropriate size. 
@@ -279,7 +278,7 @@ where the reader should see \citep[Corollary 3]{watanabe_widely_2013} for a prec
 %\]
 %Hence if $d'_0 < d'_1$ then the model we obtain by integrating near $w_0$ will have an error which increases less quickly with temperature. From the point of view of statistical learning two true parameters with different volume dimensions are not equivalent.
 
-\textbf{Flatness}. It is folklore in the deep learning community that flatness of minima is related to generalisation \citep{hinton_keeping_1993, hochreiter1997flat} and this claim has been revisited in recent years \citep{chaudhari2019entropy, smith2017bayesian, jastrzkebski2017three, Zhang:2018MolPh.116.3214Z}. In regular models this can be justified using the lower order terms of the asymptotic expansion of the Bayes free energy \citep[\S 3.1]{Balasubramanian:1996cond.mat..1030B} but the argument breaks down in singular models, since for example the Laplace approximation of \cite{Zhang:2018MolPh.116.3214Z} is invalid. The basic point can be understood by a close analysis of the version of the idea in \citep{hochreiter1997flat}. Their measure of entropy compares the volume of the set of parameters with tolerable error $t_0$ (our ``almost true'' parameters) to a standard volume defined without the Kullback-Liebler function
+\textbf{Flatness}. It is folklore in the deep learning community that flatness of minima is related to generalisation \citep{hinton_keeping_1993, hochreiter1997flat} and this claim has been revisited in recent years \citep{chaudhari2019entropy, smith2017bayesian, jastrzkebski2017three, Zhang:2018MolPh.116.3214Z}. In regular models this can be justified using the lower order terms of the asymptotic expansion of the Bayes free energy \citep[\S 3.1]{Balasubramanian:1996cond.mat..1030B} but the argument breaks down in singular models, since for example the Laplace approximation of \cite{Zhang:2018MolPh.116.3214Z} is invalid. The basic point can be understood by a close analysis of the version of the idea in \citep{hochreiter1997flat}. Their measure of entropy compares the volume of the set of parameters with tolerable error $t_0$ (our ``almost true'' parameters) to a standard volume defined without the Kullback-Leibler function
 \begin{equation}\label{eq:entropy}
 - \log\Big[\frac{V(t_0)}{t_0^{d/2}}\Big] = \frac{d-d'}{2} \log(t_0) + \tfrac{1}{2} \sum_{i=1}^{d} \log c_i\,.
 \end{equation}
@@ -410,6 +409,7 @@ In singular models the RLCT varies with the true distribution (in contrast to re
 \text{simple function} \iff \text{complicated singularities}\\
 \text{complicated function} \iff \text{simple singularities}
 \end{align*}
+
 The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. %While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
 
 Consider again the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where $f_\theta: \mathbb{R}^2 \longrightarrow \mathbb{R}$ is a two-layer ReLU network
@@ -429,6 +429,7 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 \caption{Increasingly complicated true distributions $q_m(x,y)$ on $[-1,1]^2 \times \mathbb{R}$.}
 \label{fig:simp_func_complex}
 \end{figure}
+
 
 
 \begin{table}
@@ -479,6 +480,7 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 %    \label{table:hyper}
 %\end{table}
 %
+
 %\begin{figure}[h]
 %\begin{center}
 %\includegraphics[scale=0.6]{RLCTplot.png}
@@ -487,7 +489,7 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 %\label{fig:simp_func_complex2}
 %\end{figure}
 
-Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$ as follows. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are defined as follows: $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$) and the distribution $q_m$ is $\mathbb{Z}/m\mathbb{Z}$-invariant. We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
+Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are the vectors $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$). We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
 
 We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{fig:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
 
@@ -497,8 +499,12 @@ The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence th
 
 We show in Appendix \ref{??} that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. Hence if such a model is minimally singular its RLCT will be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula.
 
+\begin{remark} (cleanup)
+e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
+\end{remark}
+
 \section{Future directions}
-We claim that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network\footnote{Hironaka's resolution of singularities guarantees existence. But the proof is not constructive. It is notoriously difficult to do the so-called blowup transformations in high dimensions to obtain the standard form.}. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
+We claim that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network\footnote{Hironaka's resolution of singularities guarantees existence. However it is notoriously difficult to do the required blowup transformations in high dimensions to obtain the standard form.}. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
 
 For very few singular models have theoretical RLCTs been cataloged \citep{}. Theoretical RLCTs are certainly not known for modern deep neural networks where the network weights number on the order of $n$. Furthermore singular learning theory, as it stands, cannot be directly applied to neural networks with the ReLU activation function. 
 
@@ -526,6 +532,7 @@ Another TODO: we should probably clarify that we don't mean to say that SLT is, 
 \subsection{Neural networks are strictly singular}
 \label{section:nn_singular}
 Many-layered neural networks are strictly singular. There seems to be only informal acknowledgment of this fact in the deep learning community. For instance the recent work in \citet{pennington_spectrum_2018} deliberately studies the Fisher information matrix of a \textit{single-hidden-layer} neural network. If instead the interest is in a many-layered network, one must work with rather ad-hoc workarounds  \citep{sun2017relative}.  
+
 We first explain how to think about a neural network in the context of singular learning theory. A feedforward network of depth $k$ parametrises a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
 \[
 f = A_k \circ \sigma_{k-1} \circ A_{k-1} \cdots \sigma_1 \circ A_1
@@ -536,19 +543,25 @@ p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Bi
 \label{eq:gaussian_model_in_w}
 \end{equation}
 We assume the true distribution is realisable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
+
 By straightforward calculations we obtain
-\begin{gather}
-K(w) = \tfrac{1}{2} \int q(x) \| f(x,w) - f(x,w_0) \|^2 dx\\
-I(w)_{ij} = \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
-\end{gather}
+\begin{align}
+K(w) &= \tfrac{1}{2} \int \| f(x,w) - f(x,w_0) \|^2 q(x) dx\\
+\tfrac{\partial^2}{\partial w_i \partial w_j} K(w) &= \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx \nonumber \\
+&\quad + \int \Big\langle f(x,w) - f(x,w_0), \tfrac{\partial^2}{\partial w_i \partial w_j} f(x,w) \Big\rangle q(x) dx \label{eq:Hessian}\\
+I(w)_{ij} &= \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
+\end{align}
 where $\langle -, - \rangle$ denotes the dot product on $\mathbb{R}^M$. Given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the decision boundary at that node (clarify). Since each of these decision boundaries is a hyperplane, $\mathcal{D}(w)$ is a disjoint union of finitely many open chambers. The partial derivative with respect to $\frac{\partial}{\partial w_j}$ of $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$ exists at any point $(x,w)$ with $x \in \mathcal{D}(w)$. We assume that $q(x)$ has been chosen such that this integral exists.
+
 We prove the common feedforward ReLU network has degenerate Fisher information matrix. 
+
 \begin{lemma}\label{lemma:reln} Suppose $\sigma = \operatorname{ReLU}$. For any hidden node in the network with coordinates $(a_k)_k$ for the incoming weights, $(b_i)_i$ for the outgoing weights and $c$ for the bias
 	\begin{align*}
 	\Big\{ \sum_k a_{k}\frac{\partial}{\partial a_k} + c \frac{\partial}{\partial c}-\sum_{i} b_i\frac{\partial}{\partial b_i} \Big\} f = 0.
 	\end{align*}
 \end{lemma}
-\begin{proof}
+
+\begin{proof}[Proof of Lemma \ref{lemma:reln}]
 	Let $e_i$ denote unit vectors and $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Let $u$ and $a$ denote the value of node before and after activation, respectively $u =\sum_k w_k a_{k}^{l-1}+b_{j}^{l}$ and $a_{j}^{l} =\operatorname{ReLU}(u_{j}^{l})$. Then
 	\begin{align*}
 	\frac{\partial f}{\partial q_i}&=\frac{\partial y}{\partial u}u_{j}^{l}H(u_{j}^{l})e_{i}\\
@@ -557,15 +570,16 @@ We prove the common feedforward ReLU network has degenerate Fisher information m
 	\end{align*}
 	The claim immediately follows (TODO: fix notation).
 \end{proof}
-\begin{lemma} If $\sigma = \operatorname{ReLU}$ the matrix $I(w)$ is degenerate at every nonzero point of $W$.
+
+\begin{lemma}\label{lemma:all_degen} Suppose $k > 1$, $\sigma = \operatorname{ReLU}$ and that $w \in W$ has at least one weight or bias at a hidden node nonzero. Then the matrix $I(w)$ is degenerate and if $w \in W_0$ then the Hessian of $K$ at $w$ is also degenerate.
 \end{lemma}
 \begin{proof}
-	Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation.
+	Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation. At a true parameter the second summand in (\ref{eq:Hessian}) vanishes so by the same argument the Hessian is degenerate.
 \end{proof}
-The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. As we show in Section \ref{??} even once this symmetry is ``fixed'' there is additional degeneracy (as measured by the RLCT).
-\begin{remark} (cleanup)
-	e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
-\end{remark}
+
+Lemma \ref{lemma:all_degen} implies that every true parameter for a nontrivial ReLU network is a degenerate critical point of $K$. Hence in the study of nontrivial ReLU networks it is never appropriate to divide by the determinant of the Hessian of $K$ at a true parameter, and in particular Laplace or saddle-point approximations at a true parameter are invalid.
+
+The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. The degeneracy, as measured by the RLCT, is much lower than one would expect on the basis of this symmetry alone (see Section \ref{??}).
 
 \subsection{RLCT estimation} \label{appendix:RLCT_estimation}
 
