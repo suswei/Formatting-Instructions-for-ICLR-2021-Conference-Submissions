@@ -68,13 +68,13 @@ Address \\
 \maketitle
 
 \begin{abstract}
-In singular models, the optimal set of parameters forms an algebraic or analytic set with singularities. Classical statistical inference cannot be applied to such models.  This has truly practical implications for deep learning as DNNs (DNNs) are singular, e.g., one should not ``divide" by the determinant of the Hessian in deep learning and, relatedly, the Laplace approximation is not appropriate. \textit{Singular learning theory} provides the statistical foundation for investigating singular models and may hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
-Despite its potential for addressing fundamental issues in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. Here we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
+In singular models, the optimal set of parameters forms an algebraic or analytic set with singularities. Classical statistical inference cannot be applied to such models.  This has truly practical implications for deep learning as deep neural networks (DNNs) are singular, e.g., one should not ``divide" by the determinant of the Hessian in deep learning and, relatedly, the Laplace approximation is not appropriate. \textit{Singular learning theory} provides an appealing framework that may hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
+Despite its potential for addressing fundamental issues in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. Here we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, with the goal of making the topic accessible to a wider audience. 
 \end{abstract}
 
 \section{Introduction}
 
-It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights that are equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory, e.g., generalization error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, mathematical physics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
+It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights that are equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory, e.g., generalization error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 In order to illustrate the relevance of singular learning theory to deep learning, the paper\footnote{The code to reproduce all experiments in the paper can be found at \url{???}.} consists of several sections each of which illustrates one key take-away idea. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a DNN} (Section \ref{section:no_flat_minima}). 
@@ -170,8 +170,6 @@ $
 %\end{equation}
 where $w_0 \in W_0$ and $\lambda$ is the RLCT. 
 Since more complex singularities lead to smaller values of $\lambda$, which we illustrate in Section \ref{section:simple_func}, and deep learning models are highly singular, it is possible for DNNs to have high marginal likelihood -- consistent with their empirical success. 
-
-The RLCT is a birational invariant \citep{kollar_birational_1998} that measures the complexity of singularities in the model. Since the complexity of singularities determine most of the interesting properties of a model, the RLCT is a very appealing choice for understanding, say, the generalization behavior in singular models, particularly DNNs. Furthermore the RLCT as a capacity measure is theoretically rigorous which most existing capacity measures for DNNs cannot claim. While theoretical investigations of a deep network's generalization behavior is an active area of research \cite{neyshabur_exploring_2017}, it is still common practice to work with degenerate Hessians in proposing capacity measures, e.g., \citet{thomas_information_2019}. Another common mistake is to perform the Laplace approximation for singular neural networks. For instance, both \citet{zhang_energyentropy_2018} and  \citet{le_bayesian_2018} have explanations of the generalization error of the full Bayes predictor that relies on the Laplace approximation of the intractable posterior distribution. ???Also discuss the following works \cite{maddox_rethinking_2020}, \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
 
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
@@ -289,7 +287,12 @@ Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a me
 %\end{example}
 
 \section{Generalization}\label{section:gen_error}
-In the Bayesian paradigm, prediction proceeds via the so-called Bayes predictive distribution,
+The generalization puzzle is one of the central mysteries of deep learning. Theoretical investigations into the matter is an active area of research \cite{neyshabur_exploring_2017}. Some capacity measures are based on workarounds concerning the degenerate Hessian, e.g., \citet{thomas_information_2019}. ???Briefly review following works \cite{maddox_rethinking_2020}, \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
+
+
+Far more precise statements regarding the generalization behavior in singular models can be made using singular learning theory.
+%The RLCT is a birational invariant \citep{kollar_birational_1998} that measures the complexity of singularities in the model. Since the complexity of singularities determine most of the interesting properties of a model, the RLCT is a very appealing choice for understanding, say, the generalization behavior in singular models, particularly DNNs. Furthermore the RLCT as a capacity measure is theoretically rigorous which most existing capacity measures for DNNs cannot claim. 
+Recall in the Bayesian paradigm, prediction proceeds via the so-called Bayes predictive distribution,
 %\begin{equation}
 $
 p(y|x, \mathcal D_n) = \int p(y|x,\theta) p(\theta|\mathcal D_n) \,d\theta.
@@ -308,12 +311,12 @@ $$
 G(n) := KL (q(y|x) || \hat q_n(y|x) ) = \int  \int q(y|x) \log \frac{q(y|x)}{\hat q_n(y|x)} q(x) \,dy  \,dx.
 $$
 To account for sampling variability, we will work with the \textit{average generalization error}, ${\E}_n G(n)$, where ${\E}_n$ denotes expectation over the dataset $\mathcal D_n$.
-By {\citet[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have\footnote{A quick sketch of the derivation of \eqref{eq:Bayes_generalization} is provided in Appendix \ref{appendix:generalization_theory}}
+By {\citet[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have\footnote{ In contrast, \citet{zhang_energyentropy_2018} and  \citet{le_bayesian_2018} rely on the Laplace approximation to explain the generalization of the Bayes predictive distribution though both works acknowledge the Laplace approximate is inappropriate. }
 \begin{equation}
 {\E}_n G(n) = \lambda/n + o(1/n)  \text{ if $\hat q_n$ is the Bayes predictive distribution,}
 \label{eq:Bayes_generalization}
 \end{equation}
-where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$.
+where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$. A quick sketch of the derivation of \eqref{eq:Bayes_generalization} is provided in Appendix \ref{appendix:generalization_theory}.
 On the other hand, by {\cite[Theorem 6.4]{watanabe_algebraic_2009}} we have
 \begin{equation}
 {\E}_n G(n) = C/n + o(1/n)   \text{ if $\hat q_n$ is the MAP or MLE,}
@@ -341,14 +344,14 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 		\includegraphics[scale=0.4]{taskid10.png}
 		\includegraphics[scale=0.4]{taskid11.png}
 	\end{center}
-	\caption{Realizable and full batch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Note that the y-axis is not shared across the subfigures. Figure \ref{fig:avg_gen_err_minibatch_realizable} is analogous to this figure except minibatch gradient descent was employed to find MAP.}
+	\caption{Realizable and full batch gradient descent for MAP. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Note that the y-axis is not shared across the subfigures. Figure \ref{fig:avg_gen_err_minibatch_realizable} is analogous to this figure except minibatch gradient descent was employed to find MAP.}
 	\label{fig:avg_gen_err_fullbatch_realizable}
 \end{figure}
 
 
 
 
- Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model} using batch gradient descent. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{Interestingly, \citet{kristiadi_being_2020} apply this very idea using a Laplace approximation for the final layer of a ReLU network. It is also worth noting that the title of \citet{kristiadi_being_2020} claims that being Bayesian fixes overconfidence although this is never formalized in terms of $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
+ Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model} using batch gradient descent. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{ \citet{kristiadi_being_2020} use a Laplace approximation for the final layer of a ReLU network, an approach we did not find to work well in our experiments. It is also worth noting that the title of \citet{kristiadi_being_2020} claims that being Bayesian fixes overconfidence although this is never formalized in terms of $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
 Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward ReLU block with each hidden layer having 5 hidden units and $h: \mathbb R^3 \to \mathbb R^3$ is either $BAx$ or $B\text{ReLU}(Ax)$ where $A \in \mathbb R^{3 \times r}, B \in \mathbb R^{r \times 3}$. We set $r=3$. We shall consider 1 or 5 hidden layers for $g$. 
 
 \begin{table}[h!]%
@@ -395,22 +398,22 @@ From the outset, we expect the Laplace approximation to model \ref{eq:last_two_l
 
 
 To understand the effect of the network architecture, we varied the following factors: 1) ReLU activation or identity activation in $h$, 2) either 1 or 5 layers in $g$. 
-The results displayed in Figures \ref{fig:avg_gen_err_fullbatch_realizable} are in line with our stated expectations above, except for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. Table \ref{table:avg_gen_err_fullbatch_realizable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realizable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient.
+The results displayed in Figures \ref{fig:avg_gen_err_fullbatch_realizable} are in line with our stated expectations above, except for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. Table \ref{table:avg_gen_err_fullbatch_realizable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realizable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient. The $R^2$ corresponding to the linear fit is also provided. 
 
 
-In Appendix \ref{appendix:generalizaton}, we also show the corresponding results when 1) the data-generating mechanism and the assumed model do not satisfy the condition of realizability and/or 2) the MAP estimate is obtained via minibatch stochastic gradient descent instead of batch gradient descent. The $R^2$ corresponding to the linear fit is also provided. 
+In Appendix \ref{appendix:generalizaton}, we also show the corresponding results when 1) the data-generating mechanism and the assumed model do not satisfy the condition of realizability and/or 2) the MAP estimate is obtained via minibatch stochastic gradient descent instead of batch gradient descent. 
 
 
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
 
-In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. Watanabe provides in \citep[\S 7.6]{watanabe_algebraic_2009} the following intuition for the relationship between the true distribution and the RLCT:
-\begin{align*}
-\text{simple function} \iff \text{complicated singularities}\\
-\text{complicated function} \iff \text{simple singularities}
-\end{align*}
-
-The complexity of a singularity is inversely proportional to the RLCT so as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase.
+In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. 
+%Watanabe provides in \citep[\S 7.6]{watanabe_algebraic_2009} the following intuition for the relationship between the true distribution and the RLCT:
+%\begin{align*}
+%\text{simple function} \iff \text{complicated singularities}\\
+%\text{complicated function} \iff \text{simple singularities}
+%\end{align*}
+Specifically, we observe the complexity of a singularity is inversely proportional to the RLCT in the sense that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. 
 
 Consider the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where
 $
@@ -430,7 +433,7 @@ is a two-layer ReLU network with weight vector $w = (\{w_i\}_{i=1}^H, \{b_i\}_{i
 
 \begin{table}[h]
 	\centering
-	\caption{\footnotesize RLCT estimates for ReLU and SiLU.}
+	\caption{\footnotesize RLCT estimates for ReLU and SiLU networks. We observe the RLCT increasing as $m$ increase, i.e., the true distribution becomes more ``complicated'' relative to the supposed model.}
 	\label{table:hyper}
     \begin{tiny}
     \begin{tabular}
@@ -497,16 +500,19 @@ e.g. Amari, this lightlike-neuromanifold thing).
 \end{remark}
 
 \section{Future directions}
-We have put forth that the RLCT is \textit{the} correct way to account for model complexity in a DNN. We do not however claim that the RLCT can be easily estimated for a DNN\footnote{Hironaka's resolution of singularities guarantees existence. However it is notoriously difficult to do the required blowup transformations in high dimensions to obtain the standard form.}. 
-At present there does not exist a method of sampling from the Bayesian posterior for DNNs which is sufficiently accurate to yield accurate RLCT estimates. Variants of MCMC are the gold standard for such estimations, but these techniques do not scale to large networks; consequently we restrict to small networks in our present experiments.
+We have put forth that the RLCT is \textit{the} correct way to account for model complexity in a DNN. Unfortunately, theoretical RLCTs have been cataloged for very few singular models\footnote{Hironaka's resolution of singularities guarantees existence. However it is notoriously difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. Theoretical RLCTs are certainly not known for modern DNNs where the network weights number on the order of $n$.
 
-The intractability of RLCT estimation may not in reality be a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
+
+RLCTs do not yield simply to statistical estimation either.
+In theory MCMC provides the gold standard for RLCT estimation, but MCMC (and most of its variants) do not scale to large networks; consequently our present experiments were restricted to small networks. We had made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior for DNN weights but this did not prove sufficient for accurate RLCT estimation.
+
+The intractability of RLCT estimation for DNNs may not in reality be a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
 %Despite this, we have illustrated that it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
 
-%For very few singular models have theoretical RLCTs been cataloged \citep{}. Theoretical RLCTs are certainly not known for modern DNNs where the network weights number on the order of $n$.
+
 As it stands, singular learning theory does not yet provide a complete mathematical theory of deep learning, as it is practiced. Much of this is technical in nature. For instance, theory allowing for neural networks with the ReLU activation function is lacking. Also, the consequences of nonrealizability is still not well understood. 
 
-Among the many directions available for future investigation, we are most intrigued by what singular learning theory can say about the way DNNs are trained in practice, namely by stochastic gradient descent. A growing number of works \citep{??} suggest that mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. If this is indeed true, then combined with our knowledge that the Bayes predictive distribution is superior to MAP and MLE, we could use SGD to sample from the posterior and form an approximate Bayes predictive distribution. 
+Among the many directions available for future investigation, we are most intrigued by what singular learning theory can say about the way DNNs are trained in practice, namely stochastic gradient descent. A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. If this is indeed true, then combined with our knowledge that the Bayes predictive distribution is superior to MAP and MLE, we could use SGD to sample from the posterior and form an approximate Bayes predictive distribution. 
 
 
 
