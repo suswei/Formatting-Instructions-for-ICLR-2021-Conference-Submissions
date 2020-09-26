@@ -1,8 +1,8 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{iclr2021_conference,times}
+\usepackage{iclr2021_extras}
 \usepackage{graphicx,amsmath,amsthm}
 \usepackage{showlabels}
-\usepackage{iclr2021_extras}
 \usepackage{subcaption}
 %\usepackage{subfig}
 \usepackage{booktabs}
@@ -188,40 +188,31 @@ p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Bi
 We assume the true distribution is realisable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
 
 By straightforward calculations we obtain
-\begin{gather}
-K(w) = \tfrac{1}{2} \int q(x) \| f(x,w) - f(x,w_0) \|^2 dx\\
-I(w)_{ij} = \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
-\end{gather}
+\begin{align}
+K(w) &= \tfrac{1}{2} \int \| f(x,w) - f(x,w_0) \|^2 q(x) dx\\
+\tfrac{\partial^2}{\partial w_i \partial w_j} K(w) &= \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx \nonumber \\
+&\quad + \int \Big\langle f(x,w) - f(x,w_0), \tfrac{\partial^2}{\partial w_i \partial w_j} f(x,w) \Big\rangle q(x) dx \label{eq:Hessian}\\
+I(w)_{ij} &= \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
+\end{align}
 where $\langle -, - \rangle$ denotes the dot product on $\mathbb{R}^M$. Given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the decision boundary at that node (clarify). Since each of these decision boundaries is a hyperplane, $\mathcal{D}(w)$ is a disjoint union of finitely many open chambers. The partial derivative with respect to $\frac{\partial}{\partial w_j}$ of $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$ exists at any point $(x,w)$ with $x \in \mathcal{D}(w)$. We assume that $q(x)$ has been chosen such that this integral exists.
 
-We prove the common feedforward ReLU network has degenerate Fisher information matrix. 
+We prove the common feedforward ReLU network has degenerate Fisher information matrix. For the proof see Appendix \ref{??}.
 
 \begin{lemma}\label{lemma:reln} Suppose $\sigma = \operatorname{ReLU}$. For any hidden node in the network with coordinates $(a_k)_k$ for the incoming weights, $(b_i)_i$ for the outgoing weights and $c$ for the bias
 \begin{align*}
 \Big\{ \sum_k a_{k}\frac{\partial}{\partial a_k} + c \frac{\partial}{\partial c}-\sum_{i} b_i\frac{\partial}{\partial b_i} \Big\} f = 0.
 \end{align*}
 \end{lemma}
-\begin{proof}
-Let $e_i$ denote unit vectors and $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Let $u$ and $a$ denote the value of node before and after activation, respectively $u =\sum_k w_k a_{k}^{l-1}+b_{j}^{l}$ and $a_{j}^{l} =\operatorname{ReLU}(u_{j}^{l})$. Then
-\begin{align*}
-\frac{\partial f}{\partial q_i}&=\frac{\partial y}{\partial u}u_{j}^{l}H(u_{j}^{l})e_{i}\\
-\frac{\partial y}{\partial w_{jk}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial w_{jk}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l})e_{i}.\\
-\frac{\partial y}{\partial b_{j}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial b_{j}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}H(u_{j}^{l})e_{i}.
-\end{align*}
-The claim immediately follows (TODO: fix notation).
-\end{proof}
 
-\begin{lemma} If $\sigma = \operatorname{ReLU}$ the matrix $I(w)$ is degenerate at every nonzero point of $W$.
+\begin{lemma}\label{lemma:all_degen} Suppose $k > 1$, $\sigma = \operatorname{ReLU}$ and that $w \in W$ has at least one weight or bias at a hidden node nonzero. Then the matrix $I(w)$ is degenerate and if $w \in W_0$ then the Hessian of $K$ at $w$ is also degenerate.
 \end{lemma}
 \begin{proof}
-Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation.
+Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation. At a true parameter the second summand in (\ref{eq:Hessian}) vanishes so by the same argument the Hessian is degenerate.
 \end{proof}
 
-The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. As we show in Section \ref{??} even once this symmetry is ``fixed'' there is additional degeneracy (as measured by the RLCT).
+Lemma \ref{lemma:all_degen} implies that every true parameter for a nontrivial ReLU network is a degenerate critical point of $K$. Hence in the study of nontrivial ReLU networks it is never appropriate to divide by the determinant of the Hessian of $K$ at a true parameter, and in particular Laplace or saddle-point approximations at a true parameter are invalid.
 
-\begin{remark} (cleanup)
-e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
-\end{remark}
+The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. The degeneracy, as measured by the RLCT, is much lower than one would expect on the basis of this symmetry alone (see Section \ref{??}).
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
@@ -448,9 +439,7 @@ In singular models the RLCT varies with the true distribution (in contrast to re
 \text{simple function} \iff \text{complicated singularities}\\
 \text{complicated function} \iff \text{simple singularities}
 \end{align*}
-The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. %While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
-
-Consider again the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where $f_\theta: \mathbb{R}^2 \longrightarrow \mathbb{R}$ is a two-layer ReLU network
+The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. Consider the model $p(y|x,w)$ of (\ref{eq:gaussian_model_in_w}) where $f_\theta: \mathbb{R}^2 \longrightarrow \mathbb{R}$ is a two-layer ReLU network
 \begin{gather*}
 f_\theta(x) = c + \sum_{i=1}^H q_i \operatorname{ReLU}( \langle w_i, x \rangle + b_i )
 \end{gather*}
@@ -471,7 +460,7 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
     \begin{tabular}
     {r l l l l}
     \toprule
-      \textbf{m}  & \textbf{Nonlinearity}  & \textbf{Mean} & \textbf{Std}\\ 
+      \textbf{m}  & \textbf{Nonlinearity}  & \textbf{RLCT} & \textbf{Std}\\ 
     \midrule
     3 & ReLU & 0.526301 & 0.027181\\
     3 & SiLU & 0.522393 & 0.026342\\
@@ -486,15 +475,15 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
     \label{table:hyper}
 \end{table}
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[scale=0.6]{RLCTplot.png}
-\end{center}
-\caption{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
-\label{fig:simp_func_complex2}
-\end{figure}
+%\begin{figure}[h]
+%\begin{center}
+%\includegraphics[scale=0.6]{RLCTplot.png}
+%\end{center}
+%\caption{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
+%\label{fig:simp_func_complex2}
+%\end{figure}
 
-Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$ as follows. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are defined as follows: $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$) and the distribution $q_m$ is $\mathbb{Z}/m\mathbb{Z}$-invariant. We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
+Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are the vectors $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$). We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
 
 We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{fig:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
 
@@ -504,8 +493,12 @@ The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence th
 
 We show in Appendix \ref{??} that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. Hence if such a model is minimally singular its RLCT will be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula.
 
+\begin{remark} (cleanup)
+e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
+\end{remark}
+
 \section{Future directions}
-We claim that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network\footnote{Hironaka's resolution of singularities guarantees existence. But the proof is not constructive. It is notoriously difficult to do the so-called blowup transformations in high dimensions to obtain the standard form.}. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
+We claim that the RLCT is \textit{the} correct way to account for model complexity in a deep neural network. We do not however claim that the RLCT can be easily estimated for a deep neural network\footnote{Hironaka's resolution of singularities guarantees existence. However it is notoriously difficult to do the required blowup transformations in high dimensions to obtain the standard form.}. The intractability of RLCT estimation may not in reality be a significant deterrent. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. 
 
 For very few singular models have theoretical RLCTs been cataloged \citep{}. Theoretical RLCTs are certainly not known for modern deep neural networks where the network weights number on the order of $n$. Furthermore singular learning theory, as it stands, cannot be directly applied to neural networks with the ReLU activation function. 
 
@@ -529,6 +522,18 @@ Another TODO: we should probably clarify that we don't mean to say that SLT is, 
 
 \appendix
 \section{Appendix}
+
+\subsection{Proof of degeneracy}
+
+\begin{proof}[Proof of Lemma \ref{lemma:reln}]
+Let $e_i$ denote unit vectors and $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Let $u$ and $a$ denote the value of node before and after activation, respectively $u =\sum_k w_k a_{k}^{l-1}+b_{j}^{l}$ and $a_{j}^{l} =\operatorname{ReLU}(u_{j}^{l})$. Then
+\begin{align*}
+\frac{\partial f}{\partial q_i}&=\frac{\partial y}{\partial u}u_{j}^{l}H(u_{j}^{l})e_{i}\\
+\frac{\partial y}{\partial w_{jk}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial w_{jk}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l})e_{i}.\\
+\frac{\partial y}{\partial b_{j}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial b_{j}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}H(u_{j}^{l})e_{i}.
+\end{align*}
+The claim immediately follows (TODO: fix notation).
+\end{proof}
 
 \subsection{RLCT estimation} \label{appendix:RLCT_estimation}
 
