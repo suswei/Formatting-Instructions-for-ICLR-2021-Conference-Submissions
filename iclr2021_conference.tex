@@ -179,11 +179,11 @@ The RLCT is a birational invariant \citep{kollar_birational_1998} that measures 
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
 
-\textbf{Volume dimension}. The easiest way to understand the RLCT is as a volume dimension \citep[Theorem 7.1]{watanabe_algebraic_2009}.  Suppose $W_0$ is nonempty, i.e., the true distribution is realizable and that $W \subseteq \mathbb{R}^d$. We consider a special case in which a neighborhood of every point $w_0 \in W_0$ the Kullback-Leibler distance has the following expression in local coordinates
+\textbf{Volume dimension}. The easiest way to understand the RLCT is as a volume dimension \citep[Theorem 7.1]{watanabe_algebraic_2009}.  Suppose $W_0$ is nonempty, i.e., the true distribution is realizable and that $W \subseteq \mathbb{R}^d$. We consider a special case in which a neighborhood of every point $w_0 \in W_0$ the Kullback-Leibler distance has an expression in local coordinates of the form
 \begin{equation}\label{eq:local_Kw}
 K(w) = \sum_{i=1}^{d'} c_i w_i^2,
 \end{equation} %This corresponds to a reduced rank regression model, or a neural network with two linear layers and the identity function: $f_w(x) = BAx$ where $B$ and $A$ are matrices of the appropriate size. 
-where the coefficients $c_1,\ldots,c_{d'} > 0$ may depend on $w_0$ and $d'$ may be strictly less than $d$. It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} (or \emph{effective degrees of freedom}) near $w_0$. 
+where the coefficients $c_1,\ldots,c_{d'} > 0$ may depend on $w_0$ and $d'$ may be strictly less than $d$. If the model is regular then this is true with $d = d'$ and if it holds for $d' < d$ then we say that the pair $(p,q)$ is \emph{minimally singular}. It follows that the set $W_0 \subseteq W$ of true parameters is a regular submanifold of codimension $d'$ (that is, $W_0$ is a manifold of dimension $d - d'$ where $W$ has dimension $d$). Under this hypothesis there are, near each true parameter $w_0 \in W_0$, exactly $d - d'$ directions in which $w_0$ can be varied without changing the model $p(y|x,w)$ and $d'$ directions in which varying the parameters does change the model. In this sense, there are $d'$ \emph{effective parameters} near $w_0$. 
 
 This effective dimension near $w_0$ can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters
 %This is not true in general, and it is not true of deep neural networks, but it is true of regular models with $d' = 0$ (the set of true parameters is a set of isolated points) and for singular models such as reduced rank regression with $d' > 0$.
@@ -406,15 +406,13 @@ In singular models the RLCT varies with the true distribution (in contrast to re
 \text{complicated function} \iff \text{simple singularities}
 \end{align*}
 
-The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. %While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
+The complexity of a singularity is inversely proportional to the RLCT so as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase.
 
-Consider again the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where $f_\theta: \mathbb{R}^2 \longrightarrow \mathbb{R}$ is a two-layer ReLU network
-%\begin{gather*}
+Consider the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where
 $
-f_\theta(x) = c + \sum_{i=1}^H q_i \operatorname{ReLU}( \langle w_i, x \rangle + b_i )
+f(x,w) = c + \sum_{i=1}^H q_i \operatorname{ReLU}( \langle w_i, x \rangle + b_i )
 $
-%\end{gather*}
-and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb{R}^{4H+1}$ and $w_i \in \mathbb{R}^2, b_i \in \mathbb{R}, q_i \in \mathbb{R}$ for $1 \le i \le H$. We let $W$ be some compact neighborhood of the origin in $\mathbb{R}^{3H+1}$.
+is a two-layer ReLU network with weight vector $w = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb{R}^{4H+1}$ and $w_i \in \mathbb{R}^2, b_i \in \mathbb{R}, q_i \in \mathbb{R}$ for $1 \le i \le H$. We let $W$ be some compact neighborhood of the origin.
 
 \begin{figure}[h]
 \begin{center}
@@ -426,33 +424,24 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 \label{fig:simp_func_complex}
 \end{figure}
 
-
-
-\begin{table}
-	\begin{minipage}{0.5\linewidth}
-		\caption{\footnotesize RLCT estimates for ReLU and SiLU.}
-		\label{table:hyper}
-		\centering
-		\begin{tabular}
-			{r l l l l}
-			\toprule
-			\textbf{m}  & \textbf{Nonlinearity}  & \textbf{Mean} & \textbf{Std}\\ 
-			\midrule
-			3 & ReLU & 0.526301 & 0.027181\\
-			3 & SiLU & 0.522393 & 0.026342\\
-			4 & ReLU & 0.539590 & 0.024774\\
-			4 & SiLU & 0.539387 & 0.020769\\
-			5 & ReLU & 0.555303 & 0.002344\\
-			5 & SiLU & 0.555630 & 0.021184\\
-			\bottomrule
-		\end{tabular}
-	\end{minipage}\hfill
-	\begin{minipage}{0.45\linewidth}
-		\centering
-		\includegraphics[scale=0.3]{RLCTplot.png}
-		\captionof{figure}{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
-		\label{fig:simp_func_complex2}
-	\end{minipage}
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}
+    {r l l l l}
+    \toprule
+      \textbf{m}  & \textbf{Nonlinearity}  & \textbf{RLCT} & \textbf{Std} & \textbf{R squared}\\ 
+    \midrule
+    3 & ReLU & 0.526301 & 0.027181 & 0.983850\\
+    3 & SiLU & 0.522393 & 0.026342 & 0.978770\\
+    4 & ReLU & 0.539590 & 0.024774 & 0.991241\\
+    4 & SiLU & 0.539387 & 0.020769 & 0.988495\\
+    5 & ReLU & 0.555303 & 0.002344 & 0.993092\\
+    5 & SiLU & 0.555630 & 0.021184 & 0.990971\\
+   \bottomrule
+   \end{tabular}
+    \end{center}
+    \caption{\footnotesize RLCT estimates for ReLU and SiLU.}
+    \label{table:hyper}
 \end{table}
 
 
@@ -485,18 +474,21 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 %\label{fig:simp_func_complex2}
 %\end{figure}
 
-Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are the vectors $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$). We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
+Given an integer $3 \le m \le H$ we define a network $s_m \in W$ and $q_m(y|x) := p(y|x, s_m)$. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $s_m$ are the vectors $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$). We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. The functions $f(x,s_m)$ are graphed in Figure \ref{fig:simp_func_complex}. It is intuitively clear that the complexity of these true distributions increases with $m$.
 
-We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{fig:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
+We let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and estimate the RLCTs of the triples $(p, q_m, \varphi)$. We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Table \ref{table:hyper} shows the estimated RLCT. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. As predicted the RLCT increases with $m$ verifying that in this case, the simpler true distributions give rise to more complex singularities.
 
-The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citep[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
+Note that in all cases the number of parameters in $W$ is $d = 21$ and so if the model were regular the RLCT would be $11.5$. It can be shown that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$ \cite{??}. If such a model were minimally singular its RLCT would be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula. So not only does the function $K$ have nondegenerate critical point on $W_0$, it is not even quadratic in a local coordinate neighborhood.
 
-The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence that this model is not minimally singular, when combined with the symmetric true distribution $q^{SiLU}_m(x,y)$. Starting from the weight vector of this true distribution, varying $c$ or any of the $b_i$ independently takes the model off the set of true parameters, so that the normal bundle has dimension $> H + 1$. Hence the RLCT in the minimally singular case would be bounded below by $3$ in the case $H = 5$, but our estimates for the RLCT are $< 0.6$.
+Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because the function $K(w)$ is not necessarily analytic (Appendix \ref{??}). However we observe empirically that the predicted linear relationship between $E^\beta_w[nL_n(w)]$ and $1/\beta$ holds in our small ReLU networks, and that the RLCT estimates are close to those for the two-layer SiLU network, which is analytic (the SiLU or sigmoid weighted linear unit is $\sigma(x) = x (1 + e^{-\beta x})^{-1}$ which approaches the ReLU as $\beta \to \infty$. We use $\beta = 100.0$ in our experiments). The competitive performance of SiLU on standard benchmarks \cite{??} shows that the non-analyticity of ReLU is not fundamental.
 
-We show in Appendix \ref{??} that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. Hence if such a model is minimally singular its RLCT will be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula.
+\begin{remark} The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citep[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
+\end{remark}
+
+% The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence that this model is not minimally singular, when combined with the symmetric true distribution $q^{SiLU}_m(x,y)$. Starting from the weight vector of this true distribution, varying $c$ or any of the $b_i$ independently takes the model off the set of true parameters, so that the normal bundle has dimension $> H + 1$. Hence the RLCT in the minimally singular case would be bounded below by $3$ in the case $H = 5$, but our estimates for the RLCT are $< 0.6$.
 
 \begin{remark} (cleanup)
-e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
+e.g. Amari, this lightlike-neuromanifold thing).
 \end{remark}
 
 \section{Future directions}
