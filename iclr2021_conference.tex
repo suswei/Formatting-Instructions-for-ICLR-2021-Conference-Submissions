@@ -68,13 +68,13 @@ Address \\
 \maketitle
 
 \begin{abstract}
-Deep neural networks are highly singular models. First recognized as such in \textit{singular learning theory}, we further advance the perspective that singularities are hallmark distinguishing features of deep neural networks and hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
+In singular models, the optimal set of parameters form an algebraic or analytic set with singularities. Classical statistical inference cannot be applied to such models, and since deep neural networks are singular, cannot be applied to deep learning. It seems that \textit{singular learning theory}, which provides the statistical foundation to investigate singular models, may hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
 Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
 \end{abstract}
 
 \section{Introduction}
 
-It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means that the set of network weights that are equivalent, under the Kullback-Leibler divergence, to the true model forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory such as the Bayes generalisation error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
+It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights that are equivalent, under the Kullback-Leibler divergence, to the true model forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory such as the Bayes generalisation error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 
 In order to illustrate the relevance of singular learning theory to deep learning, the paper consists of several sections each of which illustrates one key take-away idea. The code to reproduce all experiments in the paper can be found at \url{???}/
 
@@ -92,7 +92,7 @@ In order to illustrate the relevance of singular learning theory to deep learnin
 
 \section{Singular Learning Theory}
 
-In classical learning theory, generalization is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2002.5introduction}. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. 
+In classical learning theory, generalization is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. 
 %Rethinking generalization will likely require devising capacity measures suitable to the peculiarities of deep learning, e.g. non-identifiability and degenerate Fisher information matrix. 
 To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it is important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$ where $W \subset \mathbb R^d$ is the parameter space. Let 
 $$
@@ -115,14 +115,18 @@ A statistical model $p(y|x,w)$ is called \textbf{regular} if it is 1) identifiab
 % \end{definition}
 
 Let  $\varphi(w)$ be a prior on the model parameters $w$.
-To every model-truth-prior triplet, we can associate the zeta function
-\begin{equation}
-\zeta(z) = \int K(w)^z \varphi(w) \,dw, \quad z \in \mathbb C,
-\end{equation} 
+To every model-truth-prior triplet, we can associate the zeta function,
+%\begin{equation}
+$
+\zeta(z) = \int K(w)^z \varphi(w) \,dw, z \in \mathbb C,
+$
+%\end{equation} 
 where $K(w)$ is the Kullback-Leibler divergence between the model $p(y|x,w)$ and the true distribution $q(y|x)$:
-\begin{equation}
+%\begin{equation}
+$$
     K(w) := \int \!\int q(y|x) \log \frac{ q(y|x) }{ p(y|x,w) } q(x) \,dx \,dy.
-\end{equation}
+$$
+%\end{equation}
 Then to every triplet of model-truth-prior, we can associate the following central quantity of singular learning theory:
 
 \begin{definition}[Real log canonical threshold (RLCT)]
@@ -153,75 +157,27 @@ and can be loosely interpreted as the evidence for the model. Between two models
 However, since the marginal likelihood is an intractable integral over the parameter space of the model, one needs to consider some approximation.
 
 Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of the negative log marginal likelihood, $-\log p(\mathcal D_n)$, using the Laplace approximation, leading to
-\[
+$
 \operatorname{BIC} = nL_n( w_{mle}) + \frac{d}{2} \log n.
-\]
+$
 Since we want the marginal likelihood of the data for some given model to be \textit{high}, we want the negative log marginal likelihood to be \textit{low}. Thus when $d$ is extremely large as is the case in deep neural networks, one should almost never adopt a deep network according to the BIC. 
 %(aka the log marginal likelihood, aka the free energy). 
 % Given two statistical models of a data source, one should choose (all else being equal) the one with higher model evidence. 
 
 However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and deep neural networks are not regular. Deep neural networks are \textit{strictly singular} as we illustrated in Section \ref{section:nn_singular}. 
 If we have realizability (along with a few more technical conditions), the correct criterion for both regular and strictly singular models was shown in \citet{watanabe_widely_2013} to be 
-\begin{equation}
+%\begin{equation}
+$
 nL_n(w_0) + \lambda \log n,
-\label{logmarginal_rlct}
-\end{equation}
+$
+%\label{logmarginal_rlct}
+%\end{equation}
 where $w_0 \in W_0$ and $\lambda$ is the RLCT. 
 Since more complex singularities lead to smaller values of $\lambda$, which we illustrate in Section \ref{section:simple_func}, and deep learning models are highly singular, it is possible for deep neural networks to have high marginal likelihood -- consistent with their empirical success. 
 
 The RLCT is a birational invariant \citep{kollar_birational_1998} that measures the complexity of singularities in the model. Since the complexity of singularities determine most of the interesting properties of a model, the RLCT is a very appealing choice for understanding, say, the generalization behavior in singular models, particularly deep neural networks. Furthermore the RLCT as a capacity measure is theoretically rigorous which most existing capacity measures for deep neural networks cannot claim. While theoretical investigations of a deep network's generalization behavior is an active area of research \cite{neyshabur_exploring_2017}, it is still common practice to work with degenerate Hessians in proposing capacity measures, e.g., \citet{thomas_information_2019}. Another common mistake is to perform the Laplace approximation for singular neural networks. For instance, both \citet{zhang_energyentropy_2018} and  \citet{le_bayesian_2018} have explanations of the generalization error of the full Bayes predictor that relies on the Laplace approximation of the intractable posterior distribution. ???Also discuss the following works \cite{maddox_rethinking_2020}, \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
 
 
-\section{Neural networks are strictly singular}
-\label{section:nn_singular}
-Many-layered neural networks are strictly singular. There seems to be only informal acknowledgment of this fact in the deep learning community. For instance the recent work in \citet{pennington_spectrum_2018} deliberately studies the Fisher information matrix of a \textit{single-hidden-layer} neural network. If instead the interest is in a many-layered network, one must work with rather ad-hoc workarounds  \citep{sun2017relative}.  
-
-We first explain how to think about a neural network in the context of singular learning theory. A feedforward network of depth $k$ parametrises a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
-\[
-f = A_k \circ \sigma_{k-1} \circ A_{k-1} \cdots \sigma_1 \circ A_1
-\]
-where the $A_i: \mathbb{R}^{d_i} \lto \mathbb{R}^{d_{i+1}}$ are affine functions and $\sigma_i: \mathbb{R}^{d_{i+1}} \lto \mathbb{R}^{d_{i+1}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of the space $\mathbb{R}^D$ containing the origin, where $\mathbb{R}^D$ is the space of sequences affine functions $(A_i)_{i=1}^k$ with coordinates denoted $w_1,\ldots,w_D$, so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define
-\begin{equation}
-p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
-\label{eq:gaussian_model_in_w}
-\end{equation}
-We assume the true distribution is realisable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
-
-By straightforward calculations we obtain
-\begin{gather}
-K(w) = \tfrac{1}{2} \int q(x) \| f(x,w) - f(x,w_0) \|^2 dx\\
-I(w)_{ij} = \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
-\end{gather}
-where $\langle -, - \rangle$ denotes the dot product on $\mathbb{R}^M$. Given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the decision boundary at that node (clarify). Since each of these decision boundaries is a hyperplane, $\mathcal{D}(w)$ is a disjoint union of finitely many open chambers. The partial derivative with respect to $\frac{\partial}{\partial w_j}$ of $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$ exists at any point $(x,w)$ with $x \in \mathcal{D}(w)$. We assume that $q(x)$ has been chosen such that this integral exists.
-
-We prove the common feedforward ReLU network has degenerate Fisher information matrix. 
-
-\begin{lemma}\label{lemma:reln} Suppose $\sigma = \operatorname{ReLU}$. For any hidden node in the network with coordinates $(a_k)_k$ for the incoming weights, $(b_i)_i$ for the outgoing weights and $c$ for the bias
-\begin{align*}
-\Big\{ \sum_k a_{k}\frac{\partial}{\partial a_k} + c \frac{\partial}{\partial c}-\sum_{i} b_i\frac{\partial}{\partial b_i} \Big\} f = 0.
-\end{align*}
-\end{lemma}
-\begin{proof}
-Let $e_i$ denote unit vectors and $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Let $u$ and $a$ denote the value of node before and after activation, respectively $u =\sum_k w_k a_{k}^{l-1}+b_{j}^{l}$ and $a_{j}^{l} =\operatorname{ReLU}(u_{j}^{l})$. Then
-\begin{align*}
-\frac{\partial f}{\partial q_i}&=\frac{\partial y}{\partial u}u_{j}^{l}H(u_{j}^{l})e_{i}\\
-\frac{\partial y}{\partial w_{jk}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial w_{jk}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l})e_{i}.\\
-\frac{\partial y}{\partial b_{j}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial b_{j}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}H(u_{j}^{l})e_{i}.
-\end{align*}
-The claim immediately follows (TODO: fix notation).
-\end{proof}
-
-\begin{lemma} If $\sigma = \operatorname{ReLU}$ the matrix $I(w)$ is degenerate at every nonzero point of $W$.
-\end{lemma}
-\begin{proof}
-Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation.
-\end{proof}
-
-The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. As we show in Section \ref{??} even once this symmetry is ``fixed'' there is additional degeneracy (as measured by the RLCT).
-
-\begin{remark} (cleanup)
-e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
-\end{remark}
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
@@ -234,9 +190,11 @@ where the coefficients $c_1,\ldots,c_{d'} > 0$ may depend on $w_0$ and $d'$ may 
 
 This effective dimension near $w_0$ can be computed by an integral. To see this, define the volume of the set of ``almost true'' parameters
 %This is not true in general, and it is not true of deep neural networks, but it is true of regular models with $d' = 0$ (the set of true parameters is a set of isolated points) and for singular models such as reduced rank regression with $d' > 0$.
-\begin{equation}\label{eq:true_param}
+%\begin{equation}\label{eq:true_param}
+$
 V(t) = \int_{K(w) < t} \varphi(w) dw
-\end{equation}
+$
+%\end{equation}
 where the integral is restricted to some sufficiently small open neighborhood of $w_0$. As long as the prior $\varphi(w)$ is non-zero on $W_0$ it does not affect the relevant features of the volume, so we may assume $\varphi$ is constant on the region of integration in the first $d'$ directions and normal in the remaining directions, so up to a constant depending only on $d'$ we have
 \begin{equation}\label{eq:volume_singular}
 V(t) \propto \frac{t^{d'/2}}{\sqrt{c_1 \cdots c_{d'}}}
@@ -247,28 +205,30 @@ d' = 2 \lim_{t \to 0} \frac{\log\big\{V(at)/V(t)\big\}}{\log(a)}
 \ee
 for any $a > 0$, $a \neq 1$. The right hand side of (\ref{eq:limit_volumedim}) is the \emph{volume dimension} associated to $K$. 
 
-The function $K(w)$ has the special form (\ref{eq:local_Kw}) locally with $d' = d$ if the statistical model is regular (and realisable) and with $d' < d$ in some singular models such as reduced rank regression (Appendix \ref{??}). While such a local form does not exist for a general singular model (in particular for neural networks) nonetheless under natural conditions Watanabe shows that \citet[Theorem 7.1]{watanabe_algebraic_2009}
-\[
+The function $K(w)$ has the special form (\ref{eq:local_Kw}) locally with $d' = d$ if the statistical model is regular (and realisable) and with $d' < d$ in some singular models such as reduced rank regression (Appendix \ref{??}). While such a local form does not exist for a general singular model (in particular for neural networks) nonetheless under natural conditions Watanabe shows in \citet[Theorem 7.1]{watanabe_algebraic_2009} that
+$
 V(t) = c t^\lambda + o( t^\lambda)
-\]
+$
 where $\lambda$ is the RLCT and $c$ is a constant.\footnote{We are assuming that in a sufficiently small neighborhood of $w_0$ the RLCT at $w_0$ is less than or equal to the RLCT at every point in the neighborhood so that the multiplicity $m = 1$, see Section 7.6 of \citep{watanabe_algebraic_2009}.} It follows that the limit on the right hand side of  (\ref{eq:volume_singular}) exists and is equal to $\lambda$. In particular $\lambda = d/2$ in the regular case and $d'/2$ in the more general case of (\ref{eq:local_Kw}) above. In general it is appropriate to think of $2 \lambda$ as a volume dimension, or as the effective number of parameters near $w_0$.\footnote{In general $\lambda$ is a rational number, so it is not straightforward to give a geometric interpretation of why the volume grows as $t^\lambda$. Such an analysis requires an understanding of the resolution of singularities.}
 
 %It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
 
 \textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the exponential form  (\ref{eq:gaussian_model_in_w}) and let $D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. The negative log likelihood is
-\begin{equation}
+%\begin{equation}
+$
 L_n(w) = \frac{M}{2} \log(2\pi) + \frac{1}{n} \sum_{i=1}^n \frac{1}{2} \| y_i - f(x_i,w) \|^2\,.
-\end{equation}
-Given a temperature $T$ consider the quantity $E(T)$ 
-\[
-E(T) = \mathbb{E}^{1/T}_w\big[nL_n(w) \big] = \mathbb{E}_w^{1/T}\Big[ \tfrac{1}{2} \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big] + \frac{nM}{2} \log(2\pi)\,.
-\]
-where $p^{1/T}(w|D_n)$ is the Bayesian posterior at temperature $T$ of (\ref{general_posterior}).
+$
+%\end{equation}
+Given a temperature $T$ consider the quantity
+$$
+E(T) = \mathbb{E}^{1/T}_w\big[nL_n(w) \big] = \mathbb{E}_w^{1/T}\Big[ \tfrac{1}{2} \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big] + \frac{nM}{2} \log(2\pi),
+$$
+where $p^{1/T}(w|D_n)$ is the Bayesian posterior at inverse temperature $1/T$ of (\ref{general_posterior}).
 
 Note that when $n$ is large $L_n(w_0) \approx \frac{M}{2} \log(2\pi)$ for any $w_0 \in W_0$ so for $T \approx 0$ the posterior concentrates around the set $W_0$ of true parameters and $E(T) \approx \frac{nM}{2} \log(2\pi)$. Consider the increase $\Delta E = E(T + \Delta T) - E(T)$ corresponding to an increase in temperature $\Delta T$. It can be shown that 
-\[
+$
 \Delta E \approx \lambda \Delta T
-\]
+$
 where the reader should see \citep[Corollary 3]{watanabe_widely_2013} for a precise statement. As the temperature increases, samples taken from the tempered posterior are more likely to come from further away from $W_0$ and $E$ will increase. If $\lambda$ is smaller then for a given increase in temperature the quantity $E$ increases less: this is one way to understand why a model with smaller RLCT generalises better from the dataset $D_n$ to the true distribution.\footnote{The relation $\Delta E \approx \lambda \Delta T$ holds for the global RLCT. If the posterior is defined with respect to a prior $\varphi(w)$ which is concentrated around a point $w_0$ with lower point RLCT than any other point in its neighborhood, as above, then the same relation holds for the point RLCT $\lambda$.}
 
 %Hence if $d'_0 < d'_1$ then the model we obtain by integrating near $w_0$ will have an error which increases less quickly with temperature. From the point of view of statistical learning two true parameters with different volume dimensions are not equivalent.
@@ -334,11 +294,13 @@ Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a me
 %\end{example}
 
 \section{Generalization}\label{section:gen_error}
-In the Bayesian paradigm, prediction proceeds via the so-called Bayes predictive distribution
-\begin{equation}
-p(y|x, \mathcal D_n) = \int p(y|x,\theta) p(\theta|\mathcal D_n) \,d\theta
-\label{eq:bayes_pred_dist}
-\end{equation}
+In the Bayesian paradigm, prediction proceeds via the so-called Bayes predictive distribution,
+%\begin{equation}
+$
+p(y|x, \mathcal D_n) = \int p(y|x,\theta) p(\theta|\mathcal D_n) \,d\theta.
+$
+%\label{eq:bayes_pred_dist}
+%\end{equation}
 More commonly encountered in deep learning practice are the point estimators \textit{maximum a posteriori} (MAP) estimator and the maximum likelihood estimator (MLE).
 While in a regular statistical model, the three estimators 1) Bayes predictive distribution, 2) MAP, and 3) MLE have the \textit{same} leading term in their asymptotic generalization behavior, the same is not true in singular models.
 % Let $\varphi(\theta)$ be the prior distribution of the weights of the network. We call $p(\mathcal D_n |\theta) = \Pi_{i=1}^n p(y_i | x_i, \theta)$ the likelihood of the data $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$. Then we have the posterior distribution of $\theta$: $$
@@ -351,15 +313,15 @@ $$
 G(n) := KL (q(y|x) || \hat q_n(y|x) ) = \int  \int q(y|x) \log \frac{q(y|x)}{\hat q_n(y|x)} q(x) \,dy  \,dx.
 $$
 To account for sampling variability, we will work with the \textit{average generalization error}, ${\E}_n G(n)$, where ${\E}_n$ denotes expectation over the dataset $\mathcal D_n$.
-If $\hat q_n$ is the Bayes predictive distribution, then by {\citet[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have\footnote{A quick sketch of the derivation of \eqref{eq:RLCT_generalization} is provided in Appendix \ref{appendix:generalization_theory}}
+By {\citet[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have\footnote{A quick sketch of the derivation of \eqref{eq:RLCT_generalization} is provided in Appendix \ref{appendix:generalization_theory}}
 \begin{equation}
-{\E}_n G(n) = \lambda/n + o(1/n)
+{\E}_n G(n) = \lambda/n + o(1/n)  \text{ if $\hat q_n$ is the Bayes predictive distribution,}
 \label{eq:RLCT_generalization}
 \end{equation}
 where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$.
-On the other hand, if $\hat q_n$ is the MAP or MLE, then by {\cite[Theorem 6.4]{watanabe_algebraic_2009}} we have
+On the other hand, by {\cite[Theorem 6.4]{watanabe_algebraic_2009}} we have
 $$
-{\E}_n G(n) = C/n + o(1/n)
+{\E}_n G(n) = C/n + o(1/n)   \text{ if $\hat q_n$ is the MAP or MLE,}
 $$
 where $C$ (different for MAP and MLE) is the maximum of some Gaussian process. For regular models, the MAP, MLE, and the Bayes predictive distribution have the same leading term for ${\E}_n G(n)$ since $\lambda = C = d/2$. However in singular models, $C$ is generally greater than $\lambda$. 
 
@@ -377,16 +339,18 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[scale=0.4]{taskid8.png}
-		\includegraphics[scale=0.4]{taskid9.png}
-		\includegraphics[scale=0.4]{taskid10.png}
-		\includegraphics[scale=0.4]{taskid11.png}
+		\includegraphics[scale=0.21]{taskid8.png}
+		\includegraphics[scale=0.21]{taskid9.png}
+		\includegraphics[scale=0.21]{taskid10.png}
+		\includegraphics[scale=0.21]{taskid11.png}
 	\end{center}
 	\caption{Realizable and full batch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Figure \ref{fig:avg_gen_err_minibatch_realizable} is analogous to this figure except minibatch gradient descent was employed to find MAP.}
 	\label{fig:avg_gen_err_fullbatch_realizable}
 \end{figure}
 
 \begin{table}[h]%
+	\caption{Companion to Figure \ref{fig:avg_gen_err_fullbatch_realizable}.}
+	\label{table:avg_gen_err_fullbatch_realizable}
 	\centering
 	\begin{tiny}
 		\begin{subtable}[t]{2.5in}
@@ -409,12 +373,10 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 			\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
 		\end{subtable}
 	\end{tiny}
-	\caption{Companion to Figure \ref{fig:avg_gen_err_fullbatch_realizable}.}%
-	\label{table:avg_gen_err_fullbatch_realizable}%
 \end{table}
 
 
- Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{Interestingly, \citet{kristiadi_being_2020} apply this very idea using a Laplace approximation for ReLU networks. It is also worth noting that the title of \citet{kristiadi_being_2020} claims that being Bayesian fixes overconfidence; the authors however seem to  miss that this is a statement  about $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
+ Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{Interestingly, \citet{kristiadi_being_2020} apply this very idea using a Laplace approximation for the final layer of a ReLU network. It is also worth noting that the title of \citet{kristiadi_being_2020} claims that being Bayesian fixes overconfidence; however the authors do not present this as a statement about $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
 Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward ReLU block with each hidden layer having 5 hidden units and $h: \mathbb R^3 \to \mathbb R^3$ is either $BAx$ or $B\text{ReLU}(Ax)$ where $A \in \mathbb R^{3 \times r}, B \in \mathbb R^{r \times 3}$. We set $r=3$. We shall consider 1 or 5 hidden layers for $g$. 
 
 %Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; A); B)$ where $w=(A,B)$.
@@ -451,9 +413,11 @@ In singular models the RLCT varies with the true distribution (in contrast to re
 The complexity of a singularity is inversely proportional to the RLCT so this predicts that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. %While in general it is not clear how to give an \emph{a priori} measure of function complexity other than the RLCT itself, we can construct simple examples in which such a measure is possible.
 
 Consider again the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where $f_\theta: \mathbb{R}^2 \longrightarrow \mathbb{R}$ is a two-layer ReLU network
-\begin{gather*}
+%\begin{gather*}
+$
 f_\theta(x) = c + \sum_{i=1}^H q_i \operatorname{ReLU}( \langle w_i, x \rangle + b_i )
-\end{gather*}
+$
+%\end{gather*}
 and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb{R}^{4H+1}$ and $w_i \in \mathbb{R}^2, b_i \in \mathbb{R}, q_i \in \mathbb{R}$ for $1 \le i \le H$. We let $W$ be some compact neighborhood of the origin in $\mathbb{R}^{3H+1}$.
 
 \begin{figure}[h]
@@ -466,33 +430,62 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 \label{fig:simp_func_complex}
 \end{figure}
 
-\begin{table}[h]
-    \begin{center}
-    \begin{tabular}
-    {r l l l l}
-    \toprule
-      \textbf{m}  & \textbf{Nonlinearity}  & \textbf{Mean} & \textbf{Std}\\ 
-    \midrule
-    3 & ReLU & 0.526301 & 0.027181\\
-    3 & SiLU & 0.522393 & 0.026342\\
-    4 & ReLU & 0.539590 & 0.024774\\
-    4 & SiLU & 0.539387 & 0.020769\\
-    5 & ReLU & 0.555303 & 0.002344\\
-    5 & SiLU & 0.555630 & 0.021184\\
-   \bottomrule
-   \end{tabular}
-    \end{center}
-    \caption{\footnotesize RLCT estimates for ReLU and SiLU.}
-    \label{table:hyper}
+
+\begin{table}
+	\begin{minipage}{0.5\linewidth}
+		\caption{\footnotesize RLCT estimates for ReLU and SiLU.}
+		\label{table:hyper}
+		\centering
+		\begin{tabular}
+			{r l l l l}
+			\toprule
+			\textbf{m}  & \textbf{Nonlinearity}  & \textbf{Mean} & \textbf{Std}\\ 
+			\midrule
+			3 & ReLU & 0.526301 & 0.027181\\
+			3 & SiLU & 0.522393 & 0.026342\\
+			4 & ReLU & 0.539590 & 0.024774\\
+			4 & SiLU & 0.539387 & 0.020769\\
+			5 & ReLU & 0.555303 & 0.002344\\
+			5 & SiLU & 0.555630 & 0.021184\\
+			\bottomrule
+		\end{tabular}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\linewidth}
+		\centering
+		\includegraphics[scale=0.3]{RLCTplot.png}
+		\captionof{figure}{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
+		\label{fig:simp_func_complex2}
+	\end{minipage}
 \end{table}
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[scale=0.6]{RLCTplot.png}
-\end{center}
-\caption{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
-\label{fig:simp_func_complex2}
-\end{figure}
+
+%\begin{table}[h]
+%    \begin{center}
+%    \begin{tabular}
+%    {r l l l l}
+%    \toprule
+%      \textbf{m}  & \textbf{Nonlinearity}  & \textbf{Mean} & \textbf{Std}\\ 
+%    \midrule
+%    3 & ReLU & 0.526301 & 0.027181\\
+%    3 & SiLU & 0.522393 & 0.026342\\
+%    4 & ReLU & 0.539590 & 0.024774\\
+%    4 & SiLU & 0.539387 & 0.020769\\
+%    5 & ReLU & 0.555303 & 0.002344\\
+%    5 & SiLU & 0.555630 & 0.021184\\
+%   \bottomrule
+%   \end{tabular}
+%    \end{center}
+%    \caption{\footnotesize RLCT estimates for ReLU and SiLU.}
+%    \label{table:hyper}
+%\end{table}
+%
+%\begin{figure}[h]
+%\begin{center}
+%\includegraphics[scale=0.6]{RLCTplot.png}
+%\end{center}
+%\caption{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
+%\label{fig:simp_func_complex2}
+%\end{figure}
 
 Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$ as follows. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are defined as follows: $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$) and the distribution $q_m$ is $\mathbb{Z}/m\mathbb{Z}$-invariant. We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
 
@@ -529,6 +522,50 @@ Another TODO: we should probably clarify that we don't mean to say that SLT is, 
 
 \appendix
 \section{Appendix}
+
+\subsection{Neural networks are strictly singular}
+\label{section:nn_singular}
+Many-layered neural networks are strictly singular. There seems to be only informal acknowledgment of this fact in the deep learning community. For instance the recent work in \citet{pennington_spectrum_2018} deliberately studies the Fisher information matrix of a \textit{single-hidden-layer} neural network. If instead the interest is in a many-layered network, one must work with rather ad-hoc workarounds  \citep{sun2017relative}.  
+We first explain how to think about a neural network in the context of singular learning theory. A feedforward network of depth $k$ parametrises a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
+\[
+f = A_k \circ \sigma_{k-1} \circ A_{k-1} \cdots \sigma_1 \circ A_1
+\]
+where the $A_i: \mathbb{R}^{d_i} \lto \mathbb{R}^{d_{i+1}}$ are affine functions and $\sigma_i: \mathbb{R}^{d_{i+1}} \lto \mathbb{R}^{d_{i+1}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of the space $\mathbb{R}^D$ containing the origin, where $\mathbb{R}^D$ is the space of sequences affine functions $(A_i)_{i=1}^k$ with coordinates denoted $w_1,\ldots,w_D$, so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define
+\begin{equation}
+p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
+\label{eq:gaussian_model_in_w}
+\end{equation}
+We assume the true distribution is realisable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
+By straightforward calculations we obtain
+\begin{gather}
+K(w) = \tfrac{1}{2} \int q(x) \| f(x,w) - f(x,w_0) \|^2 dx\\
+I(w)_{ij} = \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
+\end{gather}
+where $\langle -, - \rangle$ denotes the dot product on $\mathbb{R}^M$. Given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the decision boundary at that node (clarify). Since each of these decision boundaries is a hyperplane, $\mathcal{D}(w)$ is a disjoint union of finitely many open chambers. The partial derivative with respect to $\frac{\partial}{\partial w_j}$ of $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$ exists at any point $(x,w)$ with $x \in \mathcal{D}(w)$. We assume that $q(x)$ has been chosen such that this integral exists.
+We prove the common feedforward ReLU network has degenerate Fisher information matrix. 
+\begin{lemma}\label{lemma:reln} Suppose $\sigma = \operatorname{ReLU}$. For any hidden node in the network with coordinates $(a_k)_k$ for the incoming weights, $(b_i)_i$ for the outgoing weights and $c$ for the bias
+	\begin{align*}
+	\Big\{ \sum_k a_{k}\frac{\partial}{\partial a_k} + c \frac{\partial}{\partial c}-\sum_{i} b_i\frac{\partial}{\partial b_i} \Big\} f = 0.
+	\end{align*}
+\end{lemma}
+\begin{proof}
+	Let $e_i$ denote unit vectors and $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Let $u$ and $a$ denote the value of node before and after activation, respectively $u =\sum_k w_k a_{k}^{l-1}+b_{j}^{l}$ and $a_{j}^{l} =\operatorname{ReLU}(u_{j}^{l})$. Then
+	\begin{align*}
+	\frac{\partial f}{\partial q_i}&=\frac{\partial y}{\partial u}u_{j}^{l}H(u_{j}^{l})e_{i}\\
+	\frac{\partial y}{\partial w_{jk}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial w_{jk}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l})e_{i}.\\
+	\frac{\partial y}{\partial b_{j}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial b_{j}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}H(u_{j}^{l})e_{i}.
+	\end{align*}
+	The claim immediately follows (TODO: fix notation).
+\end{proof}
+\begin{lemma} If $\sigma = \operatorname{ReLU}$ the matrix $I(w)$ is degenerate at every nonzero point of $W$.
+\end{lemma}
+\begin{proof}
+	Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation.
+\end{proof}
+The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. As we show in Section \ref{??} even once this symmetry is ``fixed'' there is additional degeneracy (as measured by the RLCT).
+\begin{remark} (cleanup)
+	e.g. Amari, this lightlike-neuromanifold thing) that make this minimal singularity assumption are just irrelevant to deep learning.
+\end{remark}
 
 \subsection{RLCT estimation} \label{appendix:RLCT_estimation}
 
