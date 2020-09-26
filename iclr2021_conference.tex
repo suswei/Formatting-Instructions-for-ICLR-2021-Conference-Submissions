@@ -68,17 +68,15 @@ Address \\
 \maketitle
 
 \begin{abstract}
-In singular models, the optimal set of parameters form an algebraic or analytic set with singularities. Classical statistical inference cannot be applied to such models, and since deep neural networks are singular, cannot be applied to deep learning. It seems that \textit{singular learning theory}, which provides the statistical foundation to investigate singular models, may hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
-Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
+In singular models, the optimal set of parameters form an algebraic or analytic set with singularities. Classical statistical inference cannot be applied to such models and in particular not to deep learning as deep neural networks are singular, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. \textit{Singular learning theory} provides the statistical foundation to investigate singular models and may hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
+Despite its potential for addressing fundamental issues in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. Here we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
 \end{abstract}
 
 \section{Introduction}
 
-It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights that are equivalent, under the Kullback-Leibler divergence, to the true model forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory such as the Bayes generalisation error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
+It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights that are equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory such as the Bayes generalisation error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 
 In order to illustrate the relevance of singular learning theory to deep learning, the paper consists of several sections each of which illustrates one key take-away idea. The code to reproduce all experiments in the paper can be found at \url{???}/
-
-\textbf{Neural networks are singular models.} (Section \ref{section:nn_singular}). A many-layered neural network statistical model is non-identifiable and has degenerate Fisher information matrix \emph{at every point of the parameter space}. Classical tools from statistical inference are hence inappropriate for deep neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network.} (Section \ref{section:no_flat_minima}). 
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood as the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian), laying bare some of the confusion over ``flat'' minima in deep learning 
@@ -110,9 +108,9 @@ A statistical model $p(y|x,w)$ is called \textbf{regular} if it is 1) identifiab
 %{\cite[Theorem 7.2]{watanabe_algebraic_2009}}.
 \end{definition}
 
-% \begin{definition}[Singular model]
-% A singular statistical model is either a regular model or a strictly singular model. 
-% \end{definition}
+\textbf{Neural networks are singular models.} A multilayer neural network statistical model is non-identifiable and has degenerate Fisher information matrix \emph{at every point of the parameter space}. We document this routine calculation in Section \ref{section:nn_singular}. 
+%Classical tools from statistical inference are hence inappropriate for deep neural networks, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. 
+
 
 Let  $\varphi(w)$ be a prior on the model parameters $w$.
 To every model-truth-prior triplet, we can associate the zeta function,
@@ -332,7 +330,7 @@ To approximate the Bayes predictive distribution, we consider marginalization ov
 p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
 \label{eq:genexp_model}
 \end{equation}
-where $f_\theta$ is a many-layered neural network.
+where $f_\theta$ is a multilayer neural network.
 We set $q(x) = N(0,I_3)$. 
 For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model \ref{eq:genexp_model} is instantiated. How to use multiple datasets $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$, $(x,y) \sim q(x,y) = q(y|x)q(x)$ and a large testing set drawn also from $q(x,y)$ to assess $E_n G(n)$ is discussed in Appendix \ref{appendix:generalizaton}. 
 
@@ -353,23 +351,21 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 	\centering
 	\begin{tiny}
 		\begin{subtable}[t]{2.5in}
-			\input{graphics/taskid8.tex}
-			\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
+			\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}			\input{graphics/taskid8.tex}
 		\end{subtable}
 		\quad
 		\begin{subtable}[t]{2.5in}
-			\input{graphics/taskid9.tex}
 			\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}
+			\input{graphics/taskid9.tex}
 		\end{subtable}
 		\quad
 		\begin{subtable}[t]{2.5in}
-			\input{graphics/taskid10.tex}
 			\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+			\input{graphics/taskid10.tex}
 		\end{subtable}
 		\quad
 		\begin{subtable}[t]{2.5in}
-			\input{graphics/taskid11.tex}
-			\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+			\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}			\input{graphics/taskid11.tex}
 		\end{subtable}
 	\end{tiny}
 \end{table}
@@ -531,7 +527,7 @@ Another TODO: we should probably clarify that we don't mean to say that SLT is, 
 
 \subsection{Neural networks are strictly singular}
 \label{section:nn_singular}
-Many-layered neural networks are strictly singular. There seems to be only informal acknowledgment of this fact in the deep learning community. For instance the recent work in \citet{pennington_spectrum_2018} deliberately studies the Fisher information matrix of a \textit{single-hidden-layer} neural network. If instead the interest is in a many-layered network, one must work with rather ad-hoc workarounds  \citep{sun2017relative}.  
+Many-layered neural networks are strictly singular. There seems to be only informal acknowledgment of this fact in the deep learning community. For instance the recent work in \citet{pennington_spectrum_2018} deliberately studies the Fisher information matrix of a \textit{single-hidden-layer} neural network. If instead the interest is in a multilayer network, one must work with rather ad-hoc workarounds  \citep{sun2017relative}.  
 
 We first explain how to think about a neural network in the context of singular learning theory. A feedforward network of depth $k$ parametrises a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
 \[
@@ -783,29 +779,27 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 
 \begin{table}[h]%
 	\centering
-	\begin{tiny}
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid0.tex}
-		\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
-	\end{subtable}
-	\quad
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid1.tex}
-		\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}
-	\end{subtable}
-	\quad
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid2.tex}
-		\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
-	\end{subtable}
-	\quad
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid3.tex}
-		\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
-	\end{subtable}
-	\end{tiny}
 	\caption{Companion to Figure \ref{fig:avg_gen_err_fullbatch_nonrealizable}.}%
 	\label{table::avg_gen_err_fullbatch_nonrealizable}%
+	\begin{tiny}
+	\begin{subtable}[t]{2.5in}
+		\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
+		\input{graphics/taskid0.tex}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}		\input{graphics/taskid1.tex}
+	\end{subtable}
+	\quad 
+	\begin{subtable}[t]{2.5in}
+		\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+		\input{graphics/taskid2.tex}
+	\end{subtable}
+	\quad 
+	\begin{subtable}[t]{2.5in}
+		\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}		\input{graphics/taskid3.tex}
+	\end{subtable}
+	\end{tiny}
 \end{table}
 
 
@@ -822,29 +816,25 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 
 \begin{table}[h]%
 	\centering
-	\begin{tiny}
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid0.tex}
-		\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
-	\end{subtable}
-	\quad
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid1.tex}
-		\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}
-	\end{subtable}
-	\quad
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid2.tex}
-		\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
-	\end{subtable}
-	\quad
-	\begin{subtable}[t]{2.5in}
-		\input{graphics/taskid3.tex}
-		\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
-	\end{subtable}
-	\end{tiny}
 	\caption{Companion to Figure \ref{fig:avg_gen_err_minibatch_nonrealizable}.}%
 	\label{table::avg_gen_err_minibatch_nonrealizable}%
+	\begin{tiny}
+	\begin{subtable}[t]{2.5in}
+		\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}		\input{graphics/taskid0.tex}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}		\input{graphics/taskid1.tex}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}		\input{graphics/taskid2.tex}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}		\input{graphics/taskid3.tex}
+	\end{subtable}
+	\end{tiny}
 \end{table}
 
 %We have to be careful when we speak of the generalization error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{map}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
