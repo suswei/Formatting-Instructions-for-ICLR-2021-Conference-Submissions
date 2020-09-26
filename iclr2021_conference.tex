@@ -4,6 +4,8 @@
 \usepackage{showlabels}
 \usepackage{iclr2021_extras}
 \usepackage{subcaption}
+%\usepackage{subfig}
+\usepackage{booktabs}
 
 % Optional math commands from https://github.com/goodfeli/dlbook_notation.
 \input{math_commands.tex}
@@ -14,7 +16,7 @@
 
 \graphicspath{{graphics/}}
 
-\title{Deep Learning is Singular Learning}
+\title{Deep Learning is Singular, and That's Good}
 
 % Authors must not appear in the submitted version. They should be hidden
 % as long as the \iclrfinalcopy macro remains commented out below.
@@ -58,6 +60,7 @@ Address \\
 \def\l{\,|\,}
 \def\lto{\longrightarrow}
 
+
 %\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
 \begin{document}
 
@@ -65,12 +68,13 @@ Address \\
 \maketitle
 
 \begin{abstract}
+Deep neural networks are highly singular models. First recognized as such in \textit{singular learning theory}, we further advance the perspective that singularities are hallmark distinguishing features of deep neural networks and hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
 Despite its potential for addressing fundamental mysteries in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. In this note we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, in the hope of making the topic accessible to a wider audience. 
 \end{abstract}
 
 \section{Introduction}
 
-It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means that the set of weights with zero loss form a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory such as the Bayes generalisation error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
+It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means that the set of network weights that are equivalent, under the Kullback-Leibler divergence, to the true model forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory such as the Bayes generalisation error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 
 In order to illustrate the relevance of singular learning theory to deep learning, the paper consists of several sections each of which illustrates one key take-away idea. The code to reproduce all experiments in the paper can be found at \url{???}/
 
@@ -88,7 +92,7 @@ In order to illustrate the relevance of singular learning theory to deep learnin
 
 \section{Singular Learning Theory}
 
-In classical learning theory, generalization is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. 
+In classical learning theory, generalization is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2002.5introduction}. It has become clear however that these measures are unable to account for the empirical success of deep neural networks \citep{zhang_understanding_2017}. 
 %Rethinking generalization will likely require devising capacity measures suitable to the peculiarities of deep learning, e.g. non-identifiability and degenerate Fisher information matrix. 
 To understand why classical measures of capacity fail to say anything meaningful about deep neural networks (DNN), it is important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$ where $W \subset \mathbb R^d$ is the parameter space. Let 
 $$
@@ -373,14 +377,42 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[scale=0.4]{publication_taskid8.png}
-		\includegraphics[scale=0.4]{publication_taskid9.png}
-		\includegraphics[scale=0.4]{publication_taskid10.png}
-		\includegraphics[scale=0.4]{publication_taskid11.png}
+		\includegraphics[scale=0.4]{taskid8.png}
+		\includegraphics[scale=0.4]{taskid9.png}
+		\includegraphics[scale=0.4]{taskid10.png}
+		\includegraphics[scale=0.4]{taskid11.png}
 	\end{center}
-	\caption{Full batch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Figure \ref{figure:avg_gen_err_minibatch} is analogous to this setup except minibatch gradient descent was employed to find MAP.}
-	\label{figure:avg_gen_err_fullbatch}
+	\caption{Realizable and full batch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Figure \ref{fig:avg_gen_err_minibatch_realizable} is analogous to this figure except minibatch gradient descent was employed to find MAP.}
+	\label{fig:avg_gen_err_fullbatch_realizable}
 \end{figure}
+
+\begin{table}[h]%
+	\centering
+	\begin{tiny}
+		\begin{subtable}[t]{2.5in}
+			\input{graphics/taskid8.tex}
+			\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
+		\end{subtable}
+		\quad
+		\begin{subtable}[t]{2.5in}
+			\input{graphics/taskid9.tex}
+			\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}
+		\end{subtable}
+		\quad
+		\begin{subtable}[t]{2.5in}
+			\input{graphics/taskid10.tex}
+			\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+		\end{subtable}
+		\quad
+		\begin{subtable}[t]{2.5in}
+			\input{graphics/taskid11.tex}
+			\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+		\end{subtable}
+	\end{tiny}
+	\caption{Companion to Figure \ref{fig:avg_gen_err_fullbatch_realizable}.}%
+	\label{table:avg_gen_err_fullbatch_realizable}%
+\end{table}
+
 
  Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{map})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model}. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{Interestingly, \citet{kristiadi_being_2020} apply this very idea using a Laplace approximation for ReLU networks. It is also worth noting that the title of \citet{kristiadi_being_2020} claims that being Bayesian fixes overconfidence; the authors however seem to  miss that this is a statement  about $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
 Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward ReLU block with each hidden layer having 5 hidden units and $h: \mathbb R^3 \to \mathbb R^3$ is either $BAx$ or $B\text{ReLU}(Ax)$ where $A \in \mathbb R^{3 \times r}, B \in \mathbb R^{r \times 3}$. We set $r=3$. We shall consider 1 or 5 hidden layers for $g$. 
@@ -404,8 +436,8 @@ From the outset, we expect the Laplace approximation to model \ref{eq:last_two_l
 
 
 We varied the following factors: 1) minibatch stochastic gradient descent or full batch gradient descent, 2) ReLU activation or identity activation in $h$ network, 3) either 1 or 5 layers in $g$. 
-The results are displayed in Figures \ref{avg_gen_err_fullbatch} and \ref{avg_gen_err_minibatch}, with the latter in the Appendix. We see that...
-In Appendix \ref{appendix:generalizaton}, we also present results analogous to Figure \ref{avg_gen_err_fullbatch} and \ref{avg_gen_err_minibatch} when the data-generating mechanism and the assumed model do not satisfy the condition of realizability. ???summarize the lesson???
+The results are displayed in Figures \ref{fig:avg_gen_err_fullbatch_realizable} and \ref{fig:avg_gen_err_minibatch_realizable}, with the latter in the Appendix. We see that...
+In Appendix \ref{appendix:generalizaton}, we also results when the data-generating mechanism and the assumed model do not satisfy the condition of realizability, see Figures \ref{fig:avg_gen_err_fullbatch_nonrealizable} and \ref{fig:avg_gen_err_minibatch_nonrealizable}. ???summarize the lesson???
 
 
 
@@ -431,7 +463,7 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 \includegraphics[scale=0.4]{truedist5.png}
 \end{center}
 \caption{Increasingly complicated true distributions $q_m(x,y)$ on $[-1,1]^2 \times \mathbb{R}$.}
-\label{figure:simp_func_complex}
+\label{fig:simp_func_complex}
 \end{figure}
 
 \begin{table}[h]
@@ -459,12 +491,12 @@ and $\theta = (\{w_i\}_{i=1}^H, \{b_i\}_{i=1}^H, \{q_i\}_{i=1}^H, c) \in \mathbb
 \includegraphics[scale=0.6]{RLCTplot.png}
 \end{center}
 \caption{RLCT estimates for ReLU and SiLU. Shaded region shows one standard deviation.}
-\label{figure:simp_func_complex2}
+\label{fig:simp_func_complex2}
 \end{figure}
 
 Given an integer $3 \le m \le H$ we define a network $\kappa_m \in W$ and $q_m(y|x) := p(y|x, \kappa_m)$ as follows. Let $g \in SO(2)$ stand for rotation by $\frac{2\pi}{m}$, set $w_1 = g^{\tfrac{1}{2}} e_1$ where $e_i$ denote unit vectors. The components of $\kappa_m$ are defined as follows: $w_i = g^{i-1} w_1$ for $1 \le i \le m$ and $w_i = 0$ for $i > m$, $b_i = - \tfrac{1}{3}$ and $q_i = 1$ for $1 \le i \le m$ and $b_i = q_i = 0$ for $i > m$, and finally $c = 0$ (the factor of $\tfrac{1}{3}$ ensures the relevant parts of the decision boundaries lie within $X = [-1,1]^2$) and the distribution $q_m$ is $\mathbb{Z}/m\mathbb{Z}$-invariant. We let $q(x)$ be the uniform distribution on $X$ and define $q_m(x,y) = q_m(y|x) q(x)$. Let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and consider the RLCTs of the triples $(p, q_m, \varphi)$. 
 
-We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{figure:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
+We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Figure \ref{fig:simp_func_complex} shows the estimated RLCT where the error bars account for sampling variability. Note that in all cases the number of parameters in $W$ is $d = 21$ and the RLCTs are less than 1\footnote{Not only are these models not regular, they are not even minimally singular since the dimension of the \emph{set} of true parameters, viewed as a submanifold, is $10$ when $m = 5$. Hence if this model were minimally singular the RLCT would have to be $11/2$}. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. 
 
 The comments of \citep[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citep[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
 
@@ -648,19 +680,121 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 	
 \end{itemize}
 
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.4]{taskid12.png}
+		\includegraphics[scale=0.4]{taskid13.png}
+		\includegraphics[scale=0.4]{taskid14.png}
+		\includegraphics[scale=0.4]{taskid15.png}
+	\end{center}
+	\caption{Realizable and minibatch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
+	\label{fig:avg_gen_err_minibatch_realizable}
+\end{figure}
+
+\begin{table}[h]%
+	\centering
+	\begin{tiny}
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid12.tex}
+		\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid13.tex}
+		\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid14.tex}
+		\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid15.tex}
+		\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+	\end{subtable}
+	\end{tiny}
+	\caption{Companion to Figure \ref{fig:avg_gen_err_minibatch_realizable}.}%
+	\label{table::avg_gen_err_minibatch_realizable}%
+\end{table}
+
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[scale=0.4]{publication_taskid12.png}
-		\includegraphics[scale=0.4]{publication_taskid13.png}
-		\includegraphics[scale=0.4]{publication_taskid14.png}
-		\includegraphics[scale=0.4]{publication_taskid15.png}
+		\includegraphics[scale=0.4]{taskid0.png}
+		\includegraphics[scale=0.4]{taskid1.png}
+		\includegraphics[scale=0.4]{taskid2.png}
+		\includegraphics[scale=0.4]{taskid3.png}
 	\end{center}
-	\caption{Minibatch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
-	\label{figure:avg_gen_err_minibatch}
+	\caption{Non-realizable and full batch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
+	\label{fig:avg_gen_err_fullbatch_nonrealizable}
 \end{figure}
 
-\input{graphics/publication_taskid8.tex}
+\begin{table}[h]%
+	\centering
+	\begin{tiny}
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid0.tex}
+		\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid1.tex}
+		\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid2.tex}
+		\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid3.tex}
+		\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+	\end{subtable}
+	\end{tiny}
+	\caption{Companion to Figure \ref{fig:avg_gen_err_fullbatch_nonrealizable}.}%
+	\label{table::avg_gen_err_fullbatch_nonrealizable}%
+\end{table}
+
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.4]{taskid4.png}
+		\includegraphics[scale=0.4]{taskid5.png}
+		\includegraphics[scale=0.4]{taskid6.png}
+		\includegraphics[scale=0.4]{taskid7.png}
+	\end{center}
+	\caption{Non-realizable and minibatch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
+	\label{fig:avg_gen_err_minibatch_nonrealizable}
+\end{figure}
+
+\begin{table}[h]%
+	\centering
+	\begin{tiny}
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid0.tex}
+		\caption{1 hidden layer(s) in $g$ network, identity activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid1.tex}
+		\caption{5 hidden layer(s) in $g$ network, identity activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid2.tex}
+		\caption{1 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+	\end{subtable}
+	\quad
+	\begin{subtable}[t]{2.5in}
+		\input{graphics/taskid3.tex}
+		\caption{5 hidden layer(s) in $g$ network, ReLU activation in $h$ network}
+	\end{subtable}
+	\end{tiny}
+	\caption{Companion to Figure \ref{fig:avg_gen_err_minibatch_nonrealizable}.}%
+	\label{table::avg_gen_err_minibatch_nonrealizable}%
+\end{table}
 
 %We have to be careful when we speak of the generalization error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{map}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
 %\begin{equation}
