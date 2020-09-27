@@ -68,23 +68,20 @@ Address \\
 \maketitle
 
 \begin{abstract}
-In singular models, the optimal set of parameters forms an algebraic or analytic set with singularities. Classical statistical inference cannot be applied to such models.  This has truly practical implications for deep learning as deep neural networks (DNNs) are singular, e.g., one should not ``divide" by the determinant of the Hessian in deep learning and, relatedly, the Laplace approximation is not appropriate. \textit{Singular learning theory} provides an appealing framework that may hold the key to unlocking outstanding mysteries of deep learning, e.g., the generalization puzzle.
-Despite its potential for addressing fundamental issues in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. Here we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, with the goal of making the topic accessible to a wider audience. 
+In singular models, the optimal set of parameters forms an algebraic or analytic set with singularities and classical statistical inference cannot be applied to such models. This is significant for deep learning as neural networks are singular, which in particular means that one should not ``divide" by the determinant of the Hessian in deep learning and, relatedly, the Laplace approximation is not appropriate. Despite its potential for addressing fundamental issues in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. Here we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, with the goal of making the topic accessible to a wider audience. 
 \end{abstract}
 
 \section{Introduction}
 
 It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights that are equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory, e.g., generalization error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
-In order to illustrate the relevance of singular learning theory to deep learning, the paper\footnote{The code to reproduce all experiments in the paper can be found at \url{???}.} consists of several sections each of which illustrates one key take-away idea. 
+To illustrate the relevance of singular learning theory to deep learning, the paper\footnote{The code to reproduce all experiments in the paper can be found at \url{???}.} consists of sections each of which illustrates one key take-away idea. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a DNN} (Section \ref{section:no_flat_minima}). 
-    To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood as the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian), laying bare some of the confusion over ``flat'' minima in deep learning 
+    To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood in simple cases as half the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian) laying bare some of the confusion over ``flat'' minima in deep learning.
 
 \textbf{For singular models, Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models, MAP, MLE, and the Bayes predictive distribution share the same leading term in the asymptotic expansion of the generalization error (as measured by the Kullback-Leibler divergence). This is not so in singular models. We illustrate in our experiments that, borrowing the phrasing of \citet{kristiadi_being_2020}, even ``being Bayesian''  in just the final layers improves generalization over MAP. Our experiments further confirm that the Laplace approximations of the predictive distribution is indeed not appropriate in deep learning.
 
-\textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair.
-     %under a hypothesis of realizability 
-     We verify this experimentally with a simple family of ReLU networks. Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
+\textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair. We verify this experimentally with a simple family of ReLU networks. This makes concrete the theoretical principle that in singular learning theory, generalisation error depends not just on the network architecture but also on the complexity of the data. %Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
 
 
 \section{Singular Learning Theory}
@@ -276,7 +273,7 @@ where the reader should see \citep[Corollary 3]{watanabe_widely_2013} for a prec
 \begin{equation}\label{eq:entropy}
 - \log\Big[\frac{V(t_0)}{t_0^{d/2}}\Big] = \frac{d-d'}{2} \log(t_0) + \tfrac{1}{2} \sum_{i=1}^{d} \log c_i\,.
 \end{equation}
-Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a measure of the entropy of the set of true parameters near $w_0$, a point made for example in \cite{Zhang:2018MolPh.116.3214Z}. However when $d' < d$ this conception of entropy is inappropriate because of the $d - d'$ directions in which $K(w)$ is flat near $w_0$, which introduce the $t_0$ dependence in (\ref{eq:entropy}).
+Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a measure of the entropy of the set of true parameters near $w_0$, a point made for example in \cite{Zhang:2018MolPh.116.3214Z}. However when $d' < d$ this conception of entropy is inappropriate because of the $d - d'$ directions in which $K(w)$ is flat near $w_0$, which introduce the $t_0$ dependence in (\ref{eq:entropy}). There is no way around it: ideas from algebraic geometry such as the resolution of singularities are necessary to understand the geometric features of the loss surface that determine generalisation error.
 
 % Note that in comparing two regular models with parameter space $W \subseteq \mathbb{R}^d$, both of which have volume dimension $d/2$, the Hessian determinant is relevant to compare how the respective volumes of almost true parameters vary with $t$. But in comparing two minimally singular models with Hessian determinants of rank $d', d''$ the behavior of the volume depends much more strongly on the dimensions $d'/2, d''/2$ than it does on the eigenvalues.
 % From a theoretical point of view the exponent $d/2$ appears as the leading $O(\log n)$ term in the asymptotic expansion of the Bayes free energy and the Hessian determinant appears in the next $O(1)$ term, where $n$ is the size of a dataset . The upshot of this is that if two regular models have parameter spaces of dimension $d_1 < d_2$ one should prefer the model class of dimension $d_1$ (assuming both can perfectly fit the data) but if $d_1 = d_2$ then it may be appropriate to compare models on the basis of their curvature at the true parameter.
@@ -407,13 +404,7 @@ In Appendix \ref{appendix:generalizaton}, we also show the corresponding results
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
 
-In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. 
-%Watanabe provides in \citep[\S 7.6]{watanabe_algebraic_2009} the following intuition for the relationship between the true distribution and the RLCT:
-%\begin{align*}
-%\text{simple function} \iff \text{complicated singularities}\\
-%\text{complicated function} \iff \text{simple singularities}
-%\end{align*}
-Specifically, we observe the complexity of a singularity is inversely proportional to the RLCT in the sense that as the true distribution becomes more ``complicated'', relative to the supposed model, the RLCT should increase. 
+In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. As the true distribution becomes more complicated relative to the supposed model, the singularities of the analytic variety of true parameters should become simpler and hence the RLCT should increase \citep[\S 7.6]{watanabe_algebraic_2009}
 
 Consider the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where
 $
@@ -500,23 +491,19 @@ e.g. Amari, this lightlike-neuromanifold thing).
 \end{remark}
 
 \section{Future directions}
-We have put forth that the RLCT is \textit{the} correct way to account for model complexity in a DNN. Unfortunately, theoretical RLCTs have been cataloged for very few singular models\footnote{Hironaka's resolution of singularities guarantees existence. However it is notoriously difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. Theoretical RLCTs are certainly not known for modern DNNs where the network weights number on the order of $n$.
 
+Deep neural networks are singular statistical models, and that's good: the presence of singularities is \emph{necessary} for overparametrised neural networks to have low generalisation error. As it stands, singular learning theory is a promising foundation for a mathematical theory of deep learning, but much remains to be done. From our point of view the most outstanding open problems are:
 
-RLCTs do not yield simply to statistical estimation either.
-In theory MCMC provides the gold standard for RLCT estimation, but MCMC (and most of its variants) do not scale to large networks; consequently our present experiments were restricted to small networks. We had made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior for DNN weights but this did not prove sufficient for accurate RLCT estimation.
+\textbf{Real-world datasets are unrealisable.} Among the most profound experimental results in deep learning are the existence of power laws in language model training \cite{??} and this is an indication of interesting new phenomenon in singular learning theory in the case where the true distribution is unrealisable. However, so far this case has been little studied.
 
-The intractability of RLCT estimation for DNNs may not in reality be a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
+\textbf{SGD vs the posterior.} A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. If this is indeed true, then combined with our knowledge that the Bayes predictive distribution is superior to MAP and MLE, we could use SGD to sample from the posterior and form an approximate Bayes predictive distribution. However from a theoretical perspective this remains unclear.
+
+\textbf{RLCT estimation for large networks.} Theoretical RLCTs are not known for modern neural networks where the weights number on the order of $n$. Theoretical RLCTs for neural networks have been cataloged for very few singular models at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. Further, no method is known for estimating RLCTs of large neural networks. In theory MCMC provides the gold standard but this approach does not scale to large networks. We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. We believe RLCT estimation is a challenging benchmark task for any method that purports to approximate the Bayesian posterior of a neural network.
+
+The intractability of RLCT estimation for large neural networks may not in reality be a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
 %Despite this, we have illustrated that it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
 
-
-As it stands, singular learning theory does not yet provide a complete mathematical theory of deep learning, as it is practiced. Much of this is technical in nature. For instance, theory allowing for neural networks with the ReLU activation function is lacking. Also, the consequences of nonrealizability is still not well understood. 
-
-Among the many directions available for future investigation, we are most intrigued by what singular learning theory can say about the way DNNs are trained in practice, namely stochastic gradient descent. A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. If this is indeed true, then combined with our knowledge that the Bayes predictive distribution is superior to MAP and MLE, we could use SGD to sample from the posterior and form an approximate Bayes predictive distribution. 
-
-
-
-
+%As it stands, singular learning theory does not yet provide a complete mathematical theory of deep learning, as it is practiced. Much of this is technical in nature. For instance, theory allowing for neural networks with the ReLU activation function is lacking. Also, the consequences of nonrealizability is still not well understood. 
 
 %\subsubsection*{Author Contributions}
 %If you'd like to, you may include  a section for author contributions as is done
