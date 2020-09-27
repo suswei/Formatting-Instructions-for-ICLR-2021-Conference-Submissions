@@ -537,11 +537,11 @@ Among the many directions available for future investigation, we are most intrig
 \label{section:nn_singular}
 Many-layered neural networks are strictly singular. There seems to be only informal acknowledgment of this fact in the deep learning community. For instance the recent work in \citet{pennington_spectrum_2018} deliberately studies the Fisher information matrix of a \textit{single-hidden-layer} neural network. If instead the interest is in a multilayer network, one must work with rather ad-hoc workarounds  \citep{sun2017relative}.  
 
-We first explain how to think about a neural network in the context of singular learning theory. A feedforward network of depth $k$ parametrises a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
+We first explain how to think about a neural network in the context of singular learning theory. A feedforward network of depth $c$ parametrises a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
 \[
-f = A_k \circ \sigma_{k-1} \circ A_{k-1} \cdots \sigma_1 \circ A_1
+f = A_c \circ \sigma_{c-1} \circ A_{c-1} \cdots \sigma_1 \circ A_1
 \]
-where the $A_i: \mathbb{R}^{d_i} \lto \mathbb{R}^{d_{i+1}}$ are affine functions and $\sigma_i: \mathbb{R}^{d_{i+1}} \lto \mathbb{R}^{d_{i+1}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of the space $\mathbb{R}^D$ containing the origin, where $\mathbb{R}^D$ is the space of sequences affine functions $(A_i)_{i=1}^k$ with coordinates denoted $w_1,\ldots,w_D$, so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define
+where the $A_l: \mathbb{R}^{d_{l-1}} \lto \mathbb{R}^{d_{l}}$ are affine functions and $\sigma_l: \mathbb{R}^{d_{l}} \lto \mathbb{R}^{d_{l}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of $\mathbb{R}^d$ containing the origin, where $\mathbb{R}^d$ is the space of sequences affine functions $(A_l)_{l=1}^c$ with coordinates denoted $w_1,\ldots,w_d$ so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define
 \begin{equation}
 p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
 \label{eq:gaussian_model_in_w}
@@ -555,30 +555,42 @@ K(w) &= \tfrac{1}{2} \int \| f(x,w) - f(x,w_0) \|^2 q(x) dx\\
 &\quad + \int \Big\langle f(x,w) - f(x,w_0), \tfrac{\partial^2}{\partial w_i \partial w_j} f(x,w) \Big\rangle q(x) dx \label{eq:Hessian}\\
 I(w)_{ij} &= \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
 \end{align}
-where $\langle -, - \rangle$ denotes the dot product on $\mathbb{R}^M$. Given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the decision boundary at that node (clarify). Since each of these decision boundaries is a hyperplane, $\mathcal{D}(w)$ is a disjoint union of finitely many open chambers. The partial derivative with respect to $\frac{\partial}{\partial w_j}$ of $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$ exists at any point $(x,w)$ with $x \in \mathcal{D}(w)$. We assume that $q(x)$ has been chosen such that this integral exists.
+where $\langle -, - \rangle$ is the dot product. We assume $q(x)$ is such that these integrals exist.
 
-We prove the common feedforward ReLU network has degenerate Fisher information matrix. 
+It will be convenient below to introduce another set of coordinates for $W$. Let $w_{jk}^{l}$ denote the weight from the $k$th neuron in the $(l-1)$th layer to the $j$th neuron in the $l$th layer and let $b_j^{l}$ denote the bias of the $j$th neuron in the $l$th layer. Here $1 \le l \le c$ and the input is layer zero. Let $u_{j}^{l}$ and $a_{j}^{l}$ denote the value of the $j$th neuron in the $l$th layer before and after activation, respectively. Let $u^{l}$ and $a^{l}$ denote the vectors with values $u_{j}^{l}$ and $a_{j}^{l}$, respectively. Let $d_{l}$ denote the number of neurons in the $l$th layer. Then
+\begin{align*}
+	u_{j}^{l} &=\sum_{k=1}^{d_{l-1}}w_{jk}^{l}a_{k}^{l-1}+b_{j}^{l}, &1 \le l \le c, 1 \le j \le d_l\\
+	a_{j}^{l} &=\sigma(u_{j}^{l}) & 1 \le l < c, 1 \le j \le d_l
+\end{align*}
+with the convention that $a^0 = x$ is the input and $u^c = y$ is the output.
 
-\begin{lemma}\label{lemma:reln} Suppose $\sigma = \operatorname{ReLU}$. For any hidden node in the network with coordinates $(a_k)_k$ for the incoming weights, $(b_i)_i$ for the outgoing weights and $c$ for the bias
+In the case where $\sigma = \operatorname{ReLU}$ the partial derivatives $\frac{\partial}{\partial w_j} f$ do not exist on all of $\mathbb{R}^N$. However given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the associated decision boundary, that is
+\[
+\mathbb{R}^N \setminus \mathcal{D}(w) = \bigcup_{1 \le l < c} \bigcup_{1 \le j \le d_l} \{ x \in \mathbb{R}^N \,|\, u^l_j(x) = 0 \}\,.
+\]
+The partial derivative $\frac{\partial}{\partial w_j} f$ exists on the open subset $\{ (x,w) | x \in \mathcal{D}(w) \}$ of $\mathbb{R}^N \times W$. 
+
+\begin{lemma}\label{lemma:reln}
+	Suppose $\sigma = \operatorname{ReLU}$ and there are $c > 1$ layers. For any hidden neuron $1 \le j \le d_l$ in layer $l$ with $1 \le l < c$ there is a differential equation
 	\begin{align*}
-	\Big\{ \sum_k a_{k}\frac{\partial}{\partial a_k} + c \frac{\partial}{\partial c}-\sum_{i} b_i\frac{\partial}{\partial b_i} \Big\} f = 0.
+		\Big\{ \sum_{k=1}^{d_{l-1}}w_{jk}^{l}\frac{\partial}{\partial w_{jk}^{l}} + b_{j}^{l}\frac{\partial}{\partial b_{j}^{l}}-\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}\frac{\partial}{\partial w_{ij}^{l+1}} \Big\} f =0
 	\end{align*}
 \end{lemma}
-
-\begin{proof}[Proof of Lemma \ref{lemma:reln}]
-	Let $e_i$ denote unit vectors and $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Let $u$ and $a$ denote the value of node before and after activation, respectively $u =\sum_k w_k a_{k}^{l-1}+b_{j}^{l}$ and $a_{j}^{l} =\operatorname{ReLU}(u_{j}^{l})$. Then
-	\begin{align*}
-	\frac{\partial f}{\partial q_i}&=\frac{\partial y}{\partial u}u_{j}^{l}H(u_{j}^{l})e_{i}\\
-	\frac{\partial y}{\partial w_{jk}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial w_{jk}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l})e_{i}.\\
-	\frac{\partial y}{\partial b_{j}^{l}}&=\frac{\partial y}{\partial u^{l+1}}\frac{\partial u^{l+1}}{\partial b_{j}^{l}}=\frac{\partial y}{\partial u^{l+1}}\sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}H(u_{j}^{l})e_{i}.
-	\end{align*}
-	The claim immediately follows (TODO: fix notation).
+which holds on $\cat{D}(w)$ for any fixed $w \in W$.
+\begin{proof}
+Without loss of generality assume $M = 1$, to simplify the notation. Let $e_{i}\in \mathbb{R}^{d_{l+1}}$ denote a unit vector and let $H(x)=\frac{d}{dx}\operatorname{ReLU}(x)$. Writing $\frac{\partial f}{\partial u^{l+1}}$ for a gradient vector
+\begin{gather*}
+	\frac{\partial f}{\partial w_{ij}^{l+1}} = \Big\langle \frac{\partial f}{\partial u^{l+1}}, \frac{\partial u^{l+1}}{\partial w_{ij}^{l+1}} \Big\rangle = \Big\langle \frac{\partial f}{\partial u^{l+1}}, a_{j}^{l}e_{i} \Big\rangle =\frac{\partial f}{\partial u^{l+1}_i}u_{j}^{l}H(u_{j}^{l})\\
+	\frac{\partial f}{\partial w_{jk}^{l}} =\Big\langle \frac{\partial f}{\partial u^{l+1}}, \frac{\partial u^{l+1}}{\partial w_{jk}^{l}} \Big\rangle = \Big\langle \frac{\partial f}{\partial u^{l+1}}, \sum_{i=1}^{d_{l+1}} w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l})e_{i} \Big\rangle = \sum_{i=1}^{d_{l+1}} \frac{\partial f}{\partial u^{l+1}_i}w_{ij}^{l+1}a_{k}^{l-1}H(u_{j}^{l}) \\
+	\frac{\partial f}{\partial b_{j}^{l}} = \Big\langle \frac{\partial f}{\partial u^{l+1}}, \frac{\partial u^{l+1}}{\partial b_{j}^{l}} \Big\rangle =\Big\langle \frac{\partial f}{\partial u^{l+1}}, \sum_{i=1}^{d_{l+1}}w_{ij}^{l+1}H(u_{j}^{l})e_{i} \Big\rangle = \sum_{i=1}^{d_{l+1}} \frac{\partial f}{\partial u^{l+1}_i}w_{ij}^{l+1}H(u_{j}^{l}).
+\end{gather*}
+The claim immediately follows.
 \end{proof}
 
-\begin{lemma}\label{lemma:all_degen} Suppose $k > 1$, $\sigma = \operatorname{ReLU}$ and that $w \in W$ has at least one weight or bias at a hidden node nonzero. Then the matrix $I(w)$ is degenerate and if $w \in W_0$ then the Hessian of $K$ at $w$ is also degenerate.
+\begin{lemma}\label{lemma:all_degen} Suppose $\sigma = \operatorname{ReLU}, c > 1$ and that $w \in W$ has at least one weight or bias at a hidden node nonzero. Then the matrix $I(w)$ is degenerate and if $w \in W_0$ then the Hessian of $K$ at $w$ is also degenerate.
 \end{lemma}
 \begin{proof}
-	Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathbb{R}^N$. The rows of $I(w)$ satisfy the same linear dependence relation. At a true parameter the second summand in (\ref{eq:Hessian}) vanishes so by the same argument the Hessian is degenerate.
+	Let $w \in W$ be given, and choose a hidden node where at least one of the incident weights (or bias) is nonzero. Then Lemma \ref{lemma:reln} gives a nontrivial linear dependence relation $\sum_i \lambda_i \frac{\partial}{\partial w_i} f = 0$ as functions on $\mathcal{D}(w)$. The rows of $I(w)$ satisfy the same linear dependence relation. At a true parameter the second summand in (\ref{eq:Hessian}) vanishes so by the same argument the Hessian is degenerate.
 \end{proof}
 
 Lemma \ref{lemma:all_degen} implies that every true parameter for a nontrivial ReLU network is a degenerate critical point of $K$. Hence in the study of nontrivial ReLU networks it is never appropriate to divide by the determinant of the Hessian of $K$ at a true parameter, and in particular Laplace or saddle-point approximations at a true parameter are invalid.
