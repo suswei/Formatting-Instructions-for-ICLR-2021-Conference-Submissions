@@ -74,7 +74,7 @@ In singular models, the optimal set of parameters forms an algebraic or analytic
 \section{Introduction}
 
 It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights that are equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold because of the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities control quantities of interest in statistical learning theory, e.g., generalization error. The study of singular models, also known as singular learning theory \citep{watanabe_algebraic_2009}, requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
-To illustrate the relevance of singular learning theory to deep learning, the paper\footnote{The code to reproduce all experiments in the paper can be found at \url{???}.} consists of sections each of which illustrates one key take-away idea. 
+To illustrate the relevance of singular learning theory to deep learning, the paper\footnote{The code to reproduce all experiments in the paper will be released on Github. For now, see the zip file.} consists of sections each of which illustrates one key take-away idea. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network (DNN)} (Section \ref{section:no_flat_minima}). 
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood in simple cases as half the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian) laying bare some of the confusion over ``flat'' minima in deep learning.
@@ -634,7 +634,7 @@ In Algorithm \ref{alg:thm4}, we describe an estimation procedure for the RLCT ba
 The \emph{a posteriori} distribution was approximated using the NUTS variant of Hamiltonian Monte Carlo \citep{hoffman2014no} where the first 1000 steps were omitted and $20,000$ samples were collected.  Each $\hat \lambda(\mathcal D_n)$ estimate in Algorithm \ref{alg:thm4} was performed by linear regression on the pairs $\{ (1/\beta_i, \mathbb{E}^{\beta_i}_w[ nL_n(w) ] ) \}_{i=1}^5$ where the five inverse temperatures $\beta_i$ are centered on high temperature $1/\log(20000)$.
 
 \begin{algorithm}[tb]
-	\caption{RLCT via Theorem 4}
+	\caption{RLCT via Theorem 4  in \cite{watanabe_widely_2013}}
 	\label{alg:thm4}
 	\begin{algorithmic}
 		\STATE {\bfseries Input:} range of $\beta$'s, set of training sets $\mathcal T$ each of size $n$, approximate samples $\{w_1,\ldots,w_R\}$ from $p^\beta(w|\mathcal D_n)$ for each training set $\mathcal D_n$ and each $\beta$
@@ -748,7 +748,7 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 		\includegraphics[scale=0.4]{taskid14.png}
 		\includegraphics[scale=0.4]{taskid15.png}
 	\end{center}
-	\caption{Realizable and minibatch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
+	\caption{Realizable and minibatch gradient descent for MAP training.}
 	\label{fig:avg_gen_err_minibatch_realizable}
 \end{figure}
 
@@ -790,7 +790,7 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 		\includegraphics[scale=0.4]{taskid2.png}
 		\includegraphics[scale=0.4]{taskid3.png}
 	\end{center}
-	\caption{Non-realizable and full batch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
+	\caption{Non-realizable and full batch gradient descent for MAP training.}
 	\label{fig:avg_gen_err_fullbatch_nonrealizable}
 \end{figure}
 
@@ -828,7 +828,7 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 		\includegraphics[scale=0.4]{taskid6.png}
 		\includegraphics[scale=0.4]{taskid7.png}
 	\end{center}
-	\caption{Non-realizable and minibatch gradient descent for MAP training. Average generalization error of Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). }
+	\caption{Non-realizable and minibatch gradient descent for MAP training.}
 	\label{fig:avg_gen_err_minibatch_nonrealizable}
 \end{figure}
 
