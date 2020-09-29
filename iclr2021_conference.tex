@@ -202,7 +202,7 @@ where $\lambda$ is the RLCT and $c$ is a constant.\footnote{We are assuming that
 
 %It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
 
-\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the exponential form  (\ref{eq:gaussian_model_in_w}) and let $D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. The negative log likelihood is
+\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the exponential form  (\ref{eq:gaussian_model_in_w}) and let $\mathcal D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. The negative log likelihood is
 %\begin{equation}
 $
 L_n(w) = \frac{M}{2} \log(2\pi) + \frac{1}{n} \sum_{i=1}^n \frac{1}{2} \| y_i - f(x_i,w) \|^2\,.
@@ -283,11 +283,11 @@ Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a me
 %\end{example}
 
 \section{Generalization}\label{section:gen_error}
-The generalization puzzle \citep{DBLP:journals/corr/abs-1801-00173} is one of the central mysteries of deep learning. Theoretical investigations into the matter is an active area of research \cite{neyshabur_exploring_2017}. Many of the recent proposals of capacity measures for neural networks are based on the eigenspectrum of the (degenerate) Hessian, e.g., \citet{thomas_information_2019, maddox_rethinking_2020}. 
+The generalization puzzle \citep{DBLP:journals/corr/abs-1801-00173} is one of the central mysteries of deep learning. Theoretical investigations into the matter is an active area of research \cite{neyshabur_exploring_2017}. Many of the recent proposals of capacity measures for neural networks are based on the eigenspectrum of the (degenerate) Hessian, e.g., \citet{thomas_information_2019, maddox_rethinking_2020}. But this is not appropriate for singular models, and hence for deep neural networks.
 %??? \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
 
 
-Far more precise statements regarding the generalization behavior in singular models can be made using singular learning theory.
+Precise statements regarding the generalization behavior in singular models can be made using singular learning theory.
 %The RLCT is a birational invariant \citep{kollar_birational_1998} that measures the complexity of singularities in the model. Since the complexity of singularities determine most of the interesting properties of a model, the RLCT is a very appealing choice for understanding, say, the generalization behavior in singular models, particularly DNNs. Furthermore the RLCT as a capacity measure is theoretically rigorous which most existing capacity measures for DNNs cannot claim. 
 Recall in the Bayesian paradigm, prediction proceeds via the so-called Bayes predictive distribution,
 %\begin{equation}
@@ -332,7 +332,7 @@ p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
 \end{equation}
 where $f_\theta$ is a multilayer neural network.
 We set $q(x) = N(0,I_3)$. 
-For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model \ref{eq:genexp_model} is instantiated. We calculate $E_n G(n)$ using multiple datasets $\mathcal D_n = \{(x_i,y_i)\}_{i=1}^n$, $(x,y) \sim q(x,y) = q(y|x)q(x)$ and a large testing set, see Appendix \ref{appendix:generalizaton} for more details. 
+For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model \ref{eq:genexp_model} is instantiated. We calculate $\E_n G(n)$ using multiple datasets $\mathcal D_n$ and a large testing set, see Appendix \ref{appendix:generalizaton} for more details. 
 
 \begin{figure}[h!]
 	\begin{center}
@@ -396,7 +396,7 @@ Further implementation details of these approximate Bayesian schemes are found i
 From the outset, we expect the Laplace approximation to model \ref{eq:last_two_layers} over $w = (A, B)$ to be invalid since the model is singular. We do however expect the last-layer-only Laplace approximation to be sound since model \ref{eq:last_layer} over $B$ is regular. Next, we expect the MCMC approximation of \eqref{eq:last_two_layers} and \eqref{eq:last_layer} to be both superior to the Laplace approximations and to the MAP. We further expect the last-two-layers MCMC (\eqref{eq:last_two_layers}) to have better generalization than the last-layer-only MCMC (\eqref{eq:last_layer}) since the former is closer to the Bayes predictive distribution. In summary, we anticipate the following performance order for these five approximate Bayesian schemes (from worst to best): last-two-layers Laplace, last-layer-only Laplace, MAP, last-two-layers MCMC, last-layer-only MCMC.
 
 
-To understand the effect of the network architecture, we varied the following factors: 1) ReLU activation or identity activation in $h$, 2) either 1 or 5 layers in $g$. 
+To understand the effect of the network architecture, we varied the following factors:  1) either 1 or 5 layers in $g$, and 2) ReLU or identity activation in $h$.
 The results displayed in Figures \ref{fig:avg_gen_err_fullbatch_realizable} are in line with our stated expectations above, except for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. Table \ref{table:avg_gen_err_fullbatch_realizable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realizable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient. The $R^2$ corresponding to the linear fit is also provided. 
 
 
@@ -501,11 +501,14 @@ Deep neural networks are singular statistical models, and that's good: the prese
 \textbf{Real-world distributions are unrealizable}
 The consequences of nonrealizability are not well understood in singular learning theory. Among the most profound experimental results in deep learning are the existence of power laws in language model training \cite{??} and this is an indication of interesting new phenomenon in singular learning theory in the case where the true distribution is unrealizable 
 
-\textbf{SGD vs the posterior.} A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. This suggests using SGD to sample from the posterior and form an approximate Bayes predictive distribution. Our preliminary work on this indicates training via SGD to match a target posterior distribution is challenging.
+\textbf{SGD vs the posterior.} A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. This suggests approximating the Bayes predictive distribution using SGD to sample from the posterior. Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
 
-\textbf{RLCT estimation for large networks.} Theoretical RLCTs are not known for modern neural networks where the weights number on the order of $n$. Theoretical RLCTs for neural networks have been cataloged for very few singular models at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. Further, no method is known for estimating RLCTs of large neural networks. In theory MCMC provides the gold standard but this approach does not scale to large networks. We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. We believe RLCT estimation in small networks such as the  single-hidden-layer $\tanh$ and reduced rank regression should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
+\textbf{RLCT estimation for large networks.} 
+Theoretical RLCTs have been cataloged for very few singular models at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. We believe RLCT estimation in these small networks should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
 
-The intractability of RLCT estimation for large neural networks may not in reality be a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency, i.e., if using the estimated RLCT leads to the same model being selected as if the true RLCT were being used. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
+Theoretical RLCTs are not known for modern neural networks where the weights number on the order of $n$. 
+Further, no method is known for estimating RLCTs of large neural networks. In theory MCMC provides the gold standard but this approach does not scale to large networks. We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. 
+The intractability of RLCT estimation for large neural networks may not in reality be a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
 %Despite this, we have illustrated that it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
 
 %As it stands, singular learning theory does not yet provide a complete mathematical theory of deep learning, as it is practiced. Much of this is technical in nature. For instance, theory allowing for neural networks with the ReLU activation function is lacking. Also, the consequences of nonrealizability is still not well understood. 
