@@ -352,7 +352,7 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 		\includegraphics[scale=0.35]{taskid10.png}
 		\includegraphics[scale=0.35]{taskid11.png}
 	\end{center}
-	\caption{\textit{Realizable and full batch gradient descent for MAP.} Average generalization errors $\E_n G(n)$ are displayed for various approximations of the Bayes predictive distribution. The results of the Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Note that the y-axis is not shared.
+	\caption{\textit{Realizable and full batch gradient descent for MAP.} Average generalization errors $\E_n G(n)$ are displayed for various approximations of the Bayes predictive distribution. The results of the Laplace approximations are reported in the Appendix and not displayed here because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Note that the y-axis is not shared.
 	}
 %		Figure \ref{fig:avg_gen_err_minibatch_realizable} is analogous to this figure except minibatch gradient descent was employed to find MAP.}
 	\label{fig:avg_gen_err_fullbatch_realizable}
@@ -681,6 +681,63 @@ invertible) we can take $a(u,v) = | (\overline{B} + v) u |^2 /
 |u|^2$.  
 
 
+\subsection{RLCT estimation} \label{appendix:RLCT_estimation}
+
+%From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterizations of the RLCT. To set this up, we begin with some definitions. 
+
+Let $L_n(w)$ be the negative log likelihood as in \eqref{eq:nll}. Define the data likelihood at inverse temperature $\beta >0$ to be $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$ which can also be written 
+\begin{equation}
+p^\beta(\mathcal D_n | w) = \exp(-\beta n L_n(w)).
+\label{general_likelihood}
+\end{equation}
+The posterior distribution, at inverse temperature $\beta$, is defined as 
+\begin{equation}
+p^\beta(w|\mathcal D_n) = \frac{\Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)}{\int_W \Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)} = \frac{p^\beta(\mathcal D_n|w) \varphi(w)}{p^\beta(\mathcal D_n)}
+\label{general_posterior}
+\end{equation}
+where $\varphi$ is the prior distribution on the network weights $w$ and
+\begin{equation}
+p^\beta(\mathcal D_n) = \int_W p^\beta(\mathcal D_n|w) \varphi(w) \,dw
+\label{general_marginal_likelihood}
+\end{equation}
+is the marginal likelihood of the data at inverse temperature $\beta$. 
+Finally, denote the expectation of a random variable $R(w)$ with respect to the tempered posterior $p^\beta(w|\mathcal D_n)$ as
+\begin{equation}
+{\E}_w^\beta [R(w)] = \int_W R(w) p^\beta(w|\mathcal D_n) \,dw
+\label{general_expectation_posterior}
+\end{equation}
+% There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we must grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
+
+% There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we smut grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
+In the main text, we drop the superscript in the quantities \ref{general_likelihood}, \ref{general_posterior}, \ref{general_marginal_likelihood}, \ref{general_expectation_posterior} when $\beta = 1$, e.g., $p(\mathcal D_n)$ rather than $p^1(\mathcal D_n)$.
+
+
+Assuming the conditions of Theorem 4 in \cite{watanabe_widely_2013} hold, we have
+\begin{equation}
+{\E}_w^\beta [nL_n(w)] = nL_n(w_0) + \frac{\lambda }{\beta} + U_n \sqrt{\frac{\lambda}{2 \beta}} + O_p(1)
+\label{eq:Theorem4_WBIC}
+\end{equation}
+where $\beta_0$ is a positive constant and $U_n$ is a sequence of random variables satisfying ${\E}_n U_n = 0$. %Assuming $q(y|x)$ is realizable (which we do), $U_n$ behaves nicely ???insert some of those nice properties???.
+In Algorithm \ref{alg:thm4}, we describe an estimation procedure for the RLCT based on the asymptotic result in \eqref{eq:Theorem4_WBIC}.
+%To approximate the integral $E_w^\beta [n L_n(w)]$ on the left-hand-side of \eqref{eq:Theorem4_WBIC} we use NUTS. 
+%However, the $p^\beta(w|\mathcal D_n)$ is intractable for any $\beta>0$, rendering computation of $E_w^\beta$ challenging. For regular models, the Laplace approximation to ${\E}_w^\beta [R(w)]$ would be reasonable (as guaranteed for instance by the Berstein-von Mises theorem.) Recall the Laplace approximation in this case would replace ${\E}_w^\beta$ with an expectation with respect to a normal random variable with mean $w_0$, which is a mode of $L_n$, and covariance which is the Hessian $H_{ij} =\frac{\partial^2 L_n}{\partial w_i \partial w_j}$. But as we discussed earlier, for strictly singular models, the Laplace approximation does not hold.
+
+The \emph{a posteriori} distribution was approximated using the NUTS variant of Hamiltonian Monte Carlo \citep{hoffman2014no} where the first 1000 steps were omitted and $20,000$ samples were collected.  Each $\hat \lambda(\mathcal D_n)$ estimate in Algorithm \ref{alg:thm4} was performed by linear regression on the pairs $\{ (1/\beta_i, \mathbb{E}^{\beta_i}_w[ nL_n(w) ] ) \}_{i=1}^5$ where the five inverse temperatures $\beta_i$ are centered on high temperature $1/\log(20000)$.
+
+\begin{algorithm}[tb]
+	\caption{RLCT via Theorem 4  in \cite{watanabe_widely_2013}}
+	\label{alg:thm4}
+	\begin{algorithmic}
+		\STATE {\bfseries Input:} range of $\beta$'s, set of training sets $\mathcal T$ each of size $n$, approximate samples $\{w_1,\ldots,w_R\}$ from $p^\beta(w|\mathcal D_n)$ for each training set $\mathcal D_n$ and each $\beta$
+		\FOR{training set $\mathcal D_n \in \mathcal T$}
+		\FOR{$\beta$ in range of $\beta$'s}
+		\STATE Approximate ${\E}_w^\beta [nL_n(w)]$ with $\frac{1}{R} \sum_{i=1}^R nL_n(w_r)$ where $w_1,\ldots,w_R$ are approximate samples from $p^\beta(w|\mathcal D_n)$
+		\ENDFOR
+		\STATE Perform generalized least squares to fit $\lambda$ in \eqref{eq:Theorem4_WBIC}, call result $\hat \lambda(\mathcal D_n)$
+		\ENDFOR
+		\STATE {\bfseries Output:} $\frac{1}{|\mathcal T|} \sum_{\mathcal D_n \in \mathcal T} \hat \lambda(\mathcal D_n)$
+	\end{algorithmic}
+\end{algorithm}
 
 
 \subsection{Connection between RLCT and generalization} \label{appendix:generalization_theory}
@@ -904,62 +961,53 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 %\end{equation}
 %The average generalization error in \eqref{G_LLB_vfixed} is distinctly different from the one in \eqref{G_LLB}. The nice thing about \eqref{G_LLB_vfixed} is that we know its asymptotic expansion is $\lambda/n$ where $\lambda$ corresponds to the triplet $( p(y|x,(v_{map},w_0)), p(y| x, (v_{map},w)), \varphi(w))$. For certain functions $h_w$ where the true $\lambda$ is known, we can verify this in the experiments. (Not implemented yet).
 
-\subsection{RLCT estimation} \label{appendix:RLCT_estimation}
+\begin{figure}[h!]
+	\begin{center}
+		\includegraphics[scale=0.35]{laplace_taskid8.png}
+		\includegraphics[scale=0.35]{laplace_taskid9.png}
+		\includegraphics[scale=0.35]{laplace_taskid10.png}
+		\includegraphics[scale=0.35]{laplace_taskid11.png}
+	\end{center}
+	\caption{\textit{Realizable and full batch gradient descent for MAP}: average generalization errors of Laplace approximations of the predictive distribution. The last-two-layers Laplace approximation results in numerical instabilities due to degenerate Hessian. Any missing points are due to estimated probabilities too close to 0. 
+	}
+	%		Figure \ref{fig:avg_gen_err_minibatch_realizable} is analogous to this figure except minibatch gradient descent was employed to find MAP.}
+	\label{fig:avg_gen_err_fullbatch_realizable_laplace}
+\end{figure}
 
-%From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterizations of the RLCT. To set this up, we begin with some definitions. 
-
-Let $L_n(w)$ be the negative log likelihood as in \eqref{eq:nll}. Define the data likelihood at inverse temperature $\beta >0$ to be $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$ which can also be written 
-\begin{equation}
-p^\beta(\mathcal D_n | w) = \exp(-\beta n L_n(w)).
-\label{general_likelihood}
-\end{equation}
-The posterior distribution, at inverse temperature $\beta$, is defined as 
-\begin{equation}
-p^\beta(w|\mathcal D_n) = \frac{\Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)}{\int_W \Pi_{i=1}^n p(y_i|x_i,w)^\beta \varphi(w)} = \frac{p^\beta(\mathcal D_n|w) \varphi(w)}{p^\beta(\mathcal D_n)}
-\label{general_posterior}
-\end{equation}
-where $\varphi$ is the prior distribution on the network weights $w$ and
-\begin{equation}
-p^\beta(\mathcal D_n) = \int_W p^\beta(\mathcal D_n|w) \varphi(w) \,dw
-\label{general_marginal_likelihood}
-\end{equation}
-is the marginal likelihood of the data at inverse temperature $\beta$. 
-Finally, denote the expectation of a random variable $R(w)$ with respect to the tempered posterior $p^\beta(w|\mathcal D_n)$ as
-\begin{equation}
-{\E}_w^\beta [R(w)] = \int_W R(w) p^\beta(w|\mathcal D_n) \,dw
-\label{general_expectation_posterior}
-\end{equation}
-% There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we must grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
-
-% There are two senses to the estimation that is required of the real log canonical threshold. In the first sense, assuming the true distribution $q$ is known, we may be able to only approximate $\lambda(q)$. In the second sense, we smut grapple with the fact that $q$ is not known and the plug-in procedure $\lambda(\hat q)$ is not sound. Works addressing the former vein largely come from researchers well-versed in algebraic geometry \cite{lin_ideal-theoretic_2017,imai_estimating_2019} while statisticians tend to treat the second estimation aspect \cite{drton_bayesian_2017}.
-In the main text, we drop the superscript in the quantities \ref{general_likelihood}, \ref{general_posterior}, \ref{general_marginal_likelihood}, \ref{general_expectation_posterior} when $\beta = 1$, e.g., $p(\mathcal D_n)$ rather than $p^1(\mathcal D_n)$.
+\begin{figure}[t!]
+	\begin{center}
+		\includegraphics[scale=0.35]{laplace_taskid12.png}
+		\includegraphics[scale=0.35]{laplace_taskid13.png}
+		\includegraphics[scale=0.35]{laplace_taskid14.png}
+		\includegraphics[scale=0.35]{laplace_taskid15.png}
+	\end{center}
+	\caption{\textit{Realizable and minibatch gradient descent for MAP training}. Details are same as for Figure \ref{fig:avg_gen_err_fullbatch_realizable_laplace}}
+	\label{fig:avg_gen_err_minibatch_realizable_laplace}
+\end{figure}
 
 
-Assuming the conditions of Theorem 4 in \cite{watanabe_widely_2013} hold, we have
-\begin{equation}
-{\E}_w^\beta [nL_n(w)] = nL_n(w_0) + \frac{\lambda }{\beta} + U_n \sqrt{\frac{\lambda}{2 \beta}} + O_p(1)
-\label{eq:Theorem4_WBIC}
-\end{equation}
-where $\beta_0$ is a positive constant and $U_n$ is a sequence of random variables satisfying ${\E}_n U_n = 0$. %Assuming $q(y|x)$ is realizable (which we do), $U_n$ behaves nicely ???insert some of those nice properties???.
-In Algorithm \ref{alg:thm4}, we describe an estimation procedure for the RLCT based on the asymptotic result in \eqref{eq:Theorem4_WBIC}.
-%To approximate the integral $E_w^\beta [n L_n(w)]$ on the left-hand-side of \eqref{eq:Theorem4_WBIC} we use NUTS. 
-%However, the $p^\beta(w|\mathcal D_n)$ is intractable for any $\beta>0$, rendering computation of $E_w^\beta$ challenging. For regular models, the Laplace approximation to ${\E}_w^\beta [R(w)]$ would be reasonable (as guaranteed for instance by the Berstein-von Mises theorem.) Recall the Laplace approximation in this case would replace ${\E}_w^\beta$ with an expectation with respect to a normal random variable with mean $w_0$, which is a mode of $L_n$, and covariance which is the Hessian $H_{ij} =\frac{\partial^2 L_n}{\partial w_i \partial w_j}$. But as we discussed earlier, for strictly singular models, the Laplace approximation does not hold.
+\begin{figure}[t!]
+	\begin{center}
+		\includegraphics[scale=0.35]{laplace_taskid0.png}
+		\includegraphics[scale=0.35]{laplace_taskid1.png}
+		\includegraphics[scale=0.35]{laplace_taskid2.png}
+		\includegraphics[scale=0.35]{laplace_taskid3.png}
+	\end{center}
+	\caption{\textit{Nonrealizable and full batch gradient descent for MAP training.} Details are same as for Figure \ref{fig:avg_gen_err_fullbatch_realizable_laplace}
+	}
+	\label{fig:avg_gen_err_fullbatch_nonrealizable_laplace}
+\end{figure}
 
-The \emph{a posteriori} distribution was approximated using the NUTS variant of Hamiltonian Monte Carlo \citep{hoffman2014no} where the first 1000 steps were omitted and $20,000$ samples were collected.  Each $\hat \lambda(\mathcal D_n)$ estimate in Algorithm \ref{alg:thm4} was performed by linear regression on the pairs $\{ (1/\beta_i, \mathbb{E}^{\beta_i}_w[ nL_n(w) ] ) \}_{i=1}^5$ where the five inverse temperatures $\beta_i$ are centered on high temperature $1/\log(20000)$.
-
-\begin{algorithm}[tb]
-	\caption{RLCT via Theorem 4  in \cite{watanabe_widely_2013}}
-	\label{alg:thm4}
-	\begin{algorithmic}
-		\STATE {\bfseries Input:} range of $\beta$'s, set of training sets $\mathcal T$ each of size $n$, approximate samples $\{w_1,\ldots,w_R\}$ from $p^\beta(w|\mathcal D_n)$ for each training set $\mathcal D_n$ and each $\beta$
-		\FOR{training set $\mathcal D_n \in \mathcal T$}
-		\FOR{$\beta$ in range of $\beta$'s}
-		\STATE Approximate ${\E}_w^\beta [nL_n(w)]$ with $\frac{1}{R} \sum_{i=1}^R nL_n(w_r)$ where $w_1,\ldots,w_R$ are approximate samples from $p^\beta(w|\mathcal D_n)$
-		\ENDFOR
-		\STATE Perform generalized least squares to fit $\lambda$ in \eqref{eq:Theorem4_WBIC}, call result $\hat \lambda(\mathcal D_n)$
-		\ENDFOR
-		\STATE {\bfseries Output:} $\frac{1}{|\mathcal T|} \sum_{\mathcal D_n \in \mathcal T} \hat \lambda(\mathcal D_n)$
-	\end{algorithmic}
-\end{algorithm}
+\begin{figure}[t!]
+	\begin{center}
+		\includegraphics[scale=0.35]{laplace_taskid4.png}
+		\includegraphics[scale=0.35]{laplace_taskid5.png}
+		\includegraphics[scale=0.35]{laplace_taskid6.png}
+		\includegraphics[scale=0.35]{laplace_taskid7.png}
+	\end{center}
+	\caption{\textit{Nonrealizable and minibatch gradient descent for MAP training.} Details are same as for Figure \ref{fig:avg_gen_err_fullbatch_realizable_laplace}
+	}
+	\label{fig:avg_gen_err_minibatch_nonrealizable_laplace}
+\end{figure}
 
 \end{document}
