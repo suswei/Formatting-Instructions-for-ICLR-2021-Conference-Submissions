@@ -483,20 +483,18 @@ We let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ 
 
 Note that in all cases the number of parameters in $W$ is $d = 21$ and so if the model were regular the RLCT would be $10.5$. It can be shown that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$ \cite{???}. If such a model were minimally singular its RLCT would be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula. So the function $K$ is not quadratic locally near $W_0$.
 
-Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because the function $K(w)$ is not necessarily analytic (Appendix \ref{???}). However we observe empirically that the predicted linear relationship between $E^\beta_w[nL_n(w)]$ and $1/\beta$ holds in our small ReLU networks, and that the RLCT estimates are close to those for the two-layer SiLU network, which is analytic (the SiLU or sigmoid weighted linear unit is $\sigma(x) = x (1 + e^{-\tau x})^{-1}$ which approaches the ReLU as $\tau \to \infty$. We use $\tau = 100.0$ in our experiments). The competitive performance of SiLU on standard benchmarks \cite{???} shows that the non-analyticity of ReLU is not fundamental.
+Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because the function $K(w)$ is not necessarily analytic (Example \ref{example:not_analytic}). However we observe empirically that the predicted linear relationship between $E^\beta_w[nL_n(w)]$ and $1/\beta$ holds in our small ReLU networks, and that the RLCT estimates are close to those for the two-layer SiLU network, which is analytic (the SiLU or sigmoid weighted linear unit is $\sigma(x) = x (1 + e^{-\tau x})^{-1}$ which approaches the ReLU as $\tau \to \infty$. We use $\tau = 100.0$ in our experiments). The competitive performance of SiLU on standard benchmarks \cite{???} shows that the non-analyticity of ReLU is not fundamental.
 
 \begin{remark} The comments of \citet[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citet[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
 \end{remark}
 
 % The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence that this model is not minimally singular, when combined with the symmetric true distribution $q^{SiLU}_m(x,y)$. Starting from the weight vector of this true distribution, varying $c$ or any of the $b_i$ independently takes the model off the set of true parameters, so that the normal bundle has dimension $> H + 1$. Hence the RLCT in the minimally singular case would be bounded below by $3$ in the case $H = 5$, but our estimates for the RLCT are $< 0.6$.
 
-\begin{remark} (cleanup)
-e.g. Amari, this lightlike-neuromanifold thing).
-\end{remark}
-
 \section{Future directions}
 
-Deep neural networks are singular statistical models, and that's good: the presence of singularities is \emph{necessary} for overparametrized neural networks to have low generalization error. As it stands, singular learning theory is a promising foundation for a mathematical theory of deep learning, but much remains to be done. From our point of view the most pressing open problems are:
+Deep neural networks are singular statistical models, and that's good: the presence of singularities is \emph{necessary} for neural networks with large numbers of parameters to have low generalization error. Singular learning theory clarifies how mathematical tools like the Laplace approximation are not just inappropriate in deep learning on narrow technical grounds: the failure of this approximation and the existence of interesting phenomena like the generalisation puzzle have a common cause, namely the existence of degenerate critical points of the Kullback-Leibler function $K(w)$. 
+
+Singular learning theory is a promising foundation for a mathematical theory of deep learning. However, much remains to be done. The important open problems include:
 
 \textbf{Real-world distributions are unrealizable}
 The consequences of nonrealizability are not well understood in singular learning theory. Among the most profound experimental results in deep learning are the existence of power laws in language model training \cite{??} and this is an indication of interesting new phenomenon in singular learning theory in the case where the true distribution is unrealizable 
@@ -545,7 +543,7 @@ We assume the true distribution is realizable, $q(y|x) = p(y|x,w_0)$ and that a 
 
 By straightforward calculations we obtain
 \begin{align}
-K(w) &= \tfrac{1}{2} \int \| f(x,w) - f(x,w_0) \|^2 q(x) dx\\
+K(w) &= \tfrac{1}{2} \int \| f(x,w) - f(x,w_0) \|^2 q(x) dx \label{eq:K_nn}\\
 \tfrac{\partial^2}{\partial w_i \partial w_j} K(w) &= \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx \nonumber \\
 &\quad + \int \Big\langle f(x,w) - f(x,w_0), \tfrac{\partial^2}{\partial w_i \partial w_j} f(x,w) \Big\rangle q(x) dx \label{eq:Hessian}\\
 I(w)_{ij} &= \frac{1}{2^{(M-3)/2} \pi^{(M-2)/2}} \int \Big\langle \tfrac{\partial}{\partial w_i} f(x,w), \tfrac{\partial}{\partial w_j} f(x,w) \Big\rangle q(x) dx\label{eq:fisher_relu}
@@ -591,6 +589,19 @@ The claim immediately follows.
 Lemma \ref{lemma:all_degen} implies that every true parameter for a nontrivial ReLU network is a degenerate critical point of $K$. Hence in the study of nontrivial ReLU networks it is never appropriate to divide by the determinant of the Hessian of $K$ at a true parameter, and in particular Laplace or saddle-point approximations at a true parameter are invalid.
 
 The well-known positive scale invariance of ReLU networks is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. The degeneracy, as measured by the RLCT, is much lower than one would expect on the basis of this symmetry alone (see Section \ref{section:simple_func}).
+
+\begin{example}\label{example:not_analytic} In general the Kullback-Leibler function $K(w)$ for ReLU networks is not analytic. For the minimal counterexample, let $q(x)$ be uniform on $[-N, N]$ and zero outside and consider
+\[
+K(b) = \int q(x) ( \operatorname{ReLU}(x - b) - \operatorname{ReLU}(x) )^2 dx\,.
+\]
+It is easy to check that up to a scalar factor
+\[
+K(b) = \begin{cases} -\tfrac{2}{3} b^3 + b^2 N & 0 \le b \le N \\
+-\tfrac{1}{3} b^3 + b^2 N & -N \le b \le 0
+\end{cases}
+\]
+so that $K$ is $C^2$ but not $C^3$ let alone analytic.
+\end{example}
 
 \subsection{Reduced rank regression} \label{appendix:reducedrank}
 For reduced rank regression, the model is
@@ -938,6 +949,5 @@ The \emph{a posteriori} distribution was approximated using the NUTS variant of 
 		\STATE {\bfseries Output:} $\frac{1}{|\mathcal T|} \sum_{\mathcal D_n \in \mathcal T} \hat \lambda(\mathcal D_n)$
 	\end{algorithmic}
 \end{algorithm}
-
 
 \end{document}
