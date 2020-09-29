@@ -13,6 +13,8 @@
 \usepackage{hyperref}
 \usepackage{url}
 
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
 
 \graphicspath{{graphics/}}
 
@@ -68,7 +70,7 @@ Address \\
 \maketitle
 
 \begin{abstract}
-In singular models, the optimal set of parameters forms an algebraic or analytic set with singularities and classical statistical inference cannot be applied to such models. This is significant for deep learning as neural networks are singular, which in particular means that ``dividing" by the determinant of the Hessian in deep learning and, relatedly, employing the Laplace approximation are not appropriate. Despite its potential for addressing fundamental issues in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. Here we present an invitation to key ideas of singular learning theory via a mix of theory and simple experiments, with the goal of making the topic accessible to a wider audience. 
+In singular models, the optimal set of parameters forms an algebraic or analytic set with singularities and classical statistical inference cannot be applied to such models. This is significant for deep learning as neural networks are singular, which in particular means that ``dividing" by the determinant of the Hessian in deep learning and, relatedly, employing the Laplace approximation are not appropriate. Despite its potential for addressing fundamental issues in deep learning, singular learning theory appears to have made little inroads into the developing canon of deep learning theory. Here we present an invitation to key ideas of singular learning theory via a mix of theory and experiments, with the goal of making the topic accessible to a wider audience. 
 \end{abstract}
 
 \section{Introduction}
@@ -77,18 +79,24 @@ It has been understood for close to twenty years that neural networks are singul
 To illustrate the relevance of singular learning theory to deep learning, each section illustrates a key takeaway idea\footnote{The code to reproduce all experiments in the paper will be released on Github. For now, see the zip file.}. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network (DNN)} (Section \ref{section:no_flat_minima}). 
-    To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood in simple cases as half the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian) laying bare some of the confusion over ``flat'' minima.
+    To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood in simple cases as half the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian) laying bare some of the confusion over ``flat'' minima \citep{chaudhari2019entropy, smith2017bayesian, jastrzkebski2017three, Zhang:2018MolPh.116.3214Z}.
 
-\textbf{For singular models, the Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models,  the 1) Bayes predictive distribution, 2) \textit{maximum a posteriori} (MAP) estimator, and 3) maximum likelihood estimator (MLE) have asymptotically equivalent generalization error (as measured by the Kullback-Leibler divergence). This is not so in singular models. We illustrate in our experiments that even ``being Bayesian'' in just the final layers improves generalization over MAP. Our experiments further confirm that the Laplace approximation of the predictive distribution is not only inappropriate but poor performing.
+\textbf{For singular models, the Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models,  the 1) Bayes predictive distribution, 2) \textit{maximum a posteriori} (MAP) estimator, and 3) maximum likelihood estimator (MLE) have asymptotically equivalent generalization error (as measured by the Kullback-Leibler divergence). This is not so in singular models. We illustrate in our experiments that even ``being Bayesian'' in just the final layers improves generalization over MAP. Our experiments further confirm that the Laplace approximation of the predictive distribution \citet{le_bayesian_2018,zhang_energyentropy_2018} is not only inappropriate but poor performing.
 
-\textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triple whereas in regular models it depends only on the (model, prior) pair. In particular, the complexity of the true distribution relative to the supposed model has an inverse relationship with the RLCT. We verify this experimentally with a simple family of ReLU networks. This makes concrete the theoretical principle that in singular learning theory, the generalisation error depends not just on the network architecture but also on the complexity of the data. %Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
+\textbf{The complexity of a singularity is inversely proportional to the RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triplet whereas in regular models it depends only on the (model, prior) pair. In particular, the complexity of the true distribution relative to the supposed model has an inverse relationship with the RLCT. We verify this experimentally with a simple family of ReLU networks. This makes concrete the theoretical principle that in singular learning theory, the generalisation error depends not just on the network architecture but also on the complexity of the data. %Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
 
+\section{Related work}
+In classical learning theory, generalization is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures are unable to account for the empirical success of DNNs \citep{zhang_understanding_2017}. 
+Over-parameterized neural networks can easily fit random labels \cite{zhang2016understanding,du2018gradient,allen2019convergence} while have good generalization performance, indicating that the complexity measures such as Rademacher complexity is very large.
+Recent complexity measures and uniform convergence bounds \cite{neyshabur2015norm,bartlett2017spectrally,neyshabur2018towards,neyshabur2019towards,arora2018stronger}. The bounds based on uniform convergence usually cannot provide non-vacuous bounds.
+Data-dependent bounds \cite{brutzkus2017sgd,li2018learning,allen2019learning}. These bounds consider the ``classifiability'' of the data distribution in generalization analysis of neural networks.
+Algorithm-dependent bounds \cite{daniely2017sgd,arora2019fine,yehudai2019power,cao2019generalization}. These bounds consider the relation of Gaussian initialization and the training dynamics of (stochastic) gradient descent to kernels methods, for example neural tangent kernels \cite{jacot2018neural}.
+
+In contrast to many of the aforementioned works, we are interested in estimating the conditional \textit{distribution} $q(y|x)$ and we measure the generalization error of some estimate $\hat q_n(y|x)$ in terms of the Kullback-Leibler divergence between $q$ and $\hat q_n$, see \eqref{eq:Gn}. The next section gives a crash course on singular learning theory. From Section \ref{section:gen_error} onwards we present our contributions and will review relevant work along the way related to ``flatness", the Laplace approximation in deep learning, etc. 
 
 \section{Singular Learning Theory}
-
-In classical learning theory, generalization is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures are unable to account for the empirical success of DNNs \citep{zhang_understanding_2017}. 
 %Rethinking generalization will likely require devising capacity measures suitable to the peculiarities of deep learning, e.g. non-identifiability and degenerate Fisher information matrix. 
-To understand why classical measures of capacity fail to say anything meaningful about DNNs, it is important to distinguish between two different types of statistical models. Suppose we are interested in estimating the true (and unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$ where $W \subset \mathbb R^d$ is the parameter space. Let 
+To understand why classical measures of capacity fail to say anything meaningful about DNNs, it is important to distinguish between two different types of statistical models. Again, recall we are interested in estimating the true (and unknown) conditional distribution $q(y|x)$ with a class of models $\{p(y|x,w): w \in W\}$ where $W \subset \mathbb R^d$ is the parameter space. Let 
 $$
 W_0 = \{w \in W: p(y|x,w)=q(y|x)\}
 $$
@@ -115,14 +123,15 @@ $
 $
 %\end{equation} 
 where $K(w)$ is the Kullback-Leibler divergence between the model $p(y|x,w)$ and the true distribution $q(y|x)$:
-%\begin{equation}
-$$
+\begin{equation}
+%$$
     K(w) := \int \!\int q(y|x) \log \frac{ q(y|x) }{ p(y|x,w) } q(x) \,dx \,dy.
-$$
-%\end{equation}
+%$$
+\label{eq:KL}
+\end{equation}
 %Then to every triplet of (model, truth, prior), we can associate the following central quantity of singular learning theory.
 %\begin{definition}[Real log canonical threshold (RLCT)]
-For a (model, truth, prior) triplet $(p(y|x,w),q(y|x),\varphi)$, let $-\lambda$ be the maximum pole of the corresponding zeta function. We call $\lambda$ the \textbf{real log canonical threshold} (RLCT) of the (model, truth, prior) triplet. The RLCT is the central quantity of singular learning theory. 
+For a (model, truth, prior) triplet $(p(y|x,w),q(y|x),\varphi)$, let $-\lambda$ be the maximum pole of the corresponding zeta function. We call $\lambda$ the \textbf{real log canonical threshold} (RLCT) \citep{watanabe_algebraic_2009} of the (model, truth, prior) triplet. The RLCT is the central quantity of singular learning theory. 
 %\label{def:RLCT}
 %\end{definition}
 
@@ -187,7 +196,7 @@ $
 %\end{equation}
 where the integral is restricted to some sufficiently small open neighborhood of $w_0$. As long as the prior $\varphi(w)$ is non-zero on $W_0$ it does not affect the relevant features of the volume, so we may assume $\varphi$ is constant on the region of integration in the first $d'$ directions and normal in the remaining directions, so up to a constant depending only on $d'$ we have
 \begin{equation}\label{eq:volume_singular}
-V(t) \propto \frac{t^{d'/2}}{\sqrt{c_1 \cdots c_{d'}}}
+V(t) \propto  t^{d'/2} (\Pi_i c_i)^{-1/2} 
 \end{equation}
 and we can extract the exponent of $t$ in this volume in the limit
 \be\label{eq:limit_volumedim}
@@ -203,7 +212,7 @@ where $\lambda$ is the RLCT and $c$ is a constant.\footnote{We are assuming that
 
 %It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
 
-\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the exponential form  (\ref{eq:gaussian_model_in_w}) and let $\mathcal D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. The negative log likelihood is
+\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the exponential form  (\ref{eq:gaussian_model_in_w}) and let $\mathcal D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. Suppose the task is regression and the negative log likelihood is
 %\begin{equation}
 $
 L_n(w) = \frac{M}{2} \log(2\pi) + \frac{1}{n} \sum_{i=1}^n \frac{1}{2} \| y_i - f(x_i,w) \|^2\,.
@@ -213,7 +222,7 @@ Given a temperature $T$ consider the quantity
 $$
 E(T) = \mathbb{E}^{1/T}_w\big[nL_n(w) \big] = \mathbb{E}_w^{1/T}\Big[ \tfrac{1}{2} \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big] + \frac{nM}{2} \log(2\pi),
 $$
-where $p^{1/T}(w|D_n)$ is the Bayesian posterior at inverse temperature $1/T$ of (\ref{general_posterior}).
+where $p^{1/T}(w|D_n)$ is the Bayesian posterior at inverse temperature $1/T$ of \ref{general_posterior}.
 
 Note that when $n$ is large $L_n(w_0) \approx \frac{M}{2} \log(2\pi)$ for any $w_0 \in W_0$ so for $T \approx 0$ the posterior concentrates around the set $W_0$ of true parameters and $E(T) \approx \frac{nM}{2} \log(2\pi)$. Consider the increase $\Delta E = E(T + \Delta T) - E(T)$ corresponding to an increase in temperature $\Delta T$. It can be shown that 
 $
@@ -305,17 +314,18 @@ While in a regular statistical model, the three estimators 1) Bayes predictive d
 % In general the normalizing constant in the posterior distribution is an intractable integral. When $f_\theta$ is a DNN, this is especially true. Though many approximate Bayesian techniques exist for sampling the posterior, e.g., MC, variational inference, doing this effectively for a DNN is still an open challenge. 
 % Leaving aside the fact that the posterior is hard to sample, let's see why we should care about the posterior distribution in the first place. 
 More precisely, let $\hat q_n(y|x)$ be some estimate of the true unknown conditional density $q(y|x)$ based on the dataset $\mathcal D_n$. The generalization error of the predictor $\hat q_n(y|x)$ is defined as
-$$
+\begin{equation}
 G(n) := KL (q(y|x) || \hat q_n(y|x) ) = \int  \int q(y|x) \log \frac{q(y|x)}{\hat q_n(y|x)} q(x) \,dy  \,dx.
-$$
+\label{eq:Gn}
+\end{equation}
 To account for sampling variability, we will work with the \textit{average generalization error}, ${\E}_n G(n)$, where ${\E}_n$ denotes expectation over the dataset $\mathcal D_n$.
-By {\citet[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have\footnote{ In contrast, \citet{zhang_energyentropy_2018} and  \citet{le_bayesian_2018} rely on the Laplace approximation to explain the generalization of the Bayes predictive distribution though both works acknowledge the Laplace approximate is inappropriate. }
+By {\citet[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have
 \begin{equation}
 {\E}_n G(n) = \lambda/n + o(1/n)  \text{ if $\hat q_n$ is the Bayes predictive distribution,}
 \label{eq:Bayes_generalization}
 \end{equation}
-where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$. A quick sketch of the derivation of \eqref{eq:Bayes_generalization} is provided in Appendix \ref{appendix:generalization_theory}.
-On the other hand, by {\cite[Theorem 6.4]{watanabe_algebraic_2009}} we have
+where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$. In contrast, we should note that \citet{zhang_energyentropy_2018} and  \citet{le_bayesian_2018} rely on the Laplace approximation to explain the generalization of the Bayes predictive distribution though both works acknowledge the Laplace approximate is inappropriate. For completeness, a quick sketch of the derivation of \eqref{eq:Bayes_generalization} is provided in Appendix \ref{appendix:generalization_theory}.
+Now by {\cite[Theorem 6.4]{watanabe_algebraic_2009}} we have
 \begin{equation}
 {\E}_n G(n) = C/n + o(1/n)   \text{ if $\hat q_n$ is the MAP or MLE,}
 \label{eq:map_generalization}
@@ -337,10 +347,10 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 
 \begin{figure}[h!]
 	\begin{center}
-		\includegraphics[scale=0.4]{taskid8.png}
-		\includegraphics[scale=0.4]{taskid9.png}
-		\includegraphics[scale=0.4]{taskid10.png}
-		\includegraphics[scale=0.4]{taskid11.png}
+		\includegraphics[scale=0.35]{taskid8.png}
+		\includegraphics[scale=0.35]{taskid9.png}
+		\includegraphics[scale=0.35]{taskid10.png}
+		\includegraphics[scale=0.35]{taskid11.png}
 	\end{center}
 	\caption{\textit{Realizable and full batch gradient descent for MAP.} Average generalization errors $\E_n G(n)$ are displayed for various approximations of the Bayes predictive distribution. The results of the Laplace approximations are not displayed because they are higher than other approximation schemes by at least an order of magnitude. Each subplot shows a different combination of hidden layers in $g$ (1 or 5) and activation function in $h$ (ReLU or identity). Note that the y-axis is not shared.
 	}
@@ -351,7 +361,7 @@ For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 
 
 
- Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{\operatorname{MAP}})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model} using batch gradient descent. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{This is similar in spirit to \citet{kristiadi_being_2020} who advocate "being Bayesian" a little bit fixes overconfidence. This is acheived by using the Laplace approximation for the final layer of a ReLU network, an approach we did not find to work well in our experiments. It is also worth noting that \citet{kristiadi_being_2020} do not attempt to formalize what it means to "fix overconfidence"; the precise statement should be in terms of $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
+ Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{\operatorname{MAP}})$ be the MAP estimate for $\theta$ in model \ref{eq:genexp_model} using batch gradient descent. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{This is similar in spirit to \citet{kristiadi_being_2020} who claim that even ``being Bayesian a little bit" fixes overconfidence. They approach this via the Laplace approximation for the final layer of a ReLU network. It is also worth noting that \citet{kristiadi_being_2020} do not attempt to formalize what it means to "fix overconfidence"; the precise statement should be in terms of $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
 Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward ReLU block with each hidden layer having 5 hidden units and $h: \mathbb R^3 \to \mathbb R^3$ is either $BAx$ or $B \operatorname{ReLU}(Ax)$ where $A \in \mathbb R^{3 \times r}, B \in \mathbb R^{r \times 3}$. We set $r=3$. We shall consider 1 or 5 hidden layers for $g$. 
 
 \begin{table}[h!]%
@@ -381,20 +391,20 @@ Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward Re
 
 %Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; A); B)$ where $w=(A,B)$.
 To approximate the Bayes predictive distribution, we perform either the Laplace approximation or the NUTS variant of HMC \citep{hoffman2014no} in the last two layers, i.e., performing inference over $A,B$ in
-\begin{equation}
-h(g(\cdot;v_{map});A,B).
-\label{eq:last_two_layers}
-\end{equation}
+%\begin{equation}
+$h(g(\cdot;v_{map});A,B).$
+%\label{eq:last_two_layers}
+%\end{equation}
 Note that MCMC is operating in a space of 18 dimensions in this case, which is small enough for us to expect MCMC to perform well.
 We also implemented the Laplace approximation and NUTS in the last layer only, i.e. performing inference over $B$ in
-\begin{equation}
-h_2(h_1(g(\cdot;v_{map});A_{map}); B).
-\label{eq:last_layer}
-\end{equation}
+%\begin{equation}
+$h_2(h_1(g(\cdot;v_{map});A_{map}); B).$
+%\label{eq:last_layer}
+%\end{equation}
 Further implementation details of these approximate Bayesian schemes are found in Appendix \ref{appendix:generalizaton}.
 
 
-From the outset, we expect the Laplace approximation over $w = (A, B)$ to be invalid (since  \ref{eq:last_two_layers} is singular). We do however expect the last-layer-only Laplace approximation over $B$ to be sound (since \ref{eq:last_layer} is regular). Next, we expect the MCMC approximation in either the last layer or last two layers to be  superior to the Laplace approximations and to the MAP. We further expect the last-two-layers MCMC (\eqref{eq:last_two_layers}) to have better generalization than the last-layer-only MCMC (\eqref{eq:last_layer}) since the former is closer to the Bayes predictive distribution. In summary, we anticipate the following performance order for these five approximate Bayesian schemes (from worst to best): last-two-layers Laplace, last-layer-only Laplace, MAP, last-two-layers MCMC, last-layer-only MCMC.
+From the outset, we expect the Laplace approximation over $w = (A, B)$ to be invalid since the model is singular. We do however expect the last-layer-only Laplace approximation over $B$ to be sound. Next, we expect the MCMC approximation in either the last layer or last two layers to be  superior to the Laplace approximations and to the MAP. We further expect the last-two-layers MCMC to have better generalization than the last-layer-only MCMC since the former is closer to the Bayes predictive distribution. In summary, we anticipate the following performance order for these five approximate Bayesian schemes (from worst to best): last-two-layers Laplace, last-layer-only Laplace, MAP, last-two-layers MCMC, last-layer-only MCMC.
 
 
 To understand the effect of the network architecture, we varied the following factors:  1) either 1 or 5 layers in $g$, and 2) ReLU or identity activation in $h$.
@@ -417,9 +427,9 @@ is a two-layer ReLU network with weight vector $w = (\{w_i\}_{i=1}^H, \{b_i\}_{i
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[scale=0.4]{truedist3.png}
-\includegraphics[scale=0.4]{truedist4.png}
-\includegraphics[scale=0.4]{truedist5.png}
+\includegraphics[scale=0.35]{truedist3.png}
+\includegraphics[scale=0.35]{truedist4.png}
+\includegraphics[scale=0.35]{truedist5.png}
 \end{center}
 \caption{Increasingly complicated true distributions $q_m(x,y)$ on $[-1,1]^2 \times \mathbb{R}$.}
 \label{fig:simp_func_complex}
@@ -505,9 +515,9 @@ The consequences of nonrealizability are not well understood in singular learnin
 \textbf{RLCT estimation for large networks.} 
 Theoretical RLCTs have been cataloged for very few singular models at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. We believe RLCT estimation in these small networks should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
 
-Theoretical RLCTs are not known for modern neural networks where the weights number on the order of sample size.
+No theoretical RLCTs are known for modern DNNs.
 Further, no method is known for estimating RLCTs of large neural networks. In theory MCMC provides the gold standard but this approach does not scale to large networks. We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. 
-The intractability of RLCT estimation for large neural networks may not in reality be a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
+The intractability of RLCT estimation for DNNs is not a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
 %Despite this, we have illustrated that it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
 
 %As it stands, singular learning theory does not yet provide a complete mathematical theory of deep learning, as it is practiced. Much of this is technical in nature. For instance, theory allowing for neural networks with the ReLU activation function is lacking. Also, the consequences of nonrealizability is still not well understood. 
@@ -766,10 +776,10 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 \newpage
 \begin{figure}[t!]
 	\begin{center}
-		\includegraphics[scale=0.4]{taskid12.png}
-		\includegraphics[scale=0.4]{taskid13.png}
-		\includegraphics[scale=0.4]{taskid14.png}
-		\includegraphics[scale=0.4]{taskid15.png}
+		\includegraphics[scale=0.35]{taskid12.png}
+		\includegraphics[scale=0.35]{taskid13.png}
+		\includegraphics[scale=0.35]{taskid14.png}
+		\includegraphics[scale=0.35]{taskid15.png}
 	\end{center}
 	\caption{\textit{Realizable and minibatch gradient descent for MAP training.}}
 	\label{fig:avg_gen_err_minibatch_realizable}
@@ -809,10 +819,10 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 
 \begin{figure}[t!]
 	\begin{center}
-		\includegraphics[scale=0.4]{taskid0.png}
-		\includegraphics[scale=0.4]{taskid1.png}
-		\includegraphics[scale=0.4]{taskid2.png}
-		\includegraphics[scale=0.4]{taskid3.png}
+		\includegraphics[scale=0.35]{taskid0.png}
+		\includegraphics[scale=0.35]{taskid1.png}
+		\includegraphics[scale=0.35]{taskid2.png}
+		\includegraphics[scale=0.35]{taskid3.png}
 	\end{center}
 	\caption{\textit{Nonrealizable and full batch gradient descent for MAP training.}}
 	\label{fig:avg_gen_err_fullbatch_nonrealizable}
@@ -847,10 +857,10 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 \newpage
 \begin{figure}[t!]
 	\begin{center}
-		\includegraphics[scale=0.4]{taskid4.png}
-		\includegraphics[scale=0.4]{taskid5.png}
-		\includegraphics[scale=0.4]{taskid6.png}
-		\includegraphics[scale=0.4]{taskid7.png}
+		\includegraphics[scale=0.35]{taskid4.png}
+		\includegraphics[scale=0.35]{taskid5.png}
+		\includegraphics[scale=0.35]{taskid6.png}
+		\includegraphics[scale=0.35]{taskid7.png}
 	\end{center}
 	\caption{\textit{Nonrealizable and minibatch gradient descent for MAP training.} Missing points on the MAP learning curve are due to estimated probabilities too close to 0.}
 	\label{fig:avg_gen_err_minibatch_nonrealizable}
