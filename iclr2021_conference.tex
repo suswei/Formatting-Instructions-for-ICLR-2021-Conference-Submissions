@@ -6,7 +6,6 @@
 \usepackage[skip=5pt]{subcaption}
 \usepackage{booktabs}
 
-	
 % Optional math commands from https://github.com/goodfeli/dlbook_notation.
 \input{math_commands.tex}
 
@@ -417,7 +416,7 @@ In Appendix \ref{appendix:generalizaton}, we also show the corresponding results
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
 
-In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. As the true distribution becomes more complicated relative to the supposed model, the singularities of the analytic variety of true parameters should become simpler and hence the RLCT should increase \citep[\S 7.6]{watanabe_algebraic_2009}
+In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. As the true distribution becomes more complicated relative to the supposed model, the singularities of the analytic variety of true parameters should become simpler and hence the RLCT should increase \citep[\S 7.6]{watanabe_algebraic_2009}. Our experiments are inspired by \citep[\S 7.2]{watanabe_algebraic_2009} where $\operatorname{tanh}(x)$ networks are considered and the true distribution (associated to the zero network) is held fixed while the number of hidden nodes is increased.
 
 Consider the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where
 $
@@ -492,12 +491,9 @@ Given an integer $3 \le m \le H$ we define a network $s_m \in W$ and $q_m(y|x) :
 
 We let $\varphi$ be a normal distribution $\mathcal{N}(0,50^2)$ centered on $W$ and estimate the RLCTs of the triples $(p, q_m, \varphi)$. We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Table \ref{table:hyper} shows the estimated RLCT. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure for the RLCT which we base on \citep[Theorem 4]{watanabe_widely_2013}. As predicted the RLCT increases with $m$ verifying that in this case, the simpler true distributions give rise to more complex singularities.
 
-Note that in all cases the number of parameters in $W$ is $d = 21$ and so if the model were regular the RLCT would be $10.5$. It can be shown that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$ \cite{???}. If such a model were minimally singular its RLCT would be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula. So the function $K$ is not quadratic locally near $W_0$.
+Note that in all cases the number of parameters in $W$ is $d = 21$ and so if the model were regular the RLCT would be $10.5$. It can be shown that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. If such a model were minimally singular its RLCT would be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula. So the function $K$ is not quadratic locally near $W_0$.
 
-Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because the function $K(w)$ is not necessarily analytic (Example \ref{example:not_analytic}). However we observe empirically that the predicted linear relationship between $E^\beta_w[nL_n(w)]$ and $1/\beta$ holds in our small ReLU networks, and that the RLCT estimates are close to those for the two-layer SiLU network, which is analytic (the SiLU or sigmoid weighted linear unit is $\sigma(x) = x (1 + e^{-\tau x})^{-1}$ which approaches the ReLU as $\tau \to \infty$. We use $\tau = 100.0$ in our experiments). The competitive performance of SiLU on standard benchmarks \cite{???} shows that the non-analyticity of ReLU is not fundamental.
-
-\begin{remark} The comments of \citet[\S 7.6]{watanabe_algebraic_2009} are based on the results of \citet[\S 7.2]{watanabe_algebraic_2009} which are summaries of \cite{??,??}. In \cite{??} the nonlinearity is the identity (reduced rank regression) and in \cite{??} the true distribution is always the zero function and the nonlinearity is $\operatorname{tanh}(x)$.
-\end{remark}
+Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because the function $K(w)$ is not necessarily analytic (Example \ref{example:not_analytic}). However we observe empirically that the predicted linear relationship between $E^\beta_w[nL_n(w)]$ and $1/\beta$ holds in our small ReLU networks, and that the RLCT estimates are close to those for the two-layer SiLU network \citep{hendrycks2016gaussian} which is analytic (the SiLU or sigmoid weighted linear unit is $\sigma(x) = x (1 + e^{-\tau x})^{-1}$ which approaches the ReLU as $\tau \to \infty$. We use $\tau = 100.0$ in our experiments). The competitive performance of SiLU on standard benchmarks \cite{ramachandran2017swish} shows that the non-analyticity of ReLU is not fundamental.
 
 % The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence that this model is not minimally singular, when combined with the symmetric true distribution $q^{SiLU}_m(x,y)$. Starting from the weight vector of this true distribution, varying $c$ or any of the $b_i$ independently takes the model off the set of true parameters, so that the normal bundle has dimension $> H + 1$. Hence the RLCT in the minimally singular case would be bounded below by $3$ in the case $H = 5$, but our estimates for the RLCT are $< 0.6$.
 
@@ -507,10 +503,10 @@ Deep neural networks are singular statistical models, and that's good: the prese
 
 Singular learning theory is a promising foundation for a mathematical theory of deep learning. However, much remains to be done. The important open problems include:
 
-\textbf{Real-world distributions are unrealizable}
-The consequences of nonrealizability are not well understood in singular learning theory. Among the most profound experimental results in deep learning are the existence of power laws in language model training \cite{??} and this is an indication of interesting new phenomena in singular learning theory in the case where the true distribution is unrealizable.
+\textbf{Real-world distributions are unrealizable.}
+The consequences of nonrealizability are not well understood in singular learning theory. Among the most profound experimental results in deep learning are the existence of power laws in neural language model training \citep{hestness_2017,kaplan2020scaling} and this suggests the existence of interesting new phenomena in singular learning theory when the true distribution is unrealizable.
 
-\textbf{SGD vs the posterior.} A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. This suggests approximating the Bayes predictive distribution using SGD to sample from the posterior. Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
+\textbf{SGD vs the posterior.} A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. In this case it would be possible to approximate the Bayes predictive distribution using SGD to sample from the posterior. Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
 
 \textbf{RLCT estimation for large networks.} 
 Theoretical RLCTs have been cataloged for very few singular models at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. We believe RLCT estimation in these small networks should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
