@@ -509,13 +509,13 @@ Deep neural networks are singular statistical models, and that's good: the prese
 
 Singular learning theory is a promising foundation for a mathematical theory of deep learning. However, much remains to be done. The important open problems include:
 
-\textbf{Real-world distributions are unrealizable.}
-The consequences of nonrealizability are not well understood in singular learning theory. Among the most profound experimental results in deep learning are the existence of power laws in neural language model training \citep{hestness_2017,kaplan2020scaling} and this suggests the existence of interesting new phenomena in singular learning theory when the true distribution is unrealizable.
-
-\textbf{SGD vs the posterior.} A growing number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution. In this case it would be possible to approximate the Bayes predictive distribution using SGD to sample from the posterior. Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
+\textbf{SGD vs the posterior.} A number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution but it remains an open question how to relate SGD to sampling from the Bayesian posterior. %Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
 
 \textbf{RLCT estimation for large networks.} 
 Theoretical RLCTs have been cataloged for very few singular models at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. We believe RLCT estimation in these small networks should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
+
+\textbf{Real-world distributions are unrealizable.}
+The existence of power laws in neural language model training \citep{hestness_2017,kaplan2020scaling} is one of the most remarkable experimental results in deep learning. These power laws may be a sign of interesting new phenomena in singular learning theory when the true distribution is unrealizable.
 
 No theoretical RLCTs are known for modern DNNs.
 Further, no method is known for estimating RLCTs of large neural networks. In theory MCMC provides the gold standard but this approach does not scale to large networks. We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. 
