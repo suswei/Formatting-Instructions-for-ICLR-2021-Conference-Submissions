@@ -2,7 +2,7 @@
 \usepackage{iclr2021_conference,times}
 \usepackage{iclr2021_extras}
 \usepackage{graphicx,amsmath,amsthm}
-\usepackage{showlabels}
+%\usepackage{showlabels}
 \usepackage[skip=5pt]{subcaption}
 \usepackage{booktabs}
 
@@ -75,7 +75,7 @@ In singular models, the optimal set of parameters forms an analytic set with sin
 \section{Introduction}
 
 It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold due to the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities controls quantities of interest in statistical learning theory, e.g., the generalization error. Singular learning theory \citep{watanabe_algebraic_2009} is the study of singular models and requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
-To illustrate the relevance of singular learning theory to deep learning, each section illustrates a key takeaway idea\footnote{The code to reproduce all experiments in the paper will be released on Github. For now, see the zip file.}. 
+To illustrate the relevance of singular learning theory to deep learning, each section of this paper illustrates a key takeaway idea\footnote{The code to reproduce all experiments in the paper will be released on Github. For now, see the zip file.}. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network (DNN)} (Section \ref{section:no_flat_minima}). 
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold (RLCT). The RLCT can be understood in simple cases as half the number of normal directions to the set of true parameters. We will explain why this matters much more than the curvature of those directions (as measured for example by eigenvalues of the Hessian) laying bare some of the confusion over ``flat'' minima \citep{chaudhari2019entropy, smith2017bayesian, jastrzkebski2017three, zhang_energyentropy_2018}.
@@ -89,7 +89,7 @@ In classical learning theory, generalization is explained by measures of capacit
 For instance, over-parameterized neural networks can easily fit random labels \cite{zhang2016understanding,du2018gradient,allen2019convergence} while having good generalization performance, which indicates that complexity measures such as Rademacher complexity is very large.
 There is also a slate of work on generalization bounds in deep learning. Uniform convergence bounds \citep{neyshabur2015norm,bartlett2017spectrally,neyshabur2018towards,neyshabur2019towards,arora2018stronger} usually cannot provide non-vacuous bounds.
 Data-dependent bounds \citep{brutzkus2017sgd,li2018learning,allen2019learning} consider the ``classifiability'' of the data distribution in generalization analysis of neural networks.
-Algorithm-dependent bounds \cite{daniely2017sgd,arora2019fine,yehudai2019power,cao2019generalization} consider the relation of Gaussian initialization and the training dynamics of (stochastic) gradient descent to kernels methods, for example neural tangent kernels \cite{jacot2018neural}.
+Algorithm-dependent bounds \cite{daniely2017sgd,arora2019fine,yehudai2019power,cao2019generalization} consider the relation of Gaussian initialization and the training dynamics of (stochastic) gradient descent to kernels methods \citep{jacot2018neural}.
 
 In contrast to many of the aforementioned works, we are interested in estimating the conditional \textit{distribution} $q(y|x)$. Specifically, we measure the generalization error of some estimate $\hat q_n(y|x)$ in terms of the Kullback-Leibler divergence between $q$ and $\hat q_n$, see \eqref{eq:Gn}. The next section gives a crash course on singular learning theory. The rest of the paper illustrates the key ideas listed in the introduction. Since we cover much ground in this short note, we will review other relevant work along the way, in particular literature on ``flatness", the Laplace approximation in deep learning, etc. 
 
@@ -110,7 +110,7 @@ Following the conventions in \cite{watanabe_algebraic_2009}, we have the followi
 A statistical model $p(y|x,w)$ is called \textbf{regular} if it is 1) identifiable and 2) has positive-definite Fisher information matrix. A statistical model is called \textbf{strictly singular} if it is not regular. 
 %{\cite[Theorem 7.2]{watanabe_algebraic_2009}}.
 %\end{definition}
-It is straightforward to see neural networks are singular models. Indeed, a multilayer neural network statistical model is non-identifiable and has degenerate Fisher information matrix \emph{at every point of the parameter space}. We document this routine calculation in Appendix \ref{appendix:nn_singular}. 
+%It is straightforward to see neural networks are singular models. Indeed, a multilayer neural network statistical model is non-identifiable and has degenerate Fisher information matrix \emph{at every point of the parameter space}. We document this routine calculation in Appendix \ref{appendix:nn_singular}. 
 %Classical tools from statistical inference are hence inappropriate for DNNs, e.g., one should not ``divide" by the determinant of the Hessian in deep learning. 
 
 
@@ -138,14 +138,14 @@ By {\citet[Theorem 6.4]{watanabe_algebraic_2009}}, the RLCT is equal to $d/2$ in
 % \begin{definition}
 we say $q(y|x)$ is \textbf{realizable} by the model class $\{p(y|x,w)\}$ if $W_0$ is non-empty.
 %\end{definition}
-The condition of realizability is critical to standard results in singular learning theory. Modifications to the theory are needed in the case that $q(y|x)$ is not realizable, see the more general condition called relatively finite variance in \citet{watanabe_mathematical_2018}.
+The condition of realizability is critical to standard results in singular learning theory. Modifications to the theory are needed in the case that $q(y|x)$ is not realizable, see the condition called relatively finite variance in \citet{watanabe_mathematical_2018}.
 
-\textbf{Neural networks in singular learning theory.} Let $W \subseteq \mathbb{R}^d$ be the space of weights of a neural network of some fixed architecture, and let $f(x,w): \mathbb{R}^N \times W \lto \mathbb{R}^M$ be the associated function. This neural network is represented in the context of singular learning theory \citep[\S 7.2]{watanabe_algebraic_2009} by
+\textbf{Neural networks in singular learning theory.} Let $W \subseteq \mathbb{R}^d$ be the space of weights of a neural network of some fixed architecture, and let $f(x,w): \mathbb{R}^N \times W \lto \mathbb{R}^M$ be the associated function. We shall focus on the regression task and study the model
 \begin{equation}
 p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
 \label{eq:gaussian_model_in_w}
 \end{equation}
-Formulas for $K(w)$ and $I(w)$ are given in Appendix \ref{appendix:nn_singular} and it is proven that for feedforward ReLU networks not only is the model singular but the matrix $I(w)$ is degenerate for almost all weights and the Hessian of $K$ is degenerate at every point of $W_0$.
+It is proven in Appendix \ref{appendix:nn_singular} that for feedforward ReLU networks not only is the model singular but the matrix $I(w)$ is degenerate for almost all weights and the Hessian of $K(w)$ is degenerate at every point of $W_0$.
 
 % The work of Sumio Watanabe on singular learning theory \cite{watanabe_algebraic_2009} suggests that the \textit{real log canonical threshold} (RLCT) of a DNN is suitable for measuring its effective number of parameters (see Section ???). 
 \textbf{RLCT plays an important role in model selection.}
@@ -163,24 +163,24 @@ p(\mathcal D_n) = \int_W p(\mathcal D_n|w) \varphi(w) \,dw
 $
 and can be loosely interpreted as the evidence for the model. Between two models, we should prefer the one with higher model evidence. However, since the marginal likelihood is an intractable integral over the parameter space of the model, one needs to consider some approximation.
 
-Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of the negative log marginal likelihood $-\log p(\mathcal D_n)$ using the Laplace approximation, leading to
+Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of $-\log p(\mathcal D_n)$ using the Laplace approximation, leading to
 $
 \operatorname{BIC} = nL_n( w_{\operatorname{MLE}}) + \frac{d}{2} \log n.
 $
-Since we want the marginal likelihood of the data for some given model to be \textit{high}, we want the negative log marginal likelihood to be \textit{low}. Thus one should almost never adopt a deep neural network according to the BIC. 
+Since we want the marginal likelihood of the data for some given model to be \textit{high}, we want the negative log marginal likelihood to be \textit{low}. Thus one should almost never adopt a DNN according to the BIC. 
 %(aka the log marginal likelihood, aka the free energy). 
 % Given two statistical models of a data source, one should choose (all else being equal) the one with higher model evidence. 
 
-However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and deep neural networks are not regular. They are \textit{strictly singular} as we illustrated in Appendix \ref{appendix:nn_singular}. 
+However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and DNNs are not regular. They are \textit{strictly singular} as we illustrated in Appendix \ref{appendix:nn_singular}. 
 If we have realizability (along with a few more technical conditions), the correct criterion for both regular and strictly singular models was shown in \citet{watanabe_widely_2013} to be 
 %\begin{equation}
-$
+$$
 nL_n(w_0) + \lambda \log n,
-$
+$$
 %\label{logmarginal_rlct}
 %\end{equation}
 where $w_0 \in W_0$ and $\lambda$ is the RLCT. 
-Since more complex singularities lead to smaller values of $\lambda$, which we illustrate in Section \ref{section:simple_func}, and deep learning models are highly singular, it is possible for deep neural networks to have high marginal likelihood -- consistent with their empirical success. 
+Since more complex singularities lead to smaller values of $\lambda$, which we illustrate in Section \ref{section:simple_func}, and deep learning models are highly singular, it is possible for DNNs to have high marginal likelihood -- consistent with their empirical success. 
 
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
@@ -217,7 +217,7 @@ where $\lambda$ is the RLCT and $c$ is a constant.\footnote{We are assuming that
 
 %It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
 
-\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the form (\ref{eq:gaussian_model_in_w}) and let $\mathcal D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. The negative log likelihood (\ref{eq:nll}) is
+\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the form (\ref{eq:gaussian_model_in_w}) and let $\mathcal D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. The negative log likelihood (\ref{eq:nll}) corresponding to \eqref{eq:gaussian_model_in_w} is
 %\begin{equation}
 $
 L_n(w) = \frac{M}{2} \log(2\pi) + \frac{1}{n} \sum_{i=1}^n \frac{1}{2} \| y_i - f(x_i,w) \|^2\,.
@@ -298,7 +298,7 @@ Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a me
 %\end{example}
 
 \section{Generalization}\label{section:gen_error}
-The generalization puzzle \citep{DBLP:journals/corr/abs-1801-00173} is one of the central mysteries of deep learning. Theoretical investigations into the matter is an active area of research \cite{neyshabur_exploring_2017}. Many of the recent proposals of capacity measures for neural networks are based on the eigenspectrum of the (degenerate) Hessian, e.g., \citet{thomas_information_2019, maddox_rethinking_2020}. But this is not appropriate for singular models, and hence for deep neural networks.
+The generalization puzzle \citep{DBLP:journals/corr/abs-1801-00173} is one of the central mysteries of deep learning. Theoretical investigations into the matter is an active area of research \cite{neyshabur_exploring_2017}. Many of the recent proposals of capacity measures for neural networks are based on the eigenspectrum of the (degenerate) Hessian, e.g., \citet{thomas_information_2019, maddox_rethinking_2020}. But this is not appropriate for singular models, and hence for DNNs.
 %??? \cite{gao_degrees_2016}, \cite{sun_lightlike_2020}.???
 
 
@@ -341,14 +341,14 @@ This means, since neural networks are singular, we should employ the Bayes predi
 We set out to investigate whether certain very simple approximations of the Bayes predictive distribution can already demonstrate superiority over point estimators. 
 
 %To approximate the Bayes predictive distribution, we consider marginalization over the final layers of the neural network with earlier layers frozen at the MAP point estimate. 
-Suppose the input-target relationship is modeled as
-\begin{equation}
-p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
-\label{eq:genexp_model}
-\end{equation}
-where $f_\theta$ is a multilayer neural network.
+Suppose the input-target relationship is modeled as in \ref{eq:gaussian_model_in_w} but we write $\theta$ instead of $w$.
+%\begin{equation}
+%p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
+%\label{eq:genexp_model}
+%\end{equation}
+%where $f_\theta$ is a multilayer neural network.
 We set $q(x) = N(0,I_3)$. 
-For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model \ref{eq:genexp_model} is instantiated. We calculate $\E_n G(n)$ using multiple datasets $\mathcal D_n$ and a large testing set, see Appendix \ref{appendix:generalizaton} for more details. 
+For now consider the realizable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialization in PyTorch when model  \ref{eq:gaussian_model_in_w}  is instantiated. We calculate $\E_n G(n)$ using multiple datasets $\mathcal D_n$ and a large testing set, see Appendix \ref{appendix:generalizaton} for more details. 
 
 \begin{figure}[h!]
 	\begin{center}
@@ -414,8 +414,6 @@ From the outset, we expect the Laplace approximation over $w = (A, B)$ to be inv
 
 To understand the effect of the network architecture, we varied the following factors:  1) either 1 or 5 layers in $g$, and 2) ReLU or identity activation in $h$.
 The results displayed in Figures \ref{fig:avg_gen_err_fullbatch_realizable} are in line with our stated expectations above, except for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. Table \ref{table:avg_gen_err_fullbatch_realizable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realizable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient. The $R^2$ corresponding to the linear fit is also provided. 
-
-
 In Appendix \ref{appendix:generalizaton}, we also show the corresponding results when 1) the data-generating mechanism and the assumed model do not satisfy the condition of realizability and/or 2) the MAP estimate is obtained via minibatch stochastic gradient descent instead of batch gradient descent. 
 
 
@@ -505,21 +503,21 @@ Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because
 
 \section{Future directions}
 
-Deep neural networks are singular statistical models, and that's good: the presence of singularities is \emph{necessary} for neural networks with large numbers of parameters to have low generalization error. Singular learning theory clarifies how mathematical tools like the Laplace approximation are not just inappropriate in deep learning on narrow technical grounds: the failure of this approximation and the existence of interesting phenomena like the generalisation puzzle have a common cause, namely the existence of degenerate critical points of the Kullback-Leibler function $K(w)$. 
-
+DNNs are singular models, and that's good: the presence of singularities is \emph{necessary} for neural networks with large numbers of parameters to have low generalization error. Singular learning theory clarifies how classical tools such as the Laplace approximation are not just inappropriate in deep learning on narrow technical grounds: the failure of this approximation and the existence of interesting phenomena like the generalisation puzzle have a common cause, namely the existence of degenerate critical points of the Kullback-Leibler function $K(w)$. 
 Singular learning theory is a promising foundation for a mathematical theory of deep learning. However, much remains to be done. The important open problems include:
 
-\textbf{SGD vs the posterior.} A number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that some version of mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution but it remains an open question how to relate SGD to sampling from the Bayesian posterior. %Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
+\textbf{SGD vs the posterior.} A number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution and this may go towards understanding why SGD works so well for DNNs. %Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
 
 \textbf{RLCT estimation for large networks.} 
-Theoretical RLCTs have been cataloged for very few singular models at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, namely single-hidden-layer $\tanh$ network \citep{aoyagi_resolution_2006} and reduced rank regression \citep{aoyagi_stochastic_2005}. We believe RLCT estimation in these small networks should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
+Theoretical RLCTs have been cataloged for small neural networks, albeit at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.}, \citep{aoyagi_stochastic_2005, aoyagi_resolution_2006}. We believe RLCT estimation in these small networks should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
+No theoretical RLCTs or estimation procedure are known for modern DNNs. Though MCMC provides the gold standard ti does not scale to large networks.
+% We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. 
+The intractability of RLCT estimation for DNNs is not a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
 
 \textbf{Real-world distributions are unrealizable.}
 The existence of power laws in neural language model training \citep{hestness_2017,kaplan2020scaling} is one of the most remarkable experimental results in deep learning. These power laws may be a sign of interesting new phenomena in singular learning theory when the true distribution is unrealizable.
 
-No theoretical RLCTs are known for modern DNNs.
-Further, no method is known for estimating RLCTs of large neural networks. In theory MCMC provides the gold standard but this approach does not scale to large networks. We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. 
-The intractability of RLCT estimation for DNNs is not a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency. We also demonstrated the utility of singular learning results such as \eqref{eq:Bayes_generalization} and \eqref{eq:map_generalization} which can be exploited even without knowledge of the exact value of the RLCT.
+
 %Despite this, we have illustrated that it is still possible to reap the insights offered by singular learning theory. In particular we showed that being Bayesian in the final layers, though a pale substitute for the full Bayes predictive distribution, nonetheless demonstrates humble improvements over point estimators. 
 
 %As it stands, singular learning theory does not yet provide a complete mathematical theory of deep learning, as it is practiced. Much of this is technical in nature. For instance, theory allowing for neural networks with the ReLU activation function is lacking. Also, the consequences of nonrealizability is still not well understood. 
