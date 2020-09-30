@@ -195,7 +195,7 @@ $
 %\end{equation}
 where the integral is restricted to some sufficiently small open neighborhood of $w_0$. As long as the prior $\varphi(w)$ is non-zero on $W_0$ it does not affect the relevant features of the volume, so we may assume $\varphi$ is constant on the region of integration in the first $d'$ directions and normal in the remaining directions, so up to a constant depending only on $d'$ we have
 \begin{equation}\label{eq:volume_singular}
-V(t) \propto  t^{d'/2} (\Pi_i c_i)^{-1/2} 
+V(t) \propto  \frac{t^{d'/2}}{\sqrt{c_1 \cdots c_{d'}}}
 \end{equation}
 and we can extract the exponent of $t$ in this volume in the limit
 \be\label{eq:limit_volumedim}
@@ -281,7 +281,7 @@ where the reader should see \citep[Corollary 3]{watanabe_widely_2013} for a prec
 \begin{equation}\label{eq:entropy}
 - \log\Big[\frac{V(t_0)}{t_0^{d/2}}\Big] = \frac{d-d'}{2} \log(t_0) + \tfrac{1}{2} \sum_{i=1}^{d} \log c_i\,.
 \end{equation}
-Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a measure of the entropy of the set of true parameters near $w_0$, a point made for example in \cite{zhang_energyentropy_2018}. However when $d' < d$ this conception of entropy is inappropriate because of the $d - d'$ directions in which $K(w)$ is flat near $w_0$, which introduce the $t_0$ dependence in (\ref{eq:entropy}). There is no way around it: ideas from algebraic geometry such as the resolution of singularities are necessary to understand the geometric features of the loss surface that determine generalization error.
+Hence in the case $d = d'$ the quantity $-\tfrac{1}{2} \sum_i \log(c_i)$ is a measure of the entropy of the set of true parameters near $w_0$, a point made for example in \cite{zhang_energyentropy_2018}. However when $d' < d$ this conception of entropy is inappropriate because of the $d - d'$ directions in which $K(w)$ is flat near $w_0$, which introduce the $t_0$ dependence in (\ref{eq:entropy}). %There is no way around it: ideas from algebraic geometry such as the resolution of singularities are necessary to understand the geometric features of the loss surface that determine generalization error.
 
 % Note that in comparing two regular models with parameter space $W \subseteq \mathbb{R}^d$, both of which have volume dimension $d/2$, the Hessian determinant is relevant to compare how the respective volumes of almost true parameters vary with $t$. But in comparing two minimally singular models with Hessian determinants of rank $d', d''$ the behavior of the volume depends much more strongly on the dimensions $d'/2, d''/2$ than it does on the eigenvalues.
 % From a theoretical point of view the exponent $d/2$ appears as the leading $O(\log n)$ term in the asymptotic expansion of the Bayes free energy and the Hessian determinant appears in the next $O(1)$ term, where $n$ is the size of a dataset . The upshot of this is that if two regular models have parameter spaces of dimension $d_1 < d_2$ one should prefer the model class of dimension $d_1$ (assuming both can perfectly fit the data) but if $d_1 = d_2$ then it may be appropriate to compare models on the basis of their curvature at the true parameter.
