@@ -140,6 +140,13 @@ we say $q(y|x)$ is \textbf{realizable} by the model class $\{p(y|x,w)\}$ if $W_0
 %\end{definition}
 The condition of realizability is critical to standard results in singular learning theory. Modifications to the theory are needed in the case that $q(y|x)$ is not realizable, see the more general condition called relatively finite variance in \citet{watanabe_mathematical_2018}.
 
+\textbf{Neural networks in singular learning theory.} Let $W \subseteq \mathbb{R}^d$ be the space of weights of a neural network of some fixed architecture, and let $f(x,w): \mathbb{R}^N \times W \lto \mathbb{R}^M$ be the associated function. This neural network is represented in the context of singular learning theory \citep[\S 7.2]{watanabe_algebraic_2009} by
+\begin{equation}
+p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
+\label{eq:gaussian_model_in_w}
+\end{equation}
+Formulas for $K(w)$ and $I(w)$ are given in Appendix \ref{appendix:nn_singular} and it is proven that for feedforward ReLU networks not only is the model singular but the matrix $I(w)$ is degenerate for almost all weights and the Hessian of $K$ is degenerate at every point of $W_0$.
+
 % The work of Sumio Watanabe on singular learning theory \cite{watanabe_algebraic_2009} suggests that the \textit{real log canonical threshold} (RLCT) of a DNN is suitable for measuring its effective number of parameters (see Section ???). 
 \textbf{RLCT plays an important role in model selection.}
 One of the most accessible results in singular learning theory is the work related to the widely-applicable Bayesian information criterion (WBIC) \citet{watanabe_widely_2013}, which we briefly review here for completeness.
@@ -154,18 +161,17 @@ The marginal likelihood of a model $\{p(y|x,w): w \in W\}$ is given by
 $
 p(\mathcal D_n) = \int_W p(\mathcal D_n|w) \varphi(w) \,dw
 $
-and can be loosely interpreted as the evidence for the model. Between two models, we should prefer the one with higher model evidence.
-However, since the marginal likelihood is an intractable integral over the parameter space of the model, one needs to consider some approximation.
+and can be loosely interpreted as the evidence for the model. Between two models, we should prefer the one with higher model evidence. However, since the marginal likelihood is an intractable integral over the parameter space of the model, one needs to consider some approximation.
 
-Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of the negative log marginal likelihood, $-\log p(\mathcal D_n)$, using the Laplace approximation, leading to
+Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of the negative log marginal likelihood $-\log p(\mathcal D_n)$ using the Laplace approximation, leading to
 $
 \operatorname{BIC} = nL_n( w_{\operatorname{MLE}}) + \frac{d}{2} \log n.
 $
-Since we want the marginal likelihood of the data for some given model to be \textit{high}, we want the negative log marginal likelihood to be \textit{low}. Thus when $d$ is extremely large as is the case in DNNs, one should almost never adopt a deep network according to the BIC. 
+Since we want the marginal likelihood of the data for some given model to be \textit{high}, we want the negative log marginal likelihood to be \textit{low}. Thus one should almost never adopt a deep neural network according to the BIC. 
 %(aka the log marginal likelihood, aka the free energy). 
 % Given two statistical models of a data source, one should choose (all else being equal) the one with higher model evidence. 
 
-However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and DNNs are not regular. Deep neural networks are \textit{strictly singular} as we illustrated in Appendix \ref{appendix:nn_singular}. 
+However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and deep neural networks are not regular. They are \textit{strictly singular} as we illustrated in Appendix \ref{appendix:nn_singular}. 
 If we have realizability (along with a few more technical conditions), the correct criterion for both regular and strictly singular models was shown in \citet{watanabe_widely_2013} to be 
 %\begin{equation}
 $
@@ -174,7 +180,7 @@ $
 %\label{logmarginal_rlct}
 %\end{equation}
 where $w_0 \in W_0$ and $\lambda$ is the RLCT. 
-Since more complex singularities lead to smaller values of $\lambda$, which we illustrate in Section \ref{section:simple_func}, and deep learning models are highly singular, it is possible for DNNs to have high marginal likelihood -- consistent with their empirical success. 
+Since more complex singularities lead to smaller values of $\lambda$, which we illustrate in Section \ref{section:simple_func}, and deep learning models are highly singular, it is possible for deep neural networks to have high marginal likelihood -- consistent with their empirical success. 
 
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
@@ -211,17 +217,17 @@ where $\lambda$ is the RLCT and $c$ is a constant.\footnote{We are assuming that
 
 %It can be easily shown in this special case that the RLCT $\lambda = d'/2$. In other words, $2\lambda$ is the effective number of parameters in the model.
 
-\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the exponential form  (\ref{eq:gaussian_model_in_w}) and let $\mathcal D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. Suppose the task is regression and the negative log likelihood is
+\textbf{RLCT and likelihood vs temperature}. Let us assume that our statistical model is of the form (\ref{eq:gaussian_model_in_w}) and let $\mathcal D_n = \{ (x_i,y_i) \}_{i=1}^n$ be sampled from the true distribution. The negative log likelihood (\ref{eq:nll}) is
 %\begin{equation}
 $
 L_n(w) = \frac{M}{2} \log(2\pi) + \frac{1}{n} \sum_{i=1}^n \frac{1}{2} \| y_i - f(x_i,w) \|^2\,.
 $
 %\end{equation}
-Given a temperature $T$ consider the quantity
+Given a temperature $T$ consider
 $$
 E(T) = \mathbb{E}^{1/T}_w\big[nL_n(w) \big] = \mathbb{E}_w^{1/T}\Big[ \tfrac{1}{2} \sum_{i=1}^n \| y_i - f(x_i, w) \|^2 \Big] + \frac{nM}{2} \log(2\pi),
 $$
-where $p^{1/T}(w|D_n)$ is the Bayesian posterior at inverse temperature $1/T$ of \ref{general_posterior}.
+where $p^{1/T}(w|D_n)$ is the Bayesian posterior at inverse temperature $1/T$ of (\ref{general_posterior}).
 
 Note that when $n$ is large $L_n(w_0) \approx \frac{M}{2} \log(2\pi)$ for any $w_0 \in W_0$ so for $T \approx 0$ the posterior concentrates around the set $W_0$ of true parameters and $E(T) \approx \frac{nM}{2} \log(2\pi)$. Consider the increase $\Delta E = E(T + \Delta T) - E(T)$ corresponding to an increase in temperature $\Delta T$. It can be shown that 
 $
@@ -541,12 +547,7 @@ We first explain how to think about a neural network in the context of singular 
 \[
 f = A_c \circ \sigma_{c-1} \circ A_{c-1} \cdots \sigma_1 \circ A_1
 \]
-where the $A_l: \mathbb{R}^{d_{l-1}} \lto \mathbb{R}^{d_{l}}$ are affine functions and $\sigma_l: \mathbb{R}^{d_{l}} \lto \mathbb{R}^{d_{l}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of $\mathbb{R}^d$ containing the origin, where $\mathbb{R}^d$ is the space of sequences affine functions $(A_l)_{l=1}^c$ with coordinates denoted $w_1,\ldots,w_d$ so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define
-\begin{equation}
-p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
-\label{eq:gaussian_model_in_w}
-\end{equation}
-We assume the true distribution is realizable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
+where the $A_l: \mathbb{R}^{d_{l-1}} \lto \mathbb{R}^{d_{l}}$ are affine functions and $\sigma_l: \mathbb{R}^{d_{l}} \lto \mathbb{R}^{d_{l}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of $\mathbb{R}^d$ containing the origin, where $\mathbb{R}^d$ is the space of sequences affine functions $(A_l)_{l=1}^c$ with coordinates denoted $w_1,\ldots,w_d$ so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define $p(y|x,w)$ as in (\ref{eq:gaussian_model_in_w}). We assume the true distribution is realizable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
 
 By straightforward calculations we obtain
 \begin{align}
