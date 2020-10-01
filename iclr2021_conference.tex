@@ -81,16 +81,16 @@ To illustrate the relevance of singular learning theory to deep learning, each s
     To every (model, truth, prior) triplet is associated a birational invariant known as the real log canonical threshold. The RLCT can be understood in simple cases as half the number of normal directions to the set of true parameters. We will explain why this matters more than the curvature of those directions (as measured for example by eigenvalues of the Hessian) laying bare some of the confusion over ``flat'' minima. 
 %    \citep{chaudhari2019entropy, smith2017bayesian, jastrzkebski2017three, zhang_energyentropy_2018}.
 
-\textbf{For singular models, the Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models,  the 1) Bayes predictive distribution, 2) \textit{maximum a posteriori} (MAP) estimator, and 3) maximum likelihood estimator (MLE) have asymptotically equivalent generalisation error (as measured by the Kullback-Leibler divergence). This is not so in singular models. We illustrate in our experiments that even ``being Bayesian'' in just the final layers improves generalisation over MAP. Our experiments further confirm that the Laplace approximation of the predictive distribution \citet{le_bayesian_2018,zhang_energyentropy_2018} is not only theoretically inappropriate but performs poorly.
+\textbf{For singular models, the Bayes predictive distribution is superior to MAP and MLE} (Section \ref{section:gen_error}). In regular statistical models,  the 1) Bayes predictive distribution, 2) \textit{maximum a posteriori} (MAP) estimator, and 3) maximum likelihood estimator (MLE) have asymptotically equivalent generalisation error (as measured by the Kullback-Leibler divergence). This is not so in singular models. We illustrate in our experiments that even ``being Bayesian'' in just the final layers improves generalisation over MAP. Our experiments further confirm that the Laplace approximation of the predictive distribution \citet{smith2017bayesian,zhang_energyentropy_2018} is not only theoretically inappropriate but performs poorly.
 
 \textbf{Simpler true distribution means lower RLCT} (Section \ref{section:simple_func}). In singular models the RLCT depends on the (model, truth, prior) triplet whereas in regular models it depends only on the (model, prior) pair. In particular, the complexity of the true distribution relative to the supposed model has an inverse relationship with the RLCT. We verify this experimentally with a simple family of ReLU and SiLU networks. 
 %This makes concrete the theoretical principle that in singular learning theory, the generalisation error depends not just on the network architecture but also on the complexity of the data. %Furthermore we empirically observe that the complexity of a singularity is inversely proportional to the RLCT.
 
 \section{Related work}
 In classical learning theory, generalisation is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures cannot capture the empirical success of DNNs \citep{zhang_understanding_2017}. 
-For instance, over-parameterised neural networks can easily fit random labels \citep{zhang2016understanding,du2018gradient,allen2019convergence} indicating that complexity measures such as Rademacher complexity is very large.
+For instance, over-parameterised neural networks can easily fit random labels \citep{zhang_understanding_2017,du2018gradient,allen2019convergence} indicating that complexity measures such as Rademacher complexity is very large.
 There is also a slate of work on generalisation bounds in deep learning. Uniform convergence bounds \citep{neyshabur2015norm,bartlett2017spectrally,neyshabur2018towards,neyshabur2019towards,arora2018stronger} usually cannot provide non-vacuous bounds.
-Data-dependent bounds \citep{brutzkus2017sgd,li2018learning,allen2019learning} consider the ``classifiability'' of the data distribution in generalisation analysis of neural networks.
+Data-dependent bounds \citep{brutzkus2018sgd,li2018learning,allen2019learning} consider the ``classifiability'' of the data distribution in generalisation analysis of neural networks.
 Algorithm-dependent bounds \citep{daniely2017sgd,arora2019fine,yehudai2019power,cao2019generalization} consider the relation of Gaussian initialisation and the training dynamics of (stochastic) gradient descent to kernels methods \citep{jacot2018neural}.
 
 In contrast to many of the aforementioned works, we are interested in estimating the conditional \textit{distribution} $q(y|x)$. Specifically, we measure the generalisation error of some estimate $\hat q_n(y|x)$ in terms of the Kullback-Leibler divergence between $q$ and $\hat q_n$, see (\ref{eq:Gn}). The next section gives a crash course on singular learning theory. The rest of the paper illustrates the key ideas listed in the introduction. Since we cover much ground in this short note, we will review other relevant work along the way, in particular literature on ``flatness", the Laplace approximation in deep learning, etc. 
@@ -328,7 +328,7 @@ By {\citet[Theorem 1.2 and Theorem 7.2]{watanabe_algebraic_2009}}, we have
 {\E}_n G(n) = \lambda/n + o(1/n)  \text{ if $\hat q_n$ is the Bayes predictive distribution,}
 \label{eq:Bayes_generalisation}
 \end{equation}
-where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$. In contrast, we should note that \citet{zhang_energyentropy_2018} and  \citet{le_bayesian_2018} rely on the Laplace approximation to explain the generalisation of the Bayes predictive distribution though both works acknowledge the Laplace approximate is inappropriate. For completeness, a quick sketch of the derivation of (\ref{eq:Bayes_generalisation}) is provided in Appendix \ref{appendix:generalisation_theory}.
+where $\lambda$ is the RLCT corresponding to the triplet $( p(y|x,\theta), q(y|x), \varphi(\theta) )$. In contrast, we should note that \citet{zhang_energyentropy_2018} and  \citet{smith2017bayesian} rely on the Laplace approximation to explain the generalisation of the Bayes predictive distribution though both works acknowledge the Laplace approximate is inappropriate. For completeness, a quick sketch of the derivation of (\ref{eq:Bayes_generalisation}) is provided in Appendix \ref{appendix:generalisation_theory}.
 Now by {\cite[Theorem 6.4]{watanabe_algebraic_2009}} we have
 \begin{equation}
 {\E}_n G(n) = C/n + o(1/n)   \text{ if $\hat q_n$ is the MAP or MLE,}
@@ -759,7 +759,7 @@ Since models with more complex singularities have smaller RLCTs, this would sugg
 
 \textbf{Simulated data}
 The distribution of $x \in \mathbb R^3$ is set to $q(x)=N(0,I_3)$. 
-In the realisable case, $y \in \mathbb R^3$ is drawn according to $q(y|x) = p(y|x,\theta_0)$ as in (\ref{eq:genexp_model}). In the nonrealisable setting, we set $q(y|x) \propto \exp\{-|| y - h_{w_0}(x) ||^2/2\},$ where $w_0 = (A_0,B_0)$ is drawn according to the PyTorch model initialisation of $h$.
+In the realisable case, $y \in \mathbb R^3$ is drawn according to $q(y|x) = p(y|x,\theta_0)$. In the nonrealisable setting, we set $q(y|x) \propto \exp\{-|| y - h_{w_0}(x) ||^2/2\},$ where $w_0 = (A_0,B_0)$ is drawn according to the PyTorch model initialisation of $h$.
 %???mention $x_test_std$.???
 
 %\textbf{Network architecture} In our experiments, $f = h \circ g$ where $g$ is a sequence of 
