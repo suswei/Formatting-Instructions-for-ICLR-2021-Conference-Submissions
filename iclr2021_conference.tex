@@ -74,7 +74,7 @@ In singular models, the optimal set of parameters forms an analytic set with sin
 
 \section{Introduction}
 
-It has been understood for close to twenty years that neural networks are singular statistical models \citep{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold due to the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities controls quantities of interest in statistical learning theory, e.g., the generalisation error. Singular learning theory \citep{watanabe_algebraic_2009} is the study of singular models and requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal that singular models are different from regular models in practically important ways.
+It has been understood for close to twenty years that neural networks are singular statistical models \citep{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights equivalent to the true model under the Kullback-Leibler divergence forms a real analytic variety which fails to be an analytic manifold due to the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities controls quantities of interest in statistical learning theory, e.g., the generalisation error. Singular learning theory \citep{watanabe_algebraic_2009} is the study of singular models and requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal that singular models are different from regular models in practically important ways.
 To illustrate the relevance of singular learning theory to deep learning, each section of this paper illustrates a key takeaway idea\footnote{The code to reproduce all experiments in the paper will be released on Github. For now, see the zip file.}. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network (DNN)} (Section \ref{section:no_flat_minima}). 
@@ -89,9 +89,9 @@ To illustrate the relevance of singular learning theory to deep learning, each s
 \section{Related work}
 In classical learning theory, generalisation is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures cannot capture the empirical success of DNNs \citep{zhang_understanding_2017}. 
 For instance, over-parameterised neural networks can easily fit random labels \citep{zhang_understanding_2017,du2018gradient,allen2019convergence} indicating that complexity measures such as Rademacher complexity is very large.
-There is also a slate of work on generalisation bounds in deep learning. Uniform convergence bounds \citep{neyshabur2015norm,bartlett2017spectrally,neyshabur2018towards,neyshabur2019towards,arora2018stronger} usually cannot provide non-vacuous bounds.
+There is also a slate of work on generalisation bounds in deep learning. Uniform convergence bounds \citep{neyshabur2015norm,bartlett2017spectrally,neyshabur2019towards,arora2018stronger} usually cannot provide non-vacuous bounds.
 Data-dependent bounds \citep{brutzkus2018sgd,li2018learning,allen2019learning} consider the ``classifiability'' of the data distribution in generalisation analysis of neural networks.
-Algorithm-dependent bounds \citep{daniely2017sgd,arora2019fine,yehudai2019power,cao2019generalization} consider the relation of Gaussian initialisation and the training dynamics of (stochastic) gradient descent to kernels methods \citep{jacot2018neural}.
+Algorithm-dependent bounds \citep{daniely2017sgd,arora2019fine,yehudai2019power,cao2019generalization} consider the relation of Gaussian initialisation and the training dynamics of (stochastic) gradient descent to kernel methods \citep{jacot2018neural}.
 
 In contrast to many of the aforementioned works, we are interested in estimating the conditional \textit{distribution} $q(y|x)$. Specifically, we measure the generalisation error of some estimate $\hat q_n(y|x)$ in terms of the Kullback-Leibler divergence between $q$ and $\hat q_n$, see (\ref{eq:Gn}). The next section gives a crash course on singular learning theory. The rest of the paper illustrates the key ideas listed in the introduction. Since we cover much ground in this short note, we will review other relevant work along the way, in particular literature on ``flatness", the Laplace approximation in deep learning, etc. 
 
@@ -119,7 +119,7 @@ $
 \zeta(z) = \int K(w)^z \varphi(w) \,dw, z \in \mathbb C,
 $
 %\end{equation} 
-where $K(w)$ is the Kullback-Leibler divergence between the model $p(y|x,w)$ and the true distribution $q(y|x)$:
+where $K(w)$ is the Kullback-Leibler (KL) divergence between the model $p(y|x,w)$ and the true distribution $q(y|x)$:
 \begin{equation}
 %$$
     K(w) := \int \!\int q(y|x) \log \frac{ q(y|x) }{ p(y|x,w) } q(x) \,dx \,dy.
@@ -190,7 +190,7 @@ Since DNNs are highly singular $\lambda$ may be much smaller than $d/2$ (Section
 \section{Volume dimension, effective degrees of freedom, and flatness}
 \label{section:no_flat_minima}
 
-\textbf{Volume codimension}. The easiest way to understand the RLCT is as a volume codimension \citep[Theorem 7.1]{watanabe_algebraic_2009}.  Suppose that $W \subseteq \mathbb{R}^d$ and $W_0$ is nonempty, i.e., the true distribution is realisable. We consider a special case in which the Kullback-Leibler distance in a neighborhood of every point $v_0 \in W_0$ has an expression in local coordinates of the form
+\textbf{Volume codimension}. The easiest way to understand the RLCT is as a volume codimension \citep[Theorem 7.1]{watanabe_algebraic_2009}.  Suppose that $W \subseteq \mathbb{R}^d$ and $W_0$ is nonempty, i.e., the true distribution is realisable. We consider a special case in which the KL divergence in a neighborhood of every point $v_0 \in W_0$ has an expression in local coordinates of the form
 \begin{equation}\label{eq:local_Kw}
 K(w) = \sum_{i=1}^{d'} c_i w_i^2,
 \end{equation} %This corresponds to a reduced rank regression model, or a neural network with two linear layers and the identity function: $f_w(x) = BAx$ where $B$ and $A$ are matrices of the appropriate size. 
@@ -410,8 +410,7 @@ Further implementation details of these approximate Bayesian schemes are found i
 From the outset, we expect the Laplace approximation over $w = (A, B)$ to be invalid since the model is singular. We do however expect the last-layer-only Laplace approximation over $B$ to be sound. Next, we expect the MCMC approximation in either the last layer or last two layers to be  superior to the Laplace approximations and to the MAP. We further expect the last-two-layers MCMC to have better generalisation than the last-layer-only MCMC since the former is closer to the Bayes predictive distribution. In summary, we anticipate the following performance order for these five approximate Bayesian schemes (from worst to best): last-two-layers Laplace, last-layer-only Laplace, MAP, last-layer-only MCMC, last-two-layers MCMC.
 
 
-To understand the effect of the network architecture, we varied the following factors:  1) either 1 or 5 layers in $g$, and 2) ReLU or identity activation in $h$.
-The results displayed in Figures \ref{fig:avg_gen_err_fullbatch_realisable} are in line with our stated expectations above, except for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. Table \ref{table:avg_gen_err_fullbatch_realisable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realisable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient. The $R^2$ corresponding to the linear fit is also provided. 
+The results displayed in Figure \ref{fig:avg_gen_err_fullbatch_realisable} are in line with our stated expectations above, \textit{except} for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. In Figures \ref{fig:avg_gen_err_fullbatch_realisable}, we clarify the effect of the network architecture by varying the following factors:  1) either 1 or 5 layers in $g$, and 2) ReLU or identity activation in $h$. Table \ref{table:avg_gen_err_fullbatch_realisable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realisable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient. The $R^2$ corresponding to the linear fit is also provided. 
 In Appendix \ref{appendix:generalizaton}, we also show the corresponding results when 1) the data-generating mechanism and the assumed model do not satisfy the condition of realisability and/or 2) the MAP estimate is obtained via minibatch stochastic gradient descent instead of batch gradient descent. 
 
 
@@ -500,7 +499,7 @@ Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because
 
 \section{Future directions}
 
-Deep neural networks are singular models, and that's good: the presence of singularities is \emph{necessary} for neural networks with large numbers of parameters to have low generalisation error. Singular learning theory clarifies how classical tools such as the Laplace approximation are not just inappropriate in deep learning on narrow technical grounds: the failure of this approximation and the existence of interesting phenomena like the generalisation puzzle have a common cause, namely the existence of degenerate critical points of the Kullback-Leibler function $K(w)$. 
+Deep neural networks are singular models, and that's good: the presence of singularities is \emph{necessary} for neural networks with large numbers of parameters to have low generalisation error. Singular learning theory clarifies how classical tools such as the Laplace approximation are not just inappropriate in deep learning on narrow technical grounds: the failure of this approximation and the existence of interesting phenomena like the generalisation puzzle have a common cause, namely the existence of degenerate critical points of the KL function $K(w)$. 
 Singular learning theory is a promising foundation for a mathematical theory of deep learning. However, much remains to be done. The important open problems include:
 
 \textbf{SGD vs the posterior.} A number of works \citep{Simsekli17,mandt_stochastic_2018,smith_stochastic_2018} suggest that mini-batch SGD may be governed by SDEs that have the posterior distribution as its stationary distribution and this may go towards understanding why SGD works so well for DNNs. %Our preliminary work on this indicates having SGD samples match a target posterior distribution is challenging.
@@ -595,7 +594,7 @@ Lemma \ref{lemma:all_degen} implies that every true parameter for a nontrivial R
 
 The well-known positive scale invariance of ReLU networks \citep{phuong2020functional} is responsible for the linear dependence of Lemma \ref{lemma:reln}, in the precise sense that the given differential operator is the infinitesimal generator \citep[\S IV.3]{boothby1986introduction} of the scaling symmetry. However, this is only one source of degeneracy or singularity in ReLU networks. The degeneracy, as measured by the RLCT, is much lower than one would expect on the basis of this symmetry alone (see Section \ref{section:simple_func}).
 
-\begin{example}\label{example:not_analytic} In general the Kullback-Leibler function $K(w)$ for ReLU networks is not analytic. For the minimal counterexample, let $q(x)$ be uniform on $[-N, N]$ and zero outside and consider
+\begin{example}\label{example:not_analytic} In general the KL function $K(w)$ for ReLU networks is not analytic. For the minimal counterexample, let $q(x)$ be uniform on $[-N, N]$ and zero outside and consider
 \[
 K(b) = \int q(x) ( \operatorname{ReLU}(x - b) - \operatorname{ReLU}(x) )^2 dx\,.
 \]
