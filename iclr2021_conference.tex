@@ -88,7 +88,7 @@ To illustrate the relevance of singular learning theory to deep learning, each s
 
 \section{Related work}
 In classical learning theory, generalisation is explained by measures of capacity such as the $l_2$ norm, Radamacher complexity, and VC dimension \citep{bousquet2003introduction}. It has become clear however that these measures cannot capture the empirical success of DNNs \citep{zhang_understanding_2017}. 
-For instance, over-parameterised neural networks can easily fit random labels \citep{zhang_understanding_2017,du2018gradient,allen2019convergence} indicating that complexity measures such as Rademacher complexity is very large.
+For instance, over-parameterised neural networks can easily fit random labels \citep{zhang_understanding_2017,du2018gradient,allen2019convergence} indicating that complexity measures such as Rademacher complexity are very large.
 There is also a slate of work on generalisation bounds in deep learning. Uniform convergence bounds \citep{neyshabur2015norm,bartlett2017spectrally,neyshabur2019towards,arora2018stronger} usually cannot provide non-vacuous bounds.
 Data-dependent bounds \citep{brutzkus2018sgd,li2018learning,allen2019learning} consider the ``classifiability'' of the data distribution in generalisation analysis of neural networks.
 Algorithm-dependent bounds \citep{daniely2017sgd,arora2019fine,yehudai2019power,cao2019generalization} consider the relation of Gaussian initialisation and the training dynamics of (stochastic) gradient descent to kernel methods \citep{jacot2018neural}.
@@ -144,7 +144,7 @@ The condition of realisability is critical to standard results in singular learn
 
 \textbf{Neural networks in singular learning theory.} Let $W \subseteq \mathbb{R}^d$ be the space of weights of a neural network of some fixed architecture, and let $f(x,w): \mathbb{R}^N \times W \lto \mathbb{R}^M$ be the associated function. We shall focus on the regression task and study the model
 \begin{equation}
-p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
+p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)
 \label{eq:gaussian_model_in_w}
 \end{equation}
 but singular learning theory can also apply to classification, for instance. 
@@ -166,25 +166,13 @@ p(\mathcal D_n) = \int_W p(\mathcal D_n|w) \varphi(w) \,dw
 $
 and can be loosely interpreted as the evidence for the model. Between two models, we should prefer the one with higher model evidence. However, since the marginal likelihood is an intractable integral over the parameter space of the model, one needs to consider some approximation.
 
-Recall that the well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of $-\log p(\mathcal D_n)$ using the Laplace approximation, leading to
+The well-known Bayesian Information Criterion (BIC) derives from an asymptotic approximation of $-\log p(\mathcal D_n)$ using the Laplace approximation, leading to
 $
 \operatorname{BIC} = nL_n( w_{\operatorname{MLE}}) + \frac{d}{2} \log n.
 $
-Since we want the marginal likelihood of the data for some given model to be \textit{high}. Thus one should almost never adopt a DNN according to the BIC, since in such models $d$ may be very large.
-%(aka the log marginal likelihood, aka the free energy). 
-% Given two statistical models of a data source, one should choose (all else being equal) the one with higher model evidence. 
-
-However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and DNNs are not regular. 
+Since we want the marginal likelihood of the data for some given model to be high one should almost never adopt a DNN according to the BIC, since in such models $d$ may be very large. However, this argument contains a serious mathematical error: the Laplace approximation used to derive BIC only applies to \emph{regular} statistical models, and DNNs are not regular. 
 %They are \textit{strictly singular} as we illustrated in Appendix \ref{appendix:nn_singular}. If we have realisability (along with a few more technical conditions), 
-The correct criterion for both regular and strictly singular models was shown in \citet{watanabe_widely_2013} to be 
-%\begin{equation}
-$$
-nL_n(w_0) + \lambda \log n,
-$$
-%\label{logmarginal_rlct}
-%\end{equation}
-where $w_0 \in W_0$ and $\lambda$ is the RLCT. 
-Since DNNs are highly singular $\lambda$ may be much smaller than $d/2$ (Section \ref{section:simple_func}) it is possible for DNNs to have high marginal likelihood -- consistent with their empirical success. 
+The correct criterion for both regular and strictly singular models was shown in \citet{watanabe_widely_2013} to be $nL_n(w_0) + \lambda \log n$ where $w_0 \in W_0$ and $\lambda$ is the RLCT. Since DNNs are highly singular $\lambda$ may be much smaller than $d/2$ (Section \ref{section:simple_func}) it is possible for DNNs to have high marginal likelihood -- consistent with their empirical success. 
 
 
 \section{Volume dimension, effective degrees of freedom, and flatness}
@@ -316,7 +304,7 @@ While in a regular statistical model, the three estimators 1) Bayes predictive d
 % $$
 % In general the normalizing constant in the posterior distribution is an intractable integral. When $f_\theta$ is a DNN, this is especially true. Though many approximate Bayesian techniques exist for sampling the posterior, e.g., MC, variational inference, doing this effectively for a DNN is still an open challenge. 
 % Leaving aside the fact that the posterior is hard to sample, let's see why we should care about the posterior distribution in the first place. 
-More precisely, let $\hat q_n(y|x)$ be some estimate of the true unknown conditional density $q(y|x)$ based on the dataset $\mathcal D_n$. The generalisation error of the predictor $\hat q_n(y|x)$ is defined as
+More precisely, let $\hat q_n(y|x)$ be some estimate of the true unknown conditional density $q(y|x)$ based on the dataset $\mathcal D_n$. The generalisation error of the predictor $\hat q_n(y|x)$ is
 \begin{equation}
 G(n) := KL (q(y|x) || \hat q_n(y|x) ) = \int \!\int q(y|x) \log \frac{q(y|x)}{\hat q_n(y|x)} q(x) \,dy  \,dx.
 \label{eq:Gn}
@@ -339,14 +327,14 @@ That the RLCT has such a simple relationship to the Bayesian generalisation erro
 
 We set out to investigate whether certain very simple approximations of the Bayes predictive distribution can already demonstrate superiority over point estimators. 
 %To approximate the Bayes predictive distribution, we consider marginalization over the final layers of the neural network with earlier layers frozen at the MAP point estimate. 
-Suppose the input-target relationship is modeled as in \ref{eq:gaussian_model_in_w} but we write $\theta$ instead of $w$.
+Suppose the input-target relationship is modeled as in (\ref{eq:gaussian_model_in_w}) but we write $\theta$ instead of $w$.
 %\begin{equation}
 %p(y|x,\theta) \propto \exp\{-|| y - f_\theta(x) ||^2/2\},
 %\label{eq:genexp_model}
 %\end{equation}
 %where $f_\theta$ is a multilayer neural network.
 We set $q(x) = N(0,I_3)$. 
-For now consider the realisable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialisation in PyTorch when model  \ref{eq:gaussian_model_in_w}  is instantiated. We calculate $\E_n G(n)$ using multiple datasets $\mathcal D_n$ and a large testing set, see Appendix \ref{appendix:generalizaton} for more details. 
+For now consider the realisable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0$ is drawn randomly according to the default initialisation in PyTorch when model (\ref{eq:gaussian_model_in_w}) is instantiated. We calculate $\E_n G(n)$ using multiple datasets $\mathcal D_n$ and a large testing set, see Appendix \ref{appendix:generalizaton} for more details. 
 
 \begin{figure}[h!]
 	\begin{center}
@@ -410,7 +398,7 @@ Further implementation details of these approximate Bayesian schemes are found i
 From the outset, we expect the Laplace approximation over $w = (A, B)$ to be invalid since the model is singular. We do however expect the last-layer-only Laplace approximation over $B$ to be sound. Next, we expect the MCMC approximation in either the last layer or last two layers to be  superior to the Laplace approximations and to the MAP. We further expect the last-two-layers MCMC to have better generalisation than the last-layer-only MCMC since the former is closer to the Bayes predictive distribution. In summary, we anticipate the following performance order for these five approximate Bayesian schemes (from worst to best): last-two-layers Laplace, last-layer-only Laplace, MAP, last-layer-only MCMC, last-two-layers MCMC.
 
 
-The results displayed in Figure \ref{fig:avg_gen_err_fullbatch_realisable} are in line with our stated expectations above, \textit{except} for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. In Figures \ref{fig:avg_gen_err_fullbatch_realisable}, we clarify the effect of the network architecture by varying the following factors:  1) either 1 or 5 layers in $g$, and 2) ReLU or identity activation in $h$. Table \ref{table:avg_gen_err_fullbatch_realisable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realisable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient. The $R^2$ corresponding to the linear fit is also provided. 
+The results displayed in Figure \ref{fig:avg_gen_err_fullbatch_realisable} are in line with our stated expectations above, \textit{except} for the surprise that the last-layer-only MCMC approximation is often superior to the last-two-layers MCMC approximation. This may arise from the fact that MCMC finds the singular setting in the last-two-layers more challenging. In Figure \ref{fig:avg_gen_err_fullbatch_realisable}, we clarify the effect of the network architecture by varying the following factors:  1) either 1 or 5 layers in $g$, and 2) ReLU or identity activation in $h$. Table \ref{table:avg_gen_err_fullbatch_realisable} is a companion to Figure \ref{fig:avg_gen_err_fullbatch_realisable} and tabulates for each approximation scheme the slope of $1/n$ versus ${\E}_n G(n)$, also known as the learning coefficient. The $R^2$ corresponding to the linear fit is also provided. 
 In Appendix \ref{appendix:generalizaton}, we also show the corresponding results when 1) the data-generating mechanism and the assumed model do not satisfy the condition of realisability and/or 2) the MAP estimate is obtained via minibatch stochastic gradient descent instead of batch gradient descent. 
 
 
@@ -506,9 +494,9 @@ Singular learning theory is a promising foundation for a mathematical theory of 
 
 \textbf{RLCT estimation for large networks.} 
 Theoretical RLCTs have been cataloged for small neural networks, albeit at significant effort\footnote{Hironaka's resolution of singularities guarantees existence. However it is difficult to do the required blowup transformations in high dimensions to obtain the standard form.} \citep{aoyagi_stochastic_2005, aoyagi_resolution_2006}. We believe RLCT estimation in these small networks should be standard benchmarks for any method that purports to approximate the Bayesian posterior of a neural network.
-No theoretical RLCTs or estimation procedure are known for modern DNNs. Though MCMC provides the gold standard it does not scale to large networks.
+No theoretical RLCTs or estimation procedure are known for modern DNNs. Although MCMC provides the gold standard it does not scale to large networks.
 % We made a (unsuccessful) foray into variational inference for sampling from the Bayesian posterior but this did not prove sufficient for accurate RLCT estimation. 
-The intractability of RLCT estimation for DNNs is not a significant deterrent to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency. We also demonstrated the utility of singular learning results such as (\ref{eq:Bayes_generalisation}) and (\ref{eq:map_generalisation}) which can be exploited even without knowledge of the exact value of the RLCT.
+The intractability of RLCT estimation for DNNs is not necessarily an obstacle to reaping the insights offered by singular learning theory. For instance, used in the context of model selection, the exact value of the RLCT is not as important as model selection consistency. We also demonstrated the utility of singular learning results such as (\ref{eq:Bayes_generalisation}) and (\ref{eq:map_generalisation}) which can be exploited even without knowledge of the exact value of the RLCT.
 
 \textbf{Real-world distributions are unrealisable.}
 The existence of power laws in neural language model training \citep{hestness_2017,kaplan2020scaling} is one of the most remarkable experimental results in deep learning. These power laws may be a sign of interesting new phenomena in singular learning theory when the true distribution is unrealisable.
