@@ -365,7 +365,7 @@ For now consider the realisable case, $q(y|x) = p(y|x,\theta_0)$ where $\theta_0
 
 
 
- Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{map} = (v_{map}, w_{\operatorname{MAP}})$ be the MAP estimate for $\theta$ using batch gradient descent. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{This is similar in spirit to \citet{kristiadi_being_2020} who claim that even ``being Bayesian a little bit" fixes overconfidence. They approach this via the Laplace approximation for the final layer of a ReLU network. It is also worth noting that \citet{kristiadi_being_2020} do not attempt to formalize what it means to "fix overconfidence"; the precise statement should be in terms of $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{map}$ and perform MCMC over $w$. 
+ Since $f$ is a hierarchical model, let's write it as $f_\theta(\cdot) = h(g(\cdot;v);w)$ with the dimension of $w$ being relatively small. Let $\theta_{\operatorname{MAP}} = (v_{\operatorname{MAP}}, w_{\operatorname{MAP}})$ be the MAP estimate for $\theta$ using batch gradient descent. The idea of our simple approximate Bayesian scheme is to freeze the network weights at the MAP estimate for early layers and perform approximate Bayesian inference for the final layers\footnote{This is similar in spirit to \citet{kristiadi_being_2020} who claim that even ``being Bayesian a little bit" fixes overconfidence. They approach this via the Laplace approximation for the final layer of a ReLU network. It is also worth noting that \citet{kristiadi_being_2020} do not attempt to formalize what it means to "fix overconfidence"; the precise statement should be in terms of $G(n)$.}. e.g., freeze the parameters of $g$ at $v_{\operatorname{MAP}}$ and perform MCMC over $w$. 
 Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward ReLU block with each hidden layer having 5 hidden units and $h: \mathbb R^3 \to \mathbb R^3$ is either $BAx$ or $B \operatorname{ReLU}(Ax)$ where $A \in \mathbb R^{3 \times r}, B \in \mathbb R^{r \times 3}$. We set $r=3$. We shall consider 1 or 5 hidden layers for $g$. 
 
 \begin{table}[h!]%
@@ -396,13 +396,13 @@ Throughout the experiments, $g: \mathbb R^3 \to \mathbb R^3$ is a feedforward Re
 %Since we consider $h$ to be a composition of two layers, let's write $h(\cdot;w)=h_2( h_1(\cdot; A); B)$ where $w=(A,B)$.
 To approximate the Bayes predictive distribution, we perform either the Laplace approximation or the NUTS variant of HMC \citep{hoffman2014no} in the last two layers, i.e., performing inference over $A,B$ in
 %\begin{equation}
-$h(g(\cdot;v_{map});A,B).$
+$h(g(\cdot;v_{\operatorname{MAP}});A,B).$
 %\label{eq:last_two_layers}
 %\end{equation}
 Note that MCMC is operating in a space of 18 dimensions in this case, which is small enough for us to expect MCMC to perform well.
 We also implemented the Laplace approximation and NUTS in the last layer only, i.e. performing inference over $B$ in
 %\begin{equation}
-$h_2(h_1(g(\cdot;v_{map});A_{map}); B).$
+$h_2(h_1(g(\cdot;v_{\operatorname{MAP}});A_{\operatorname{MAP}}); B).$
 %\label{eq:last_layer}
 %\end{equation}
 Further implementation details of these approximate Bayesian schemes are found in Appendix \ref{appendix:generalizaton}.
@@ -790,7 +790,7 @@ Using a held-out-test set $T_{n'} = \{(x_i',y_i')\}_{i=1}^{n'}$, we calculate th
 Assume the held-out test set is large enough so that the difference between ${\E}_n G(n)$ and (\ref{eq:computed_avgGn}) is negligible. We will refer to them interchangeably as the average generalisation error. In our experiments we use $n' = 10,000$ and $30$ draws of the dataset $\mathcal{D}_n$ to estimate ${\E}_n$.
 
 \textbf{Last layer(s) inference}
-Without loss of generality, we discuss performing inference in the $w$ parameters of $h$ while freezing the parameters of $g$ at the MAP estimate. The steps easily extend to performing inference over the final layer only of $f = h \circ g$. Let $\tilde x_i = g_{v_{map}}(x_i)$. Define a new transformed dataset $\tilde{\mathcal D}_n = \{(\tilde x_i, y_i) \}_{i=1}^n$. We take the prior on $w$ to be standard Gaussian. 
+Without loss of generality, we discuss performing inference in the $w$ parameters of $h$ while freezing the parameters of $g$ at the MAP estimate. The steps easily extend to performing inference over the final layer only of $f = h \circ g$. Let $\tilde x_i = g_{v_{\operatorname{MAP}}}(x_i)$. Define a new transformed dataset $\tilde{\mathcal D}_n = \{(\tilde x_i, y_i) \}_{i=1}^n$. We take the prior on $w$ to be standard Gaussian. 
 Define the posterior over $w$ given $\tilde{\mathcal D}_n$ as:
 \begin{equation}
 p(w | \tilde{\mathcal D}_n) \propto p(\tilde{\mathcal D}_n | w) \varphi(w) = \Pi_{i=1}^n \exp\{-|| y_i - h_w(\tilde x_i) ||^2/2\} \varphi(w)
@@ -798,17 +798,17 @@ p(w | \tilde{\mathcal D}_n) \propto p(\tilde{\mathcal D}_n | w) \varphi(w) = \Pi
 \end{equation}
 Define the following approximation to the Bayesian predictive distribution
 $$
-\tilde p(y|x, \mathcal D_n) = \int p(y|x,(v_{map},w)) p(w|\tilde{\mathcal D}_n) \,dw.
+\tilde p(y|x, \mathcal D_n) = \int p(y|x,(v_{\operatorname{MAP}},w)) p(w|\tilde{\mathcal D}_n) \,dw.
 $$
 Let $w_1,\ldots,w_R$ be some approximate samples from $p(w | \tilde{\mathcal D}_n)$. Then we approximate $\tilde p(y|x, \mathcal D_n)$ with
 \[
-\frac{1}{R} \sum_{r=1}^R p(y|x,(v_{map},w_r))
+\frac{1}{R} \sum_{r=1}^R p(y|x,(v_{\operatorname{MAP}},w_r))
 \]
 where $R$ is a large number, set to 1000 in our experiments. We consider the Laplace approximation and the NUTS variant of HMC for drawing samples from $p(w | \tilde{\mathcal D}_n)$:
 
 \begin{itemize}
 	\item \textbf{Laplace in the last layer(s)}
-	Recall $\theta_{map} = (v_{map}, w_{\operatorname{MAP}})$ is the MAP estimate for $f_\theta$ trained with the data $\mathcal D_n$. With the Laplace approximation, we draw $w_1,\ldots w_R$ from the Gaussian
+	Recall $\theta_{\operatorname{MAP}} = (v_{\operatorname{MAP}}, w_{\operatorname{MAP}})$ is the MAP estimate for $f_\theta$ trained with the data $\mathcal D_n$. With the Laplace approximation, we draw $w_1,\ldots w_R$ from the Gaussian
 	\[
 	N(w_{\operatorname{MAP}}, \Sigma)
 	\]
@@ -935,19 +935,19 @@ where $R$ is a large number, set to 1000 in our experiments. We consider the Lap
 	\end{tiny}
 \end{table}
 
-%We have to be careful when we speak of the generalisation error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{map}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
+%We have to be careful when we speak of the generalisation error of the approximate predictive distribution above. For a proper comparison to ${\E}_n G_{\operatorname{MAP}}(n)$ or ${\E}_n G_{mle}(n)$, we have to look at 
 %\begin{equation}
 %{\E}_n G_{mcmcrr}(n) =  KL (q(y|x) || p_{mcmcrr}(y|x, \mathcal D_n) )
 %\label{G_LLB}
 %\end{equation}
-%where ${\E}_n$ averages out the randomness of both $D_n$ and  $v_{map}$. 
+%where ${\E}_n$ averages out the randomness of both $D_n$ and  $v_{\operatorname{MAP}}$. 
 %
-%An alternative is to condition on $v_{map}$, using $g_{v_{map}}$ as a feature extractor in a preprocessing step. Then, assuming realisability $q(y|x) = p(y|x,(v_0,w_0))$ we may examine the generalizaton error
+%An alternative is to condition on $v_{\operatorname{MAP}}$, using $g_{v_{\operatorname{MAP}}}$ as a feature extractor in a preprocessing step. Then, assuming realisability $q(y|x) = p(y|x,(v_0,w_0))$ we may examine the generalizaton error
 %\begin{equation}
-%E_{\mathcal D_n | v_{map}} KL( p(y|x,(v_{map},w_0)) || p_{mcmcrr}(y|x, \mathcal D_n) )
+%E_{\mathcal D_n | v_{\operatorname{MAP}}} KL( p(y|x,(v_{\operatorname{MAP}},w_0)) || p_{mcmcrr}(y|x, \mathcal D_n) )
 %\label{G_LLB_vfixed}
 %\end{equation}
-%The average generalisation error in \eqref{G_LLB_vfixed} is distinctly different from the one in \eqref{G_LLB}. The nice thing about \eqref{G_LLB_vfixed} is that we know its asymptotic expansion is $\lambda/n$ where $\lambda$ corresponds to the triplet $( p(y|x,(v_{map},w_0)), p(y| x, (v_{map},w)), \varphi(w))$. For certain functions $h_w$ where the true $\lambda$ is known, we can verify this in the experiments. (Not implemented yet).
+%The average generalisation error in \eqref{G_LLB_vfixed} is distinctly different from the one in \eqref{G_LLB}. The nice thing about \eqref{G_LLB_vfixed} is that we know its asymptotic expansion is $\lambda/n$ where $\lambda$ corresponds to the triplet $( p(y|x,(v_{\operatorname{MAP}},w_0)), p(y| x, (v_{\operatorname{MAP}},w)), \varphi(w))$. For certain functions $h_w$ where the true $\lambda$ is known, we can verify this in the experiments. (Not implemented yet).
 
 \begin{figure}[h!]
 	\begin{center}
