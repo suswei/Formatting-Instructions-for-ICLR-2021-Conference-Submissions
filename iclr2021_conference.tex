@@ -74,7 +74,7 @@ In singular models, the optimal set of parameters forms an analytic set with sin
 
 \section{Introduction}
 
-It has been understood for close to twenty years that neural networks are singular statistical models \cite{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold due to the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities controls quantities of interest in statistical learning theory, e.g., the generalisation error. Singular learning theory \citep{watanabe_algebraic_2009} is the study of singular models and requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
+It has been understood for close to twenty years that neural networks are singular statistical models \citep{amari_learning_2003, watanabe_almost_2007}. This means, in particular, that the set of network weights equivalent to the true model (under the Kullback-Leibler divergence) forms a real analytic variety which fails to be an analytic manifold due to the presence of singularities. It has been shown by Sumio Watanabe that the geometry of these singularities controls quantities of interest in statistical learning theory, e.g., the generalisation error. Singular learning theory \citep{watanabe_algebraic_2009} is the study of singular models and requires very different tools from the study of regular statistical models. The breadth of knowledge demanded by singular learning theory -- Bayesian statistics, empirical processes and algebraic geometry -- is rewarded with profound and surprising results which reveal singular models are different from regular models in practically important ways.
 To illustrate the relevance of singular learning theory to deep learning, each section of this paper illustrates a key takeaway idea\footnote{The code to reproduce all experiments in the paper will be released on Github. For now, see the zip file.}. 
 
 \textbf{The real log canonical threshold (RLCT) is the correct way to count the effective number of parameters in a deep neural network (DNN)} (Section \ref{section:no_flat_minima}). 
@@ -206,7 +206,7 @@ d' = 2 \lim_{t \to 0} \frac{\log\big\{V(at,v_0)/V(t,v_0)\big\}}{\log(a)}
 \ee
 for any $a > 0$, $a \neq 1$. We refer to the right hand side of (\ref{eq:limit_volumedim}) as the \emph{volume codimension} at $v_0$. 
 
-The function $K(w)$ has the special form (\ref{eq:local_Kw}) locally with $d' = d$ if the statistical model is regular (and realisable) and with $d' < d$ in some singular models such as reduced rank regression (Appendix \ref{appendix:reducedrank}). While such a local form does not exist for a general singular model (in particular for neural networks) nonetheless under natural conditions Watanabe shows in \citet[Theorem 7.1]{watanabe_algebraic_2009} that
+The function $K(w)$ has the special form (\ref{eq:local_Kw}) locally with $d' = d$ if the statistical model is regular (and realisable) and with $d' < d$ in some singular models such as reduced rank regression (Appendix \ref{appendix:reducedrank}). While such a local form does not exist for a general singular model (in particular for neural networks) nonetheless under natural conditions \citep[Theorem 7.1]{watanabe_algebraic_2009} we have
 $
 V(t,v_0) = c t^\lambda + o( t^\lambda)
 $
@@ -409,7 +409,7 @@ In Appendix \ref{appendix:generalizaton}, we also show the corresponding results
 
 \section{Simple functions and complex singularities}\label{section:simple_func}
 
-In singular models the RLCT varies with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. As the true distribution becomes more complicated relative to the supposed model, the singularities of the analytic variety of true parameters should become simpler and hence the RLCT should increase \citep[\S 7.6]{watanabe_algebraic_2009}. Our experiments are inspired by \citep[\S 7.2]{watanabe_algebraic_2009} where $\operatorname{tanh}(x)$ networks are considered and the true distribution (associated to the zero network) is held fixed while the number of hidden nodes is increased.
+In singular models the RLCT may vary with the true distribution (in contrast to regular models) and in this section we examine this phenomenon in a simple example. As the true distribution becomes more complicated relative to the supposed model, the singularities of the analytic variety of true parameters should become simpler and hence the RLCT should increase \citep[\S 7.6]{watanabe_algebraic_2009}. Our experiments are inspired by \citep[\S 7.2]{watanabe_algebraic_2009} where $\operatorname{tanh}(x)$ networks are considered and the true distribution (associated to the zero network) is held fixed while the number of hidden nodes is increased.
 
 Consider the model $p(y|x,w)$ in (\ref{eq:gaussian_model_in_w}) where
 $
@@ -484,9 +484,9 @@ Given an integer $3 \le m \le H$ we define a network $s_m \in W$ and $q_m(y|x) :
 
 We let $\varphi$ be a normal distribution $N(0,50^2)$ and estimate the RLCTs of the triples $(p, q_m, \varphi)$. We conducted the experiments with $H = 5$, $n = 1000$. For each $m \in \{3,4,5\}$, Table \ref{table:hyper} shows the estimated RLCT. Algorithm \ref{alg:thm4} in Appendix \ref{appendix:RLCT_estimation} details the estimation procedure which we base on \citep[Theorem 4]{watanabe_widely_2013}. As predicted the RLCT increases with $m$ verifying that in this case, the simpler true distributions give rise to more complex singularities.
 
-Note thatå the dimension of $W$ is $d = 21$ and so if the model were regular the RLCT would be $10.5$. It can be shown that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. If such a model were minimally singular its RLCT would be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula. So the function $K$ is not quadratic locally near $W_0$.
+Note thatå the dimension of $W$ is $d = 21$ and so if the model were regular the RLCT would be $10.5$. It can be shown that when $m = H$ the set of true parameters $W_0 \subseteq W$ is a regular submanifold of dimension $m$. If such a model were minimally singular its RLCT would be $\tfrac{1}{2}( (4m + 1) - m ) = \tfrac{1}{2}( 3m + 1 )$. In the case $m = 5$ we observe an RLCT more than an order of magnitude less than the value $8$ predicted by this formula. So the function $K$ does not behave like a quadratic form near $W_0$.
 
-Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because the function $K(w)$ is not necessarily analytic (Example \ref{example:not_analytic}). However we observe empirically that the predicted linear relationship between $E^\beta_w[nL_n(w)]$ and $1/\beta$ holds in our small ReLU networks, and that the RLCT estimates are close to those for the two-layer SiLU network \citep{hendrycks2016gaussian} which is analytic (the SiLU or sigmoid weighted linear unit is $\sigma(x) = x (1 + e^{-\tau x})^{-1}$ which approaches the ReLU as $\tau \to \infty$. We use $\tau = 100.0$ in our experiments). The competitive performance of SiLU on standard benchmarks \cite{ramachandran2017swish} shows that the non-analyticity of ReLU is probably not fundamental.
+Strictly speaking it is incorrect to speak of the RLCT of a ReLU network because the function $K(w)$ is not necessarily analytic (Example \ref{example:not_analytic}). However we observe empirically that the predicted linear relationship between $E^\beta_w[nL_n(w)]$ and $1/\beta$ holds in our small ReLU networks (see the $R^2$ values in Table \ref{table:hyper}) and that the RLCT estimates are close to those for the two-layer SiLU network \citep{hendrycks2016gaussian} which is analytic (the SiLU or sigmoid weighted linear unit is $\sigma(x) = x (1 + e^{-\tau x})^{-1}$ which approaches the ReLU as $\tau \to \infty$. We use $\tau = 100.0$ in our experiments). The competitive performance of SiLU on standard benchmarks \cite{ramachandran2017swish} shows that the non-analyticity of ReLU is probably not fundamental.
 
 % The RLCT estimates for the two-layer SiLU network (\ref{??}) provide evidence that this model is not minimally singular, when combined with the symmetric true distribution $q^{SiLU}_m(x,y)$. Starting from the weight vector of this true distribution, varying $c$ or any of the $b_i$ independently takes the model off the set of true parameters, so that the normal bundle has dimension $> H + 1$. Hence the RLCT in the minimally singular case would be bounded below by $3$ in the case $H = 5$, but our estimates for the RLCT are $< 0.6$.
 
@@ -554,9 +554,9 @@ with the convention that $a^0 = x$ is the input and $u^c = y$ is the output.
 
 In the case where $\sigma = \operatorname{ReLU}$ the partial derivatives $\frac{\partial}{\partial w_j} f$ do not exist on all of $\mathbb{R}^N$. However given $w \in W$ we let $\mathcal{D}(w)$ denote the complement in $\mathbb{R}^N$ of the union over all hidden nodes of the associated decision boundary, that is
 \[
-\mathbb{R}^N \setminus \mathcal{D}(w) = \bigcup_{1 \le l < c} \bigcup_{1 \le j \le d_l} \{ x \in \mathbb{R}^N \,|\, u^l_j(x) = 0 \}\,.
+\mathbb{R}^N \setminus \mathcal{D}(w) = \bigcup_{1 \le l < c} \bigcup_{1 \le j \le d_l} \{ x \in \mathbb{R}^N : u^l_j(x) = 0 \}\,.
 \]
-The partial derivative $\frac{\partial}{\partial w_j} f$ exists on the open subset $\{ (x,w) | x \in \mathcal{D}(w) \}$ of $\mathbb{R}^N \times W$. 
+The partial derivative $\frac{\partial}{\partial w_j} f$ exists on the open subset $\{ (x,w) : x \in \mathcal{D}(w) \}$ of $\mathbb{R}^N \times W$. 
 
 \begin{lemma}\label{lemma:reln}
 	Suppose $\sigma = \operatorname{ReLU}$ and there are $c > 1$ layers. For any hidden neuron $1 \le j \le d_l$ in layer $l$ with $1 \le l < c$ there is a differential equation
@@ -585,7 +585,7 @@ The claim immediately follows.
 Lemma \ref{lemma:all_degen} implies that every true parameter for a nontrivial ReLU network is a degenerate critical point of $K$. Hence in the study of nontrivial ReLU networks it is never appropriate to divide by the determinant of the Hessian of $K$ at a true parameter, and in particular Laplace or saddle-point approximations at a true parameter are invalid.
 \end{remark}
 
-The well-known positive scale invariance of ReLU networks \citep{phuong2020functional} is responsible for the linear dependence of Lemma \ref{lemma:reln}, but this is only one source of degeneracy or singularity in ReLU networks. The degeneracy, as measured by the RLCT, is much lower than one would expect on the basis of this symmetry alone (see Section \ref{section:simple_func}).
+The well-known positive scale invariance of ReLU networks \citep{phuong2020functional} is responsible for the linear dependence of Lemma \ref{lemma:reln}, in the precise sense that the given differential operator is the infinitesimal generator \citep[\S IV.3]{boothby1986introduction} of the scaling symmetry. However, this is only one source of degeneracy or singularity in ReLU networks. The degeneracy, as measured by the RLCT, is much lower than one would expect on the basis of this symmetry alone (see Section \ref{section:simple_func}).
 
 \begin{example}\label{example:not_analytic} In general the Kullback-Leibler function $K(w)$ for ReLU networks is not analytic. For the minimal counterexample, let $q(x)$ be uniform on $[-N, N]$ and zero outside and consider
 \[
