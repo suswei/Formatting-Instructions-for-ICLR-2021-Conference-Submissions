@@ -147,8 +147,8 @@ The condition of realisability is critical to standard results in singular learn
 p(y|x,w) = \frac{1}{(2 \pi)^{M/2}} \exp\Big(-\tfrac{1}{2} \| y - f(x,w) \|^2 \Big)\,.
 \label{eq:gaussian_model_in_w}
 \end{equation}
-but singular learning theory can also apply to classification for instance. 
-It is proven in Appendix \ref{appendix:nn_singular} that for feedforward ReLU networks not only is the model strictly singular but the matrix $I(w)$ is degenerate for all nontrivial weight vectors and the Hessian of $K(w)$ is degenerate at every point of $W_0$.
+but singular learning theory can also apply to classification, for instance. 
+It is routine to check (see Appendix \ref{appendix:nn_singular}) that for feedforward ReLU networks not only is the model strictly singular but the matrix $I(w)$ is degenerate for all nontrivial weight vectors and the Hessian of $K(w)$ is degenerate at every point of $W_0$.
 
 % The work of Sumio Watanabe on singular learning theory \citet{watanabe_algebraic_2009} suggests that the \textit{real log canonical threshold} (RLCT) of a DNN is suitable for measuring its effective number of parameters (see Section ???). 
 \textbf{RLCT plays an important role in model selection.}
@@ -214,8 +214,7 @@ The function $K(w)$ has the special form (\ref{eq:local_Kw}) locally with $d' = 
 $
 V(t,v_0) = c t^\lambda + o( t^\lambda)
 $
-where $\lambda$ is the local RLCT and $c$ is a constant.
-We are assuming that in a sufficiently small neighborhood of $v_0$ the point RLCT at $v_0$ \citep[Definition 2.7]{watanabe_algebraic_2009} is less than or equal to the RLCT at every point in the neighborhood so that the multiplicity $m = 1$, see Section 7.6 of \citep{watanabe_algebraic_2009} for relevant discussion.
+where $c$ is a constant. We assume that in a sufficiently small neighborhood of $v_0$ the point RLCT $\lambda$ at $v_0$ \citep[Definition 2.7]{watanabe_algebraic_2009} is less than or equal to the RLCT at every point in the neighborhood so that the multiplicity $m = 1$, see Section 7.6 of \citep{watanabe_algebraic_2009} for relevant discussion.
 It follows that the limit on the right hand side of  (\ref{eq:limit_volumedim}) exists and is equal to $\lambda$. In particular $\lambda = d'/2$ in the minimally singular case.
 
 Note that for strictly singular models such as DNNs $2 \lambda$ may not be an integer. This may be disconcerting but the connection between the RLCT, generalisation error and volume dimension strongly suggests that $2 \lambda$ is nonetheless the only geometrically meaningful ``count'' of the effective number of parameters near $v_0$. 
@@ -460,7 +459,6 @@ is a two-layer ReLU network with weight vector $w = (\{w_i\}_{i=1}^H, \{b_i\}_{i
 	\end{tiny}
 \end{table}
 
-
 %\begin{table}[h]
 %    \begin{center}
 %    \begin{tabular}
@@ -538,13 +536,13 @@ The existence of power laws in neural language model training \citep{hestness_20
 
 \subsection{Neural networks are strictly singular}
 \label{appendix:nn_singular}
-Many-layered neural networks are strictly singular. The degeneracy of the Hessian in deep learning has certainly been acknowledged in e.g., \citet{DBLP:journals/corr/SagunBL16} which recognizes the eigenspectrum is concentrated around zero and in \citet{pennington_spectrum_2018} which deliberately studies the Fisher information matrix of a \textit{single}-hidden-layer, rather than multilayer, neural network. 
+Many-layered neural networks are strictly singular \citep[\S 7.2]{watanabe_algebraic_2009}. The degeneracy of the Hessian in deep learning has certainly been acknowledged in e.g., \citet{DBLP:journals/corr/SagunBL16} which recognizes the eigenspectrum is concentrated around zero and in \citet{pennington_spectrum_2018} which deliberately studies the Fisher information matrix of a \textit{single}-hidden-layer, rather than multilayer, neural network. 
 
 We first explain how to think about a neural network in the context of singular learning theory. A feedforward network of depth $c$ parametrises a function $f: \mathbb{R}^N \lto \mathbb{R}^M$ of the form
 \[
 f = A_c \circ \sigma_{c-1} \circ A_{c-1} \cdots \sigma_1 \circ A_1
 \]
-where the $A_l: \mathbb{R}^{d_{l-1}} \lto \mathbb{R}^{d_{l}}$ are affine functions and $\sigma_l: \mathbb{R}^{d_{l}} \lto \mathbb{R}^{d_{l}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of $\mathbb{R}^d$ containing the origin, where $\mathbb{R}^d$ is the space of sequences affine functions $(A_l)_{l=1}^c$ with coordinates denoted $w_1,\ldots,w_d$ so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define $p(y|x,w)$ as in (\ref{eq:gaussian_model_in_w}). We assume the true distribution is realisable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
+where the $A_l: \mathbb{R}^{d_{l-1}} \lto \mathbb{R}^{d_{l}}$ are affine functions and $\sigma_l: \mathbb{R}^{d_{l}} \lto \mathbb{R}^{d_{l}}$ is coordinate-wise some fixed nonlinearity $\sigma: \mathbb{R} \lto \mathbb{R}$. Let $W$ be a compact subspace of $\mathbb{R}^d$ containing the origin, where $\mathbb{R}^d$ is the space of sequences of affine functions $(A_l)_{l=1}^c$ with coordinates denoted $w_1,\ldots,w_d$ so that $f$ may be viewed as a function $f: \mathbb{R}^N \times W \lto \mathbb{R}^M$. We define $p(y|x,w)$ as in (\ref{eq:gaussian_model_in_w}). We assume the true distribution is realisable, $q(y|x) = p(y|x,w_0)$ and that a distribution $q(x)$ on $\mathbb{R}^N$ is fixed with respect to which $p(x,y) = p(y|x)q(x)$ and $q(x,y) = q(y|x)q(x)$. Given some prior $\varphi(w)$ on $W$ we may apply singular learning theory to the triplet $(p,q,\varphi)$.
 
 By straightforward calculations we obtain
 \begin{align}
@@ -637,15 +635,13 @@ Now assume that $B_0A_0$ is symmetric and that $B_0$ is square,
 i.e.\ $N = H$.  Then the zero locus of $K(w)$ is explicitly given as
 follows
 $$
-K(w) = \{ (A, B) : \det B \neq 0 \mbox{ and } A = B^{-1}B_0A_0 \}.
+W_0 = \{ (A, B) : \det B \neq 0 \mbox{ and } A = B^{-1}B_0A_0 \}.
 $$
 It follows that $W_0$ is globally a graph over $GL(H;
 \mathbb{R})$.  Indeed, the set $(B^{-1}B_0 A_0, B)$ with $B \in GL(H;
-\mathbb{R})$ is exactly $W_0$.  Thus $\{ K = 0\}$ is a smooth
+\mathbb{R})$ is exactly $W_0$.  Thus $W_0$ is a smooth
 $H^2$-dimensional submanifold of $\mathbb{R}^{H^2} \times
-\mathbb{R}^{H \times M}$.  
-
-To prove that $W_0$ is minimally singular in the sense of Section \ref{section:no_flat_minima} it suffices to show that $\mathrm{rank} ( D^2_{A,B}K) \ge HM$ where $D^2_{A,B} K$ denotes the Hessian, but as it is no more difficult to so, we find explicit local
+\mathbb{R}^{H \times M}$. To prove that $W_0$ is minimally singular in the sense of Section \ref{section:no_flat_minima} it suffices to show that $\mathrm{rank} ( D^2_{A,B}K) \ge HM$ where $D^2_{A,B} K$ denotes the Hessian, but as it is no more difficult to do so, we find explicit local
 coordinates $(u, v)$ near an arbitrary point $(\overline{A},
 \overline{B}) \in W_0$ for which $\{ v = 0 \} = W_0$
 and $K(u, v) = a(u,v)|u|^2$ in this neighborhood, where $a$ is a
@@ -674,7 +670,7 @@ invertible) we can take $a(u,v) = | (\overline{B} + v) u |^2 /
 
 %From derivations in \citep{watanabe_widely_2013}, we can glean several useful asymptotic characterizations of the RLCT. To set this up, we begin with some definitions. 
 
-Let $L_n(w)$ be the negative log likelihood as in (\ref{eq:nll}). Define the data likelihood at inverse temperature $\beta >0$ to be $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$ which can also be written 
+In this section we detail the estimation procedure for the RLCT used in Section \ref{section:simple_func}. Let $L_n(w)$ be the negative log likelihood as in (\ref{eq:nll}). Define the data likelihood at inverse temperature $\beta >0$ to be $p^\beta(\mathcal D_n | w) = \Pi_{i=1}^n p(y_i |x_i, w)^\beta$ which can also be written 
 \begin{equation}
 p^\beta(\mathcal D_n | w) = \exp(-\beta n L_n(w)).
 \label{general_likelihood}
@@ -711,7 +707,7 @@ In Algorithm \ref{alg:thm4}, we describe an estimation procedure for the RLCT ba
 %To approximate the integral $E_w^\beta [n L_n(w)]$ on the left-hand-side of \eqref{eq:Theorem4_WBIC} we use NUTS. 
 %However, the $p^\beta(w|\mathcal D_n)$ is intractable for any $\beta>0$, rendering computation of $E_w^\beta$ challenging. For regular models, the Laplace approximation to ${\E}_w^\beta [R(w)]$ would be reasonable (as guaranteed for instance by the Berstein-von Mises theorem.) Recall the Laplace approximation in this case would replace ${\E}_w^\beta$ with an expectation with respect to a normal random variable with mean $w_0$, which is a mode of $L_n$, and covariance which is the Hessian $H_{ij} =\frac{\partial^2 L_n}{\partial w_i \partial w_j}$. But as we discussed earlier, for strictly singular models, the Laplace approximation does not hold.
 
-The \emph{a posteriori} distribution was approximated using the NUTS variant of Hamiltonian Monte Carlo \citep{hoffman2014no} where the first 1000 steps were omitted and $20,000$ samples were collected.  Each $\hat \lambda(\mathcal D_n)$ estimate in Algorithm \ref{alg:thm4} was performed by linear regression on the pairs $\{ (1/\beta_i, \mathbb{E}^{\beta_i}_w[ nL_n(w) ] ) \}_{i=1}^5$ where the five inverse temperatures $\beta_i$ are centered on high temperature $1/\log(20000)$.
+For the estimates in Table \ref{table:hyper} the \emph{a posteriori} distribution was approximated using the NUTS variant of Hamiltonian Monte Carlo \citep{hoffman2014no} where the first 1000 steps were omitted and $20,000$ samples were collected.  Each $\hat \lambda(\mathcal D_n)$ estimate in Algorithm \ref{alg:thm4} was performed by linear regression on the pairs $\{ (1/\beta_i, \mathbb{E}^{\beta_i}_w[ nL_n(w) ] ) \}_{i=1}^5$ where the five inverse temperatures $\beta_i$ are centered on the inverse temperature $1/\log(20000)$.
 
 \begin{algorithm}[tb]
 	\caption{RLCT via Theorem 4  in \citet{watanabe_widely_2013}}
